@@ -1,0 +1,13 @@
+/*no use*/
+body {
+
+}
+
+/*set_selected_chapter: selected section*/
+.SectionNavigate ul {
+    display:none;
+}
+.SectionNavigate ul.selected {
+    display:block;
+}
+

@@ -1,0 +1,181 @@
+Update @20150114
+------------------
+
+Bootstrap_idnex.html
+====================
+- from #author : name="mdtext" action="/PresentSystem/convert/" method="get"
+- textarea #author-ta : name="author-ta"
+
+
+starter-tempalte.js
+====================
+- var server_mode 
+	= True [Using Django & conver.py]
+	= False[Using JS]
+
+- update Convert() to submit form#author for server_mode
+
+- store supported paradigm in JSON
+- simply convert() with paradigm.json
+- [an old well version of convert() is renamed as convert_v0()]
+
+- add two variables in the tempalte
+	<textarea id="author-ta">{{ author_text }}</textarea>
+	<iframe id="present" src="{{ present_path }}" ></iframe>
+
+
+views.py
+===================
+- from django.http import HttpResponseRedirect
+- define convert(request):
+
+- change present() to index()
+
+- add feedback when return from convert()
+
+- update index() to pass values of the two variables in template
+
+- update convert() to get author-ta and selected-paradigm together
+- update convert() to display pressent.html based on the selected-paradigm
+
+NO : - add parsed() to handle and diplay the returned/parsed file
+NO more Use- add parsed() to parser md to html, is called in convert()
+
+- update parsed to use json2object() defined in text.py
+
+- call parser.parer() in convert()
+	return can_output, html_parsed, output_name
+- generater tempfile and then send as context[present_path]
+
+urls.py
+===================
+- change 'present' to convert()
+	url(r'^$', views.index, name='index'),
+
+- add new url : /PresentSystem/parsed/
+	url(r'^convert/$', views.parsed, name='parsed'),
+
+parser.py
+=================
+define a new model to parser the md
+mostly are from MD_XML.py
+
+test.py
+===============
+- add object2json() to save object to json
+- add json2object() to load json from file
+
+
+
+Update @20150115
+----------------
+
+index_Bootstrap.html
+====================
+- form#author>input#select-paradigm
+	==> input # select-style
+
+
+parser.py
+========
+- replace print with print_log() defined in bcolors.py
+
+- reindent html_parsered
+	BeautifulSoup has a function called prettify
+	http://stackoverflow.com/questions/6150108/python-how-to-pretty-print-html-into-a-file
+- !! BeautifulSoup 4 has to be installed
+	=> http://www.crummy.com/software/BeautifulSoup/bs4/doc/
+	=> sudo pip install beautifulsoup4
+	=> Custom indent width for BeautifulSoup .prettify()
+	   http://stackoverflow.com/questions/15509397/custom-indent-width-for-beautifulsoup-prettify
+
+
+bcolors.py
+==========
+- defined print_log() to print log colorful in terminal
+- moved json<=>object() here
+- defined prettify to reindent html_parsed
+	using BeautifulSoup
+
+
+Upload to Google APP Engine
+===========================
+- Download & Install Java for OS X 2014-001
+	http://support.apple.com/kb/DL1572
+
+- Download & Install PyCharm
+	Version: 4.0.4
+	https://www.jetbrains.com/pycharm/download/
+- 1st Open
+	Enable opening files and projects from the command line
+	Script Path: /usr/local/bin/charm
+
+?? - set theme as Sumblime
+	http://www.ideacolorthemes.org/themes/5/
+
+- expand «Editor» → «Colors and fonts» tab and choose the installed theme.
+	Monokai
+
+- Open Desktop/Django/Mysite
+
+- TIPS:
+	-- To open any class in the editor quickly, press ⌘O (Navigate | Class) and start typing the name of the class. Choose the class from a drop-down list that appears.
+	-- You can open any file in your project in a similar way by using ⇧⌘O (Navigate | File)
+	-- The Code Completion feature lets you quickly complete different kinds of statements in the code. For example, start typing a class name and press ⌃Space to complete it. When multiple choices are available, they are shown in the lookup list.
+	-- A special variant of the Code Completion feature invoked by pressing ⌃Space twice allows you to complete the name of any class no matter if it was imported in the current file or not. If the class is not imported yet, the import statement is generated automatically.
+	-- You can quickly find all places where a particular class, method or variable is used in the whole project by positioning the caret at the symbol's name or at its usage in code and pressing ⌥F7 (Find Usages in the popup menu).
+	-- To quickly see the documentation for the symbol at caret, press F1 (View | Quick Documentation).
+ 
+- Double SHIFT: search everywhare
+- CMD + SHIFT + O : open a file by name
+- CMD + E :  open recent files
+- CMD + UP :  open navigation bat
+- CMD + SHIFT + A
+
+- ALT+T = python manage.py
+
+
+- Apply an Student account for JetBrain Tools
+	cnxyli@hku.hk
+	JetBrain Account: xyli	******py
+
+	You can use the following products for free until January 14, 2016:
+	IntelliJ IDEA
+	ReSharper
+	dotTrace
+	dotMemory
+	dotCover
+	AppCode
+	PhpStorm
+	PyCharm
+	RubyMine
+	WebStorm
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

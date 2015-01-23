@@ -1,0 +1,102 @@
+/*Template*/
+body {
+  padding-top: 50px;
+}
+.starter-template {
+  padding: 40px 15px;
+  text-align: center;
+}
+
+
+/*Modify Predefined*/
+.container {
+	width: 1366px !important;
+	max-width: 100% !important;
+}
+
+#config .control-label  {
+	text-align: left;
+}
+
+#config .col-sm-2{
+	padding-right: 0px;
+	text-align: right;
+}
+
+/*.bootstrap-select{
+	width:inherit!important;
+}*/
+
+
+/*Custom*/
+div#md2ps{
+	margin-top: 15px;
+	height: 630px;
+}
+
+div#left, div#right{
+	height:inherit;
+}
+
+form#author, form#author>textarea{
+	height:100%;
+}
+iframe#present{
+	height:75%;
+	width:100%;
+}
+/*
+div#present>iframe{
+	height:100%;
+	width:100%;
+}*/
+
+div>h3{
+	margin: 15px;
+}
+
+form#config{
+	height:25%;
+	width:100%;
+	margin-top: 10px;
+}
+
+
+/*iframe#edit{
+	width: 100%;
+	height: 65%;
+	margin-width: 5px;
+}
+
+textarea#fileDisplayArea{
+	width: 100%;
+	height:100%;
+	margin-width: 5px;
+
+	font-size: 16;
+}
+
+iframe#show{
+	width: 100%;
+	height: 100%;
+	margin-width: 15px;
+}
+
+div#left{
+	margin-width: 5px;
+	width: 40%;
+	height: 650px;
+	float:left;
+}
+
+div#right{
+	width: 59%;
+	height: 500px;
+	margin-width: 15px;
+	float:right;
+}
+
+div#FileAPI, div#CallPY{
+	margin: 10px;
+	/*float:right;*/
+}*/
