@@ -10,8 +10,8 @@ class bcolors:
 	UNDERLINE = '\033[4m'
 
 def print_log(content):
-	log = bcolors.OKGREEN+'** log **'
-	print log, content
+	log = bcolors.OKGREEN+'** log ** '+ content + bcolors.ENDC
+	print log 
 	return #log+' '+content
 
 import json,os

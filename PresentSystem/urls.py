@@ -11,4 +11,7 @@ urlpatterns = patterns('',
 
 	# ex: /PresentSystem/parsed/
 	# url(r'^parsed/$', views.parsed, name='parsed'),
+
+	# ex: /PresentSystem/test/
+	url(r'^test/$', views.test, name='test'),
 )

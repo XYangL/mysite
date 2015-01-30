@@ -29,6 +29,12 @@ body {
 
 
 /*Custom*/
+#element_to_pop_up { 
+	display:none; 
+	height:90%;
+	width:90%;
+}
+
 div#md2ps{
 	margin-top: 15px;
 	height: 630px;
@@ -38,7 +44,7 @@ div#left, div#right{
 	height:inherit;
 }
 
-form#author, form#author>textarea{
+form#authorInput, form#authorInput>textarea{
 	height:100%;
 }
 iframe#present{

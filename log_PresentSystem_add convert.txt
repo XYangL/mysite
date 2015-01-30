@@ -154,20 +154,81 @@ Upload to Google APP Engine
 
 
 
+Update @20150130
+------------------
+
+test.html in PS/template
+====================
+- tempalte used for testing features of Django
+- update PS/urls.py :  url(r'^test/$', views.test, name='test'),
+- add function test() in PS/views.py
 
 
+csrf_token
+===========
+- 1. settings.py : Add the middleware 'django.middleware.csrf.CsrfViewMiddleware' to your list of middleware classes, MIDDLEWARE_CLASSES.
+- 2. In any template that uses a POST form, use the csrf_token tag inside the <form> element if the form is for an internal URL
+  ==> template/*.html: add {% csrf_token %} after <form>
+- 3. In the corresponding view functions, ensure that the 'django.core.context_processors.csrf' context processor is being used
+  ==> PS/views.py: 
+  	from django.core.context_processors import csrf
+	from django.shortcuts import render_to_response
+	def my_view(request):
+		c = {}
+		c.update(csrf(request))
+		# ... view code here
+		return render_to_response("a_template.html", c)
 
 
+index_Bootstrap.html
+====================
+- <form id="author" name="mdtext" action="/PresentSystem/convert/" method="GET" >
+=><form id="authorInput" name="authorInput" action="/PresentSystem/convert/" method="POST" >
+
+- <textarea id="author-ta" class="form-control" name="author-ta">{{ author_text }}</textarea>
+=><textarea id="input-md" class="form-control" name="input-md">{{ input_md }}</textarea>
+
+- update related parts in starter-template.js/.css
+
+- update views.py with {input_md}
 
 
+Update Form method of convert:
+====================
+1. change context[author_text] to 
+   context[input_md] = DEFAULT_TextArea
+
+2. update templages/index_bootstrap.html
+- add {% csrf_token %} after <form>
+
+3. update view.py/convert()
+- add context.update(csrf(request))
+- check the request.method first
+  if method == post, check input, paser, and update iframe with temp.html; 
+  otherwise, context[author_ta]=  iframe is blank
+
+4. Create global variable CONTEXT_index with present_path and input_md for using HttpResponseRedirect
+
+5. update convert() :  
+- NOT setting context for rendering
+- Instead, setting global variable CONTEXT_index
+- Use HttpResponseRedirect for return
+
+6. update index(): initiate context with CONTEXT_index
 
 
+update preview() in starter-template.js
+====================
+- check iframe[src] 
+- if src!= Null, then open src in a new popup
 
+http://dinbror.dk/blog/bpopup/
+- Download jquery.bpopup.min.js at PS/static/PS/js
+- include script in HTML 
+- add iframe#element_to_pop_up to pupup in the end of HTML
+- update .css to hide the iframe#element_to_pop_up
 
-
-
-
-
+- update .js/preview() to bpopup iframe#element_to_pop_up
 
 
 

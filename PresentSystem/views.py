@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
+from django.core.context_processors import csrf
+
 # Create your views here.
 
 import json,os
@@ -12,40 +14,46 @@ from PresentSystem.parser import __author__,test,parser
 log = TOOLS.bcolors.OKGREEN+'** log **'
 path_pre = "/static/PresentSystem/API/"
 
+#Global Variables used for updating context to render index.hmtl
+DEFAULT_TextArea = '''Title
+=========
+
+Please edit your plain text here'''
+
+CONTEXT_index = {
+	'present_path': '',
+	'input_md':DEFAULT_TextArea
+	}
+
 ''' /PresentSystem/ '''
 def index(request):
 	TOOLS.print_log('Render index_Bootstrap.html')
 	
+	context = CONTEXT_index
+	
+	temp = render(request, 'PresentSystem/index_Bootstrap.html',context)
+	CONTEXT_index['present_path'] = ''
+	CONTEXT_index['input_md']=DEFAULT_TextArea
 
-	file_name = "[S5]Markdown Syntax.html"
-
-	context = {
-		'present_path': '',
-		'author_text':'''Title
-=========
-
-Please edit your palin text here'''
-		}
-
-	return render(request, 'PresentSystem/index_Bootstrap.html',context)
+	return temp #render(request, 'PresentSystem/index_Bootstrap.html',context)
 
 
 ''' /PresentSystem/convert/ '''
 def convert(request):
-	TOOLS.print_log('Submit a form #author')
+	TOOLS.print_log('Author Submit a form')
 
-	context = {}
-	if request.method == 'GET':
-		if request.GET.get('author-ta'):
-			text = request.GET.get('author-ta')
-			paradigm = request.GET.get('selected-paradigm')
+	if request.method == 'POST':
+		CONTEXT_index.update(csrf(request))
+		input_md = request.POST.get('input-md')
+		paradigm = request.POST.get('selected-paradigm')
+
+		if len(input_md.strip()) == 0:
+			CONTEXT_index['present_path'] = ''
+			CONTEXT_index['input_md']=DEFAULT_TextArea
+			TOOLS.print_log('Nothing in TextArea!')
+		else:
+			can_output, html_parsed, output_name, output_format = parser(input_md, paradigm)
 			TOOLS.print_log('selected-paradigm is '+paradigm)
-			# TOOLS.print_log(Please convert \n'+log, ('\n'+log).join(text.split('\n'))'')
-
-			# context = parsed(text, paradigm)
-			# TOOLS.print_log(__author__)
-			# test()
-			can_output, html_parsed, output_name, output_format = parser(text, paradigm)
 			TOOLS.print_log('Can_output ' + str(can_output))
 			# TOOLS.print_log(output_name)
 			if can_output:
@@ -61,22 +69,20 @@ def convert(request):
 				# print fo
 				fo.close()
 				
-				context = {
-				'present_path': path_pre+output_name,
-				'author_text':text,
-				}
+				CONTEXT_index['present_path'] = path_pre+output_name
+				CONTEXT_index['input_md'] =input_md
+				TOOLS.print_log('Filed used for Presentation: ' + CONTEXT_index['present_path'])
+	
 			else:
-				TOOLS.print_log('parser return is NOT can_output')
+				CONTEXT_index['present_path'] = ''
+				CONTEXT_index['input_md']=input_md
+				TOOLS.print_log('parser return NOT support can_output')
 
-		else:
-			TOOLS.print_log('Nothing in Textarea!')
+	else:#request.method == 'GET'
+		TOOLS.print_log('Form is NOT submitted via method = POST!')
 
-	else:
-		TOOLS.print_log('Submit Method is NOT GET!')
+	return HttpResponseRedirect('/PresentSystem/')
 
-	return render(request, 'PresentSystem/index_Bootstrap.html',context)
-	# return HttpResponseRedirect('/PresentSystem/parsed/')
-	# return HttpResponseRedirect('/PresentSystem/parsed/?text=%s&paradigm=%s' % (text, paradigm))
 
 '''/PresentSystem/parsed/ handle and diplay the returned/parsed file'''
 def parsed(text,paradigm):
@@ -88,8 +94,18 @@ def parsed(text,paradigm):
 
 	context = {
 	'present_path': path_pre+file_name,
-	'author_text':text,
+	'input_md':text,
 	}
 
 	return context
 
+
+'''/PresentSystem/test/ : test Django Features'''
+def test(request):
+	context = {}
+	context.update(csrf(request))
+	# if len(request.POST) == 
+	ou = str(request)
+	TOOLS.print_log('check request\n'+ ou)
+
+	return render(request, 'PresentSystem/test.html',context)

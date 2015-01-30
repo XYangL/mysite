@@ -41,7 +41,7 @@ SRC_HOLDER = os.path.join(PROJECT_ROOT, FILES_FOLDER)
 
 
 def test():
-	TOOLS.print_log('Hello from parser')
+	TOOLS.print_log(">>parser.py<< " + 'Hello from parser')
 	return
 
 def parser(md_plain, paradigm):
@@ -88,10 +88,10 @@ def parser(md_plain, paradigm):
 		else:
 			can_output = False
 			output_name = ''
-			TOOLS.print_log("Unknown Format : "+output_format)
+			TOOLS.print_log(">>parser.py<< " + "Unknown Format : "+output_format)
 
-		# TOOLS.print_log(can_output)
-		TOOLS.print_log(output_name)
+		# TOOLS.print_log(">>parser.py<< " + can_output)
+		# TOOLS.print_log(">>parser.py<< " + output_name)
 		# print html_parsed
 
 		'''reindent the output HTML'''
@@ -100,7 +100,7 @@ def parser(md_plain, paradigm):
 		return can_output, html_parsed, output_name, output_format
 
 	else:
-		TOOLS.print_log("\""+js_name+"\" has not been implemented")
+		TOOLS.print_log(">>parser.py<< " + "\""+js_name+"\" has not been implemented")
 		return False, '', '',''
 
 def pre_xml2html(father):
@@ -161,7 +161,7 @@ def md2xml_tree(raw_md,paradigm):#ani_type
 	body_tr = ET.fromstring(content_xml)#<content></content>
 
 	pr_title = list(body_tr)[0].text
-	TOOLS.print_log(">>Parsed raw md to XML<< Title: "+ pr_title)
+	TOOLS.print_log(">>parser.py<< " + "Parsed raw md to XML")
 
 	#Math
 	for pre_ele in list(body_tr.findall(".//pre")):

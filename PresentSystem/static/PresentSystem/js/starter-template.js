@@ -18,7 +18,7 @@ $("#cssInput").fileinput();
 /* Display selected md file in left textarea*/
 window.onload = function () {
 	var fileInput = document.getElementById('fileInput');
-	var fileDisplayArea = document.getElementById('author-ta');
+	var fileDisplayArea = document.getElementById('input-md');
 	fileInput.addEventListener('change', function (e) {
 		var file = fileInput.files[0];
 		var textType = /text.*/;
@@ -35,7 +35,19 @@ window.onload = function () {
 };
 
 function preview(){
-	alert("Preview is Clicked.");
+	var src = document.getElementById('present').src;
+	var src_def = "http://127.0.0.1:8000/PresentSystem/"
+	if (src != src_def ){
+		// alert("open "+src+" in a new window");
+		// window.open(src, '_blank');
+		document.getElementById('element_to_pop_up').src=src;
+		$('#element_to_pop_up').bPopup({
+			position: ['auto', 20]
+		});
+	} else {
+		alert("Nothing is ready for preview");
+	}
+
 
 };
 
@@ -64,14 +76,15 @@ function convert()
 
 	if (is_support){
 		
-		f = document.forms['mdtext'];
-		f.elements[1].value = paradigm;
+		f = document.forms['authorInput'];
+		f.elements.namedItem('selected-paradigm').value = paradigm;
 		// alert(f.elements[1].value);
 
 		if (has_server){
 			f.submit();
 		
-		} else {	
+		} else {
+			// alert(f.elements.namedItem('selected-paradigm').value);	
 			var out_file_path = "/static/PresentSystem/API/";
 			out_file_path += supported_paradigm[paradigm]['file_name']
 
@@ -87,7 +100,7 @@ function convert()
 function convert_v0()
 {
 	if (has_server){
-		f = document.forms['mdtext'];
+		f = document.forms['authorInput'];
 		f.submit();
 	} else {	
 		var path_pre = "/static/PresentSystem/API/";
