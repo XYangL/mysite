@@ -1,0 +1,169 @@
+body {
+	font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-size:20px;
+	color:#333;
+}
+
+li >a{
+	text-decoration:none;
+	margin:0;
+	padding:0;
+	/*font-family:"Times New Roman", Times, serif;*/
+	/*line-height:50px;*/
+}
+
+.one_level >li >a{
+	color:#FF4500;
+	font-size:35px;
+	font-weight:500;
+	}	
+	
+.two_level >li >a{
+	/*padding-left:30px;*/
+	color:#FF9000;
+	font-size:30px;
+	font-weight:450;
+	}
+	
+.three_level >li >a {
+	/*padding-left:30px;*/
+	color:#00B060;
+	font-size:25px;
+	font-weight:400;
+	}
+
+.four_level >li >a {
+	/*padding-left:30px;*/
+	color:#0A64A4;
+	font-size:20px;
+	font-weight:350;
+	}
+.five_level >li >a {
+	/*padding-left:30px;*/
+	color:#03406A;
+	font-size:20px;
+	font-weight:350;
+	}
+
+/*fixed position and other css for differe div*//*2012-06-21*/
+div.contentDiv{
+	/*0922*/
+	border-radius:5px;
+	
+	background-color:#F7F7F9;/*#EEEEEE;*/
+	height:45%;
+	width:99%;/*0924 for IE display ensure*/
+	overflow:auto;
+	margin:5px;
+	/*padding-bottom: 95px;*/
+	
+	position: fixed;
+	left:0%;
+	top:0%;
+
+}
+
+div.preziDiv{
+	background-color:#04C;   
+	border-radius:5px; 
+	
+	width:99%;
+    /*min-height:10%;
+    max-height:45%;*/
+    
+    overflow:auto;
+    
+    margin:5px;
+
+    position: fixed;
+    left:0%;
+    top:46%;
+
+/*  	border:5px solid #04C;*/
+
+	box-shadow: 5px 5px 2px #888888;
+    
+}
+
+div.preziDiv >ul>li>a{
+	color:white;
+}
+
+/*0905 for no list point in the preziDiv*/
+div.preziDiv ul {
+    list-style-type:none;
+}
+
+div.nav_chapter{
+	background-color: #F7F7F9;
+	/*height:30px;*/
+	width: 50%;
+	padding-top:5px;
+	margin:5px;
+	
+	overflow:auto;
+	
+	position: fixed;
+	left:0%;
+	bottom:0%;
+
+	display:none;
+}
+
+div.pillsDiv{
+	ackground-color: #F7F7F9;
+
+	/*margin:5px;*/
+	
+	overflow:auto;
+
+	position: fixed;
+	left:0%;
+	bottom:0%;
+}
+
+div.pillsDiv>ul.nav{
+	display: inline;
+}
+
+div.modeDiv{
+	margin:5px;
+
+	position: fixed;
+	right:0%;
+	bottom:0%;
+}
+
+
+/*0922 More formal*/
+
+div.testDiv{
+	background-color:#F7F7F9;
+    width:99%;
+    /*min-height:10%;*/
+    overflow:auto;
+    padding-bottom: 5px;
+    margin:5px;
+
+	position: fixed;
+    right:0%;
+    top:75%; 
+
+    display: none;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
