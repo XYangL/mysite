@@ -1,0 +1,84 @@
+<config>
+	<name>scroll</name>
+	
+	<type>list</type>
+	<format>html</format>
+
+	<head>
+		<append>
+			  <link rel="stylesheet" type="text/css" href="./API/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="./API/css/basic.css" />
+  <!-- 0923 -->
+  
+
+
+  <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
+  <script type="text/javascript" src="./API/js/bootstrap.js"></script>
+
+  <script type="text/javascript" src="./API/js/function.js"></script>  
+  <script type="text/javascript" src="./API/js/initialize.js"></script>    
+  <script type="text/javascript" src="./API/js/keyboard.js"></script>
+  <script type="text/javascript"
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+		</append>
+		<set></set>
+		<del></del>
+	</head>
+
+	<body>
+		<append>
+			<div class="contentDiv" >
+			</div>
+			<!-- div for showing selected item -->
+			<div class="preziDiv">
+				<ul >
+				<li><a href='#'></a></li>
+				</ul>
+			</div><!-- div.preziDiv -->
+
+			<!-- div for indicating the current mode: pre | nav | imp -->
+			<div class="modeDiv">
+				<span class="label">presentation</span>
+			</div><!-- div.modeDiv -->
+
+			<!-- div for navigation -->
+			<div class="nav_chapter tabbable tabs-below">
+
+			</div><!-- div.nav_chapter -->
+ 
+			<!-- div for pills, in case of keyboard-unusable -->
+			<div class="pillsDiv">
+			 	<ul class="nav nav-pills">
+					<li><a href="#">&lt;=</a></li>
+					<li><a href="#">=&gt;</a></li>
+					<li><a href="#">Pre</a></li>
+					<li><a href="#">Nav</a></li>
+					<li><a href="#">Imp</a></li>
+				</ul>
+			</div>
+
+			<div class="testDiv">
+				<span class="label"></span>
+			</div><!-- div.testDiv -->
+
+			<script type="text/javascript">
+				$("[rel=tooltip]").tooltip();
+			</script>
+
+		</append>
+		<content>
+			<father>./div[@class="contentDiv"]</father><!-- <body>[conent]<body> -->
+		</content>
+		<set>
+		</set>
+		<del>
+			
+		</del>
+	
+	</body>
+
+	
+
+</config>
