@@ -10,6 +10,14 @@ Download
 
 A Cross Product Formula
 
+<math >
+  <mi>a</mi><msup><mi>x</mi><mn>2</mn></msup>
+  <mo>+</mo> <mi>b</mi><mi>x</mi>
+  <mo>+</mo> <mi>c</mi> <mo>=</mo> <mn>0</mn>
+</math>
+
+When \\(a \ne 0\\), there are two solutions to \\[ax^2 + bx + c = 0\\] and they are $$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$
+
 Introduction
 ============
 

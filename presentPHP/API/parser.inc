@@ -1,9 +1,5 @@
 <?php  
 
-# This file passes the content of the Readme.md file in the same directory
-# through the Markdown filter. You can adapt this sample code in any way
-# you like.
-
 # Install PSR-0-compatible class autoloader
 spl_autoload_register(function($class){
 	require preg_replace('{\\\\|_(?!.*\\\\)}', DIRECTORY_SEPARATOR, ltrim($class, '\\')).'.php';
@@ -13,6 +9,10 @@ spl_autoload_register(function($class){
 use \Michelf\Markdown;
 
 class Parser{
+	// private PARSER_FOLDER = getcwd ();
+	const CONFIG_FOLDER = "config";
+	const CSS_FOLDER = "";
+	const JS_FOLDER = "";
 	
 	public $success = false; # will be true if presentableHTML is parsered as designed
 
@@ -26,7 +26,8 @@ class Parser{
 	public $paradigm = "";
 
 	# If $style is suportted, _config.xml will be loaded 
-	private $basicConfig = None;
+	# self::PARSER_FOLDER."/".self::CONFIG_FOLDER."/".$this->basicConfig;
+	private $basicConfig = "basic_config.xml"; # will be DOMDocument after construct
 	private $specificConfig = None;
 	
 	# private vars linking different parts of Parser 1&2
@@ -37,13 +38,26 @@ class Parser{
 	
 	public $presentableHTML = "";
 
+	function __construct($basicConfig=""){
+		if($basicConfig == ""){
+			$dom = new DOMDocument;
+			$dom->preserveWhiteSpace = FALSE;
+			$dom->formatOutput = TRUE;
+			$dom->load(self::CONFIG_FOLDER."/".$this->basicConfig);
+			$this->basicConfig = $dom;
+			unset($dom);
+		}
+		// var_dump($this->basicConfig->saveXML());
+		
+	}
+
 	# called by User for converting content in Markdown to Presentable HTML
 	public function main($title, $contentMD, $style)
 	{	
-		if( empty($title) || empty($contentMD) || empty($style) ){
-			$this->$success = false;
-			$this->$presentableHTML = "";
-			return $this->$presentableHTML;
+		if( trim($title) == "" || trim($contentMD) == "" || trim($style) == "" ){
+			$this->success = false;
+			$this->presentableHTML = "";
+			return $this->presentableHTML;
 		} 
 
 		// --- to do ---
@@ -53,6 +67,7 @@ class Parser{
 		// 	$this->$presentableHTML = "";
 		// 	return "";
 		// }
+		// ------------
 
 		$this->title = $title;
 		$this->contentMD = $contentMD;
@@ -60,13 +75,12 @@ class Parser{
 		
 		# A Parser 1.1
 		$this->rawHTML = $this->md2html($this->contentMD);
-		
-		// --- to do ---
-		$this->success = true;
 
 		# B Parser 1.2	public function setBasicStyle($rawHTML,$basicConfig)
-		$this->basicHTML = $this->setBasicStyle($this->rawHTML,$this->basicConfig);
+		$this->basicHTML = $this->setBasicStyle($this->rawHTML,$this->title,$this->basicConfig);
 
+		// --- to do ---
+		$this->success = true;
 		# C Parser 2.1	public function reOrganize($basicHTML,$paradigm)
 		$this->structuredHTML = $this->reOrganize($this->basicHTML,$this->paradigm);
 
@@ -74,7 +88,7 @@ class Parser{
 		$this->specificHTML = $this->setSpecificStyle($this->structuredHTML, $this->specificConfig);
 		
 		
-		$this->presentableHTML = $this->rawHTML;
+		$this->presentableHTML = $this->basicHTML;
 		
 		return $this->presentableHTML;
 		
@@ -89,43 +103,76 @@ class Parser{
 	}
 
 	# A Parser 1.1
-	public function md2html($contentMD=NUll){ 
-		if (!isset($contentMD)){
+	# Only process content in Markdown
+	# Returned rawHTML only inlucdes content in list of <p>s+<h*>s
+	public function md2html($contentMD=""){ 
+		if ($contentMD == ""){
 			$contentMD = $this->contentMD;
 		}
 		
 		$rawHTML="";
-		#pass content through the Markdown parser
+		
+		#Convert content via the Markdown parser
+		# Returned is list of <p>s+<h*>s
 		$rawHTML = Markdown::defaultTransform($contentMD);
 
-		// --- to do ---
-		// $bodyHTML = Markdown::defaultTransform($contentMD);
-		// $headHTML = head>title[value=$this->title]
-		// $rawHTML = $bodyHTML + $headHtml
+		#Math
+		// ??workable now, but need check Latex in multilines & past input example
 
 		return $rawHTML;
 	}
 
 	# B Parser 1.2
-	public function setBasicStyle($rawHTML,$basicConfig){
-		if (!isset($rawHTML)){
+	public function setBasicStyle($rawHTML="", $title="", $basicConfig=""){
+		if ($rawHTML == ""){
 			$rawHTML = $this->rawHTML;
 		}
-		if (!isset($basicConfig)){
+		if ($title == ""){
+			$title = $this->title;
+		}
+		if ($basicConfig == ""){
 			$basicConfig = $this->basicConfig;
 		}
 
-		$basicHTML = "";
+		# Construct $basicHTML: html>(head>title)+(body>rawHTML)
+		$head="<head><title>".$this->title."</title></head>";
+		$body= "<body>".$rawHTML."</body>";
+		$basicHTML ="<html>$head$body</html>";
 
+		$dom = new DOMDocument();
+		$dom->preserveWhiteSpace = FALSE;
+		$dom->formatOutput = TRUE;
+		$dom->loadXML($basicHTML);
+		$basicHTML = $dom;
+		unset($dom);
+		
+		// $body = $basicHTML->getElementsByTagName('body')->item(0);
+		$head = $basicHTML->getElementsByTagName('head')->item(0);
+
+		$xpath = new DOMXPath($basicConfig);
+		$query = '//config/append/father[. = "head"]/following-sibling::*/*';
+		$entries = $xpath->evaluate($query);
+
+		foreach ($entries as $entry) {
+
+			$fragment = $basicHTML->createDocumentFragment();
+			$fragment->appendXml($basicConfig->saveXML($entry));
+			$head->appendChild($fragment);
+		    // echo $basicConfig->saveXML($entry)."\n";
+		}
+
+		$basicHTML = $basicHTML->saveHTML();#"";
+		
+		$this->basicHTML = $basicHTML;
 		return $basicHTML;
 	}
 
 	# C Parser 2.1
 	public function reOrganize($basicHTML,$paradigm){ 
-		if (!isset($basicHTML)){
+		if ($basicHTML == ""){
 			$basicHTML = $this->basicHTML;
 		}
-		if (!isset($paradigm)){
+		if ($paradigm == ""){
 			$paradigm = $this->paradigm;
 		}
 
@@ -136,10 +183,10 @@ class Parser{
 
 	# D Parser 2.2
 	public function setSpecificStyle($structuredHTML, $specificConfig){
-		if (!isset($structuredHTML)){
+		if ($structuredHTML == ""){
 			$structuredHTML = $this->structuredHTML;
 		}
-		if (!isset($specificConfig)){
+		if ($specificConfig == ""){
 			$specificConfig = $this->specificConfig;
 		}
 
@@ -161,4 +208,21 @@ class Parser{
 	}
 }
 
+//-- For Testing --
+$PARSER = new Parser();
+
+$mdSrc = getcwd ()."/mdSrc/content.md";
+$title ="Presentation Title";
+$contentMD = file_get_contents($mdSrc);
+$style = "S5";
+
+$PARSER->main($title, $contentMD, $style);
+
+if($PARSER->success){
+	// echo $PARSER->presentableHTML;	
+	file_put_contents('pTest_out.html', $PARSER->presentableHTML);
+} else{
+	echo 'Error: Success==False';
+}
+//-----------------
 ?>

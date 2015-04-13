@@ -1,16 +1,16 @@
 <?php 
 session_start();
-$inputTitle = $inputMD = $inputStyle = "";
+$title = $contentMD = $style = "";
 
 require 'API/parser.inc';
 $PARSER = new Parser();
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['inputSubmit']=='true'){
-	$inputTitle = $_POST['inputTitle'];
-	$inputMD = $_POST['inputMD'];
-	$inputStyle = $_POST['inputStyle'];
+if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['submitAuthorInput']=='true'){
+	$title = $_POST['title'];
+	$contentMD = $_POST['contentMD'];
+	$style = $_POST['style'];
 
-	$PARSER->main($inputTitle, $inputMD, $inputStyle);
+	$PARSER->main($title, $contentMD, $style);
 	$_SESSION['html-parsed']= $PARSER->presentableHTML;
 
 }
@@ -92,13 +92,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['inputSubmit']=='true'){
 				<div id="left" class="col-md-5">
 					<form id="authorInput" name="authorInput" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method = "post" >
 						<!-- {% csrf_token %} -->
-						<input type="text" id="inputTitle" class="form-control" name="inputTitle" 
-							placeholder="Pesentation Title"	value="<?php echo $inputTitle; ?>">
+						<input type="text" id="title" class="form-control" name="title" 
+							placeholder="Pesentation Title"	value="<?php echo $title; ?>">
 						<br>
-						<textarea id="inputMD" class="form-control"  name="inputMD" placeholder="Content in Markdown"><?php if ($inputMD!='') { echo $inputMD; } ?></textarea>	
+						<textarea id="contentMD" class="form-control"  name="contentMD" placeholder="Content in Markdown"><?php if ($contentMD!='') { echo $contentMD; } ?></textarea>	
 						
-						<input type="hidden" id="inputStyle"  name="inputStyle" value="S5" />
-						<input type="hidden" id="inputSubmit"  name="inputSubmit" value="false" />
+						<input type="hidden" id="style"  name="style" value="S5" />
+						<input type="hidden" id="submitAuthorInput"  name="submitAuthorInput" value="false" />
 					</form>
 				</div>
 
@@ -107,7 +107,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['inputSubmit']=='true'){
 						<br><h3>Final output can be viewed here after clicking 'Convert'</h2>
 					</div> -->
 					<?php 
-					if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['inputSubmit']=='true'){
+					if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['submitAuthorInput']=='true'){
 						echo "<iframe id=\"present\" src=\"present.php\" ></iframe>";
 
 					} else {

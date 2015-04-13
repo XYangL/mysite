@@ -18,7 +18,7 @@ $("#cssInput").fileinput();
 /* Display selected md file in left textarea*/
 window.onload = function () {
 	var fileInput = document.getElementById('fileInput');
-	var fileDisplayArea = document.getElementById('inputMD');
+	var fileDisplayArea = document.getElementById('contentMD');
 	fileInput.addEventListener('change', function (e) {
 		var file = fileInput.files[0];
 		var textType = /text.*/;
@@ -76,8 +76,8 @@ function convert()
 	if (is_support){
 		
 		f = document.forms['authorInput'];
-		f.elements.namedItem('inputStyle').value = paradigm;
-		f.elements.namedItem('inputSubmit').value = 'true';
+		f.elements.namedItem('style').value = paradigm;
+		f.elements.namedItem('submitAuthorInput').value = 'true';
 		f.submit();
 	} else {
 		alert("NOT Support Paradigm! "+paradigm);
