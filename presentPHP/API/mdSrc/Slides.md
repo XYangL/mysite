@@ -1,9 +1,7 @@
-Towards Better Computer-Based Presentations
-===============
-
 Fixed Size
 ========
-Limited edit space -- Slide-based
+Limited Edit Space -- Slide-based
+
 Authors have to edit the contents to fit on a slide or slides.
 
 

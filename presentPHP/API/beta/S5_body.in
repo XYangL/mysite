@@ -1,0 +1,10 @@
+        <div class="layout">
+            <div id="controls">
+            </div>
+            <div id="currentSlide">
+            </div>
+            <div id="header">
+            </div>
+            <div id="footer">
+            </div>
+        </div>
