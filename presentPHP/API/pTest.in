@@ -1,0 +1,19 @@
+<h1>Download</h1>
+	<p><a href="http://daringfireball.net/projects/downloads/Markdown_1.0.1.zip">Markdown 1.0.1</a> (18 KB) -- 17 Dec 2004</p>
+	<p>A Cross Product Formula</p>
+	<p>When \(a \ne 0\), there are two solutions to \[ax^2 + bx + c = 0\] and they are $$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$</p>
+<h1>Introduction</h1>
+	<p>Markdown is a text-to-HTML conversion tool for web writers. Markdown allows you to write using an easy-to-read, easy-to-write plain text format, then convert it to structurally valid XHTML (or HTML).</p>
+	<p>Thus, "Markdown" is two things: (1) a plain text formatting syntax; and (2) a software tool, written in Perl, that converts the plain text formatting to HTML. See the <a href="/projects/markdown/syntax">Syntax</a> page for details pertaining to Markdown's formatting syntax. You can try it out, right now, using the online <a href="/projects/markdown/dingus">Dingus</a>.</p>
+	<h2>Movable Type</h2>
+		<p>Markdown works with Movable Type version 2.6 or later (including Movable Type 3.0).</p>
+	<h2>Command-Line</h2>
+		<p>Use the <code>--html4tags</code> command-line switch to produce HTML output from a Unix-style command line. E.g.:</p>
+		<p>(You can use this '.text' suffix trick to view the Markdown source for the content of each of the pages in this section, e.g. the
+		<a href="/projects/markdown/syntax.text">Syntax</a> and <a href="/projects/markdown/license.text">License</a> pages.)</p>
+		<p>Markdown is free software, available under a BSD-style open source license. See the <a href="/projects/markdown/license">License</a> page for more information.</p>
+<h1>Discussion List <a id="discussion-list"></a></h1>
+	<p>I've set up a public <a href="http://six.pairlist.net/mailman/listinfo/markdown-discuss">mailing list for discussion about Markdown</a>. Any topic related to Markdown -- both its formatting syntax and its software -- is fair game for discussion. Anyone who is interested is welcome to join.</p>
+	<p>It's my hope that the mailing list will lead to good ideas for future improvements to Markdown.</p>
+<h1>Installation and Requirements <a id="install"></a></h1>
+	<p>Markdown requires Perl 5.6.0 or later. Welcome to the 21st Century. Markdown also requires the standard Perl library module <a href="http://search.cpan.org/dist/Digest-MD5/MD5.pm">Digest::MD5</a>, which is probably already installed on your server.</p>

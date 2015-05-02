@@ -10,12 +10,12 @@ use \Michelf\Markdown;
 
 class Parser{
 	// private PARSER_FOLDER = getcwd ();
-	const CONFIG_FOLDER = "API/config";
-	const BETA_FOLDER = "API/beta";
+	const CONFIG_FOLDER = "API/config";//
+	const BETA_FOLDER = "API/beta";//
 	const CSS_FOLDER = "";
 	const JS_FOLDER = "";
 	
-	public $success = false; # will be true if presentableHTML is parsered as designed
+	public $success = FALSE; # will be true if presentableHTML is parsered as designed
 
 	# Input from User
 	public $title = "";
@@ -23,30 +23,26 @@ class Parser{
 	public $style = "";
 	
 	# Decided by $style according to paradigm.json; 
-	# $paradigm will be None if the style is not supported
+	# $paradigm will be FALSE if the style is not supported
 	public $paradigm = "";
 
-	# If $style is suportted, _config.xml will be loaded 
+	# If $style is suportted ($paradigm is NOT FALSE), _config.xml will be loaded 
 	# self::PARSER_FOLDER."/".self::CONFIG_FOLDER."/".$this->basicConfig;
 	private $basicConfig = "basic_config.xml"; # will be DOMDocument after construct
 	private $specificConfig = None;
 	private $deli_array = array('<h1>','<h2>');
 	
 	# private vars linking different parts of Parser 1&2
-	private $rawBODY = "";
-	private $basicHTML = "";
-	private $structuredHTML = "";
+	private $rawBODY = ""; // private $rawBODY = "";
+	private $basicHEAD = ""; // private $basicHTML = "";
+	private $structuredBODY = ""; // private $structuredHTML = "";
 	private $specificHTML = "";
 	
 	public $presentableHTML = "";
 
 	function __construct($basicConfig="",$deli_array =array()){
-		if($basicConfig == ""){
-			$basicConfig = $this->basicConfig;
-		}
-		if ($deli_array == array()){
-			$deli_array = $this->deli_array;;
-		}
+		if ($basicConfig == "" ){ $basicConfig = $this->basicConfig; }
+		if ($deli_array == array()){ $deli_array = $this->deli_array;}
 
 		$dom = new DOMDocument;
 		$dom->preserveWhiteSpace = FALSE;
@@ -56,7 +52,6 @@ class Parser{
 		unset($dom);
 
 		$this->deli_array = $deli_array;
-		// var_dump($this->basicConfig->saveXML());
 		
 	}
 
@@ -64,19 +59,16 @@ class Parser{
 	public function main($title, $contentMD, $style)
 	{	
 		if( trim($title) == "" || trim($contentMD) == "" || trim($style) == "" ){
-			$this->success = false;
-			$this->presentableHTML = "";
-			return $this->presentableHTML;
+			$this->success = FALSE; $this->presentableHTML = "";
+			return $this->presentableHTML;// ? return FALSE??
 		} 
 
-		// --- to do ---
-		// $this->paradigm = $this->setParadigm($style);
-		// if(!isset($this->paradigm)){
-		// 	$this->$success = false;
-		// 	$this->$presentableHTML = "";
-		// 	return "";
-		// }
-		// ------------
+		#0 Check if the style is supported; If not support, the parser will be paused and return FALSE.
+		$this->paradigm = $this->setParadigm($style);
+		if( $this->paradigm == FLASE ){
+			$this->success = FALSE; $this->presentableHTML = "";
+			return $this->presentableHTML;// ? return FALSE??
+		}
 
 		$this->title = $title;
 		$this->contentMD = $contentMD;
@@ -85,106 +77,52 @@ class Parser{
 		# A Parser 1.1
 		$this->rawBODY = $this->md2html($this->contentMD);
 
-		# B Parser 1.2	public function setBasicStyle($rawBODY,$basicConfig)
-		// $this->basicHTML = $this->setBasicStyle($this->rawBODY,$this->title,$this->basicConfig);
-		$basicHead =file_get_contents(self::BETA_FOLDER."/"."Basic_head.in");
+		# B Parser 1.2	public function setBasicHEAD($title,$basicConfig)
+		$this->basicHEAD = $this->setBasicHEAD($this->title,$this->basicConfig);
 
-		$div = $this->rawBODY;
-		// file_put_contents('pTest.out', $div);
-		$deli_array = $this->deli_array;
-		$deli_index = 0;
+		# C Parser 2.1	public function reOrganizeBODY($rawBODY,$paradigm)
+		$this->structuredBODY = $this->reOrganizeBODY($this->title, $this->paradigm, $this->rawBODY);
 		
-		$START = "\n<div class=\"slide\">";
-		$END = "\n</div>\n";
-
-		$styleBody = file_get_contents(self::BETA_FOLDER."/".$style."_body.in");
-		$styleHead = file_get_contents(self::BETA_FOLDER."/".$style."_head.in");
-		switch ($style) {
-			case 'S5':
-				$reOrganizeBody = $this->splitSlide($div, $deli_array,$deli_index);#divs
-				for($i = 1; $i<count($reOrganizeBody);$i++) {
-					$reOrganizeBody[$i] = $START.$reOrganizeBody[$i].$END;
-				}
-
-				$titleSlide = "<div class=\"slide\"><h1>$title</h1></div>\n";
-				
-				$TOCSlide = array_shift($reOrganizeBody);
-				$TOCSlide = implode("p>",explode("h1>",$TOCSlide));
-				$TOCSlide = "<div class=\"slide\">\n<h1>Outline</h1>$TOCSlide</div>\n";// echo "$TOCSlide\n";
-
-				$reOrganizeBody = implode("",$reOrganizeBody);
-				$reOrganizeBody =  $titleSlide.$TOCSlide.$reOrganizeBody;
-				
-				$specificHTML = "<html>\n";
-				$specificHTML .= "<head>\n<title>$title</title>\n $styleHead \n $basicHead </head>\n";
-				$specificHTML .= "<body>\n $styleBody\n <div class=\"presentation\"> $reOrganizeBody</div>\n";
-				$specificHTML .= "</body>\n</html>";
-
-				break;
-			case 'Slidy':
-				$reOrganizeBody = $this->splitSlide($div, $deli_array,$deli_index);#divs
-				for($i = 1; $i<count($reOrganizeBody);$i++) {
-					$reOrganizeBody[$i] = $START.$reOrganizeBody[$i].$END;
-				}
-
-				$titleSlide = "<div class=\"slide\"><h1>$title</h1></div>\n";
-				
-				$TOCSlide = array_shift($reOrganizeBody);
-				$TOCSlide = implode("p>",explode("h1>",$TOCSlide));
-				$TOCSlide = "<div class=\"slide\">\n<h1>Outline</h1>$TOCSlide</div>\n";
-
-				$reOrganizeBody = implode("",$reOrganizeBody);
-				$reOrganizeBody =  $titleSlide.$TOCSlide.$reOrganizeBody;
-				
-				$specificHTML = "<html>\n";
-				$specificHTML .= "<head>\n<title>$title</title>\n $styleHead \n $basicHead </head>\n";
-				$specificHTML .= "<body>\n $reOrganizeBody\n";
-				$specificHTML .= "</body>\n</html>";
-				break;
-			case 'Scroll':
-				# code...
-				break;
-			
-			default:
-				# code...
-				break;
-		}
-
-		// --- to do ---
-		$this->success = true;
-		# C Parser 2.1	public function reOrganize($basicHTML,$paradigm)
-		// $this->structuredHTML = $this->reOrganize($this->basicHTML,$this->paradigm);
-
-		# D Parser 2.2	public function setSpecificStyle($structuredHTML, $specificConfig)
-		// $this->specificHTML = $this->setSpecificStyle($this->structuredHTML, $this->specificConfig);
+		# D Parser 2.2	public function setSpecificStyle($structuredBODY, $specificConfig)
+		$this->specificHTML = $this->setSpecificStyle($this->style, $this->basicHEAD, $this->structuredBODY);
+		$this->success = TRUE;
 		
+		$this->presentableHTML = $this->specificHTML;
 		
-		$this->presentableHTML = $specificHTML;
-		
-		return $this->presentableHTML;
+		return $this->success;
 		
 	}
 
-	#if $style is suportted, set $paradigm & $configs  
-	#Or, set $paradim = None
-	public function setParadigm($style){
-		$paradigm = None;
+	#if $style is suportted, set $paradigm [[& $configs ???? ]]  
+	#Or, set $paradigm = FALSE
+	public function setParadigm($style=""){
+		if ($style == ""){ $style = $this->style; }
+
+		$paradigm = "";
+
+		// ----- TO-DO -----
+		// Need to updated as checking configs files
+		if ($style=="Slidy" || $style=="S5") {
+			$paradigm = "Slide";
+		} elseif ($style == "Scroll") {
+			$paradigm = "List";
+		} else {
+			$paradigm = FALSE;
+		}
+		// ----------------
 
 		return $paradigm;
 	}
 
 	# A Parser 1.1
-	# Only process content in Markdown
-	# Returned rawBODY only inlucdes content in list of <p>s+<h*>s
+	# Only process $content in Markdown
+	# Returned $rawBODY only inlucdes content in list of <p>s+<h*>s
 	public function md2html($contentMD=""){ 
-		if ($contentMD == ""){
-			$contentMD = $this->contentMD;
-		}
+		if ($contentMD == ""){ $contentMD = $this->contentMD; }
 		
 		$rawBODY="";
 		
-		#Convert content via the Markdown parser
-		# Returned is list of <p>s+<h*>s
+		#Convert content via the Markdown parser; Returned is list of <p>s+<h*>s
 		$rawBODY = Markdown::defaultTransform($contentMD);
 
 		#Math
@@ -194,75 +132,100 @@ class Parser{
 	}
 
 	# B Parser 1.2
-	public function setBasicStyle($rawBODY="", $title="", $basicConfig=""){
-		if ($rawBODY == ""){
-			$rawBODY = $this->rawBODY;
-		}
-		if ($title == ""){
-			$title = $this->title;
-		}
-		if ($basicConfig == ""){
-			$basicConfig = $this->basicConfig;
-		}
+	# Generate the common part inside <head>
+	# Returned $basicHEAD includes <$title> & $basicConfig about style
+	public function setBasicHEAD($title="", $basicConfig=""){
+		if ($title == ""){ $title = $this->title; }
+		if ($basicConfig == ""){ $basicConfig = $this->basicConfig; }
 
-		# Construct $basicHTML: html>(head>title)+(body>rawBODY)
-		$head="<head><title>".$this->title."</title></head>";
-		$this->rawBODY= "<body>".$rawBODY."</body>";
-		$basicHTML ="<html>$head$body</html>";
+		$basicHEAD = "";
 
-		$dom = new DOMDocument();
-		$dom->preserveWhiteSpace = FALSE;
-		$dom->formatOutput = TRUE;
-		$dom->loadXML($basicHTML);
-		$basicHTML = $dom;
-		unset($dom);
-		
-		// $body = $basicHTML->getElementsByTagName('body')->item(0);
-		$head = $basicHTML->getElementsByTagName('head')->item(0);
-
-		$xpath = new DOMXPath($basicConfig);
-		$query = '//config/append/father[. = "head"]/following-sibling::*/*';
-		$entries = $xpath->evaluate($query);
-
-		foreach ($entries as $entry) {
-
-			$fragment = $basicHTML->createDocumentFragment();
-			$fragment->appendXml($basicConfig->saveXML($entry));
-			$head->appendChild($fragment);
-		    // echo $basicConfig->saveXML($entry)."\n";
-		}
-
-		$basicHTML = $basicHTML->saveHTML();#"";
-		
-		$this->basicHTML = $basicHTML;
-		return $basicHTML;
+		# Construct $rawBODY: html>(head>title)+(body>rawBODY)
+		$titleInHead="\t<title>".$title."</title>";
+		$basicStyleInHead =file_get_contents(self::BETA_FOLDER."/"."Basic_head.in");
+		$basicHEAD ="$titleInHead\n$basicStyleInHead";
+	
+		return $basicHEAD;
 	}
 
 	# C Parser 2.1
-	public function reOrganize($basicHTML,$paradigm){ 
-		if ($basicHTML == ""){
-			$basicHTML = $this->basicHTML;
-		}
-		if ($paradigm == ""){
-			$paradigm = $this->paradigm;
+	# Only process $rawBODY based on $paradigm, Also need title as the cover page
+	# Returned $structuredBODY inlucdes an array of div.slide or an embeded list
+	public function reOrganizeBODY($title="", $paradigm="",$rawBODY=""){  
+		if ($title == ""){ $title = $this->title; }		
+		if ($paradigm == ""){ $paradigm = $this->paradigm; }
+		if ($rawBODY == ""){ $rawBODY = $this->rawBODY; }
+
+		$structuredBODY = "";
+
+		switch ($paradigm) {
+			case 'Slide':
+				$structuredBODY = $this->slideABLE($title, $rawBODY); # String
+				break;
+			case 'List':
+				$structuredBODY = $this->listABLE($title, $rawBODY); # String
+				break;
+			
+			default:
+				# code...
+				break;
 		}
 
-		$structuredHTML = "";
-
-		return $structuredHTML;
+		return $structuredBODY;
 	}
 
 	# D Parser 2.2
-	public function setSpecificStyle($structuredHTML, $specificConfig){
-		if ($structuredHTML == ""){
-			$structuredHTML = $this->structuredHTML;
+	public function setSpecificStyle($style="", $basicHEAD="", $structuredBODY=""){
+	// setSpecificStyle($structuredBODY, $specificConfig){
+		if ($style == ""){
+			$style = $this->style;
 		}
-		if ($specificConfig == ""){
-			$specificConfig = $this->specificConfig;
+		if ($basicHEAD == ""){
+			$basicHEAD = $this->basicHEAD;
+		}
+		if ($structuredBODY == ""){
+			$structuredBODY = $this->structuredBODY;
 		}
 
 		$specificHTML = "";
 
+		$styleHEAD = file_get_contents(self::BETA_FOLDER."/".$style."_head.in");
+		$styleBODY = file_get_contents(self::BETA_FOLDER."/".$style."_body.in");
+
+		$specificHEAD = "$basicHEAD\n $styleHEAD\n";
+		
+		$countTEMP = 0;
+		switch ($style) {
+			case 'S5':				
+				$specificBODY = str_replace("<structuredBODY/>", $structuredBODY, $styleBODY, $countTEMP);
+				break;
+			case 'Slidy':
+				$specificBODY = $structuredBODY; $countTEMP = 1;
+
+				break;
+			case 'Scroll':
+				
+				$specificBODY = str_replace("<structuredBODY/>", $structuredBODY, $styleBODY, $countTEMP);
+				$specificBODY = str_replace("<ul class = \"level_1\">","<ul class = \"one_level\">", $specificBODY);
+				$specificBODY = str_replace("<ul class = \"level_2\">","<ul class = \"two_level\">", $specificBODY);
+				$specificBODY = str_replace("<ul class = \"level_3\">","<ul class = \"three_level\">", $specificBODY);
+				$specificBODY = str_replace("<ul class = \"level_4\">","<ul class = \"four_level\">", $specificBODY);
+				$specificBODY = str_replace("<ul class = \"level_5\">","<ul class = \"five_level\">", $specificBODY);
+				break;
+			
+			default:
+				# code...
+				break;
+		}
+		if ($countTEMP != 1) {
+			echo "Parser Error : replace <structuredBODY/> $countTEMP times!";
+		}
+
+		$specificHTML = "<html>\n";
+		$specificHTML .="<head>\n$specificHEAD</head>\n";
+		$specificHTML .="<body>\n$specificBODY</body>\n";
+		$specificHTML .="</html>\n";
+		// echo $specificHTML;
 		return $specificHTML;
 	}
 
@@ -290,11 +253,39 @@ class Parser{
 
 		$body_new = implode("",$divs);
 	*/
+	private function slideABLE($title, $rawBODY){
+		$div =  $rawBODY; // !!!! ??? title + rawBODY
+		
+		#1. Split body into slides : splitSlide($div, $deli_array,$deli_index)
+		$divs = $this->splitSlide($div, $this->deli_array, 0);
+		
+		#2. Put every slides in a div.slide
+		$START = "<div class=\"slide\">";
+		$END = "</div>";
+		for($i = 1; $i<count($divs);$i++) {
+			$divs[$i] = $START."\n".$divs[$i].$END;
+		}
+		
+		#3. Re-style the TOC slide
+		$TOCSlide = array_shift($divs);
+		$TOCSlide = str_replace("h1>","p>",$TOCSlide) ;
+		$TOCSlide = "<div class=\"slide\">\n<h1>Outline</h1>".$TOCSlide."</div>";// echo "$TOCSlide";
+
+		#4. Generate the 1st slide with Title 
+		$titleSlide = "<div class=\"slide\">\n<h1>".$title."</h1>\n</div>"; // echo $titleSlide;
+		
+		#5. Compose all the divs into a string $structuredBODY
+		$structuredBODY = implode("\n\n",$divs);// echo $structuredBODY;
+		$structuredBODY =  $titleSlide."\n\n".$TOCSlide."\n\n".$structuredBODY; // echo $structuredBODY;
+
+		return $structuredBODY;
+
+	}
 	private function splitSlide( $div, $deli_array,$deli_index){
 		$delimiter = $deli_array[$deli_index];
 
-		if (strpos(" ".$div, $delimiter) == false){
-			// echo "\n***FLASE $div\n";
+		// -- to do -- check how to decided when to stop splitting
+		if (strpos(" ".$div, $delimiter) == FALSE){
 			return array($div);
 		}
 		
@@ -306,18 +297,21 @@ class Parser{
 
 		#Base 2. Add the subject ,$delimiter[content], of each div to outline slides
 		$subject = array('title');
-		for($i = 1; $i<count($divs);$i++) {
-		#2.1 re-add $delimiter to get meanful $divs, except $div[0]:outline	
-			$divs[$i]=$delimiter.$divs[$i];
-		#2.2 get the sutject of the slides
-			$subject[$i] = $this->get_string_between($divs[$i],$delimiter);#echo "##$i SUB## ".$subject."\n";
-		#2.3 append the sutject to outline
-			if ($delimiter!='<li>') {
+		if ($delimiter!='<li>') {
+			
+			for($i = 1; $i<count($divs);$i++) {
+				#2.1 re-add $delimiter to get meanful $divs, except $div[0]:outline	
+				$divs[$i]=$delimiter.$divs[$i];
+				
+				#2.2 get the sutject of the slides
+				$subject[$i] = $this->get_string_between($divs[$i],$delimiter);
+				
+				#2.3 append the sutject to outline
 				$divs[0] .= $subject[$i];
 			}
-			
+			// echo $divs[0]."\n------\n";
 		}
-		
+
 		#Base 3/Fur: Check if need further split:
 		if ($deli_index < count($deli_array)-1) {
 		#Case2: Need to split further
@@ -361,6 +355,73 @@ class Parser{
 	    return $start.substr($string,$ini,$len).$end."\n";
 	}
 
+	/* When called from toppest:
+		$list = "<h1>$title</h1> $body";
+		$level = 1;
+
+		$uls = embedList($list,$level); // Array of <ul>s
+
+		$body_new = implode("",$divs);
+	*/
+	private function listABLE($title, $rawBODY){		
+		$list = "<h1>".$title."</h1>".$rawBODY;
+		$level = 1;
+		$uls = $this->embedList($list,$level); // Array of <ul>s
+
+		$structuredBODY = implode("",$uls); //echo $structuredBODY;
+		return $structuredBODY;
+	}
+	private function embedList($list, $level){
+		$delimiter= "<h$level>";
+		$deliEND = "</h$level>";
+		$deliFINAL = "<p>";
+		$subjectTAG = "a";
+		$uls = explode($delimiter, $list);
+
+		for($i = 1; $i<count($uls); $i++) {
+
+			list($ulSubject,$ulContent) = explode($deliEND, $uls[$i]);
+			
+			$ulSubject ="<$subjectTAG>$ulSubject</$subjectTAG>";
+
+			$levelNext = $level+1;
+			$deliNext = "<h$levelNext>";
+			if (strpos($ulContent, $deliNext)) {
+				# HAS Further UL
+				$temp = $this->embedList($ulContent, $levelNext);
+				$ulContent = implode("",$temp);
+			} elseif (strpos($ulContent, $deliFINAL)){
+				# NO Further UL, left is $deliFINAL = <p>s
+
+				$ulContent = str_replace("<a href","<bold href",$ulContent);
+				$ulContent = str_replace("</a>","</bold>",$ulContent);
+
+				// !! Repalce <p> with <li><a href=\"#\"><span>\n ???? with<li><a><p>\n
+				$deliReplace =  "<li><a href=\"#\"><span>";
+				// $temp = explode($deliFINAL, ' '.$ulContent);
+				// $temp = implode($deliReplace,$temp);
+				$ulContent = str_replace("<p>",$deliReplace,$ulContent);
+				
+				$deliReplace =  "</span></a></li>";
+				// $temp = explode("</p>", ' '.$temp);
+				// $temp = implode($deliReplace,$temp);
+				$ulContent = str_replace("</p>",$deliReplace,$ulContent);
+				
+				$ulContent = "<ul class = \"level_$levelNext\">\n".$ulContent."</ul>\n"; // echo $ulContent;
+			}
+
+			$uls[$i] = "$ulSubject \n$ulContent";
+			$uls[$i] = "<li>".$uls[$i]."</li>\n";
+		
+		}
+
+		array_unshift($uls, "<ul class = \"level_$level\">\n");
+		array_push($uls, "</ul>\n");
+		// $uls[0] = "<ul class = \"level_$level\">\n"; // PREPEND
+		// $uls[count($uls)]="</ul>\n"; // APPEND
+		return $uls;
+	}
+
 }
 
 // //-- For Testing --
@@ -372,7 +433,7 @@ class Parser{
 // $mdSrc = getcwd ()."/mdSrc/content.md";
 // $title ="Markdown Syntax";
 // $contentMD = file_get_contents($mdSrc);
-// $style = "Slidy";
+// $style = "Scroll";
 
 // $PARSER->main($title, $contentMD, $style);
 
@@ -380,7 +441,7 @@ class Parser{
 // 	// echo $PARSER->presentableHTML;	
 // 	file_put_contents('../pTest_out.html', $PARSER->presentableHTML);
 // } else{
-// 	echo 'Error: Success==False';
+// 	echo 'Error: Success==FALSE';
 // }
 // -----------------
 ?>

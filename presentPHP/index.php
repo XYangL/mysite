@@ -13,13 +13,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['submitAuthorInput']=='true')
 	
 	// ------
 	$deli_array =array('<h1>','<h2>','<li>');
-	$most_detailed = 2;
+	$most_detailed = 3;
 	$PARSER = new Parser("", array_slice($deli_array, 0, $most_detailed));
 	// -------
 
 	$PARSER->main($title, $contentMD, $style);
-	$_SESSION['html-parsed']= $PARSER->presentableHTML;
-
+	
+	if($PARSER->success){	
+		$_SESSION['html-parsed']= $PARSER->presentableHTML;
+	} else{
+		echo 'Error: Success==FALSE';
+	}
 }
 ?>
 <!DOCTYPE html>
