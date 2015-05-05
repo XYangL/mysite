@@ -204,13 +204,44 @@ class Parser{
 
 				break;
 			case 'Scroll':
+
+				$dom = new DOMDocument();
+				$dom->preserveWhiteSpace = FALSE; $dom->formatOutput = TRUE;
+				$dom->loadXML($structuredBODY);
+				$root = $dom->documentElement;
+
+				$xpath = new DOMXPath($dom);
+				$query = '//li/div';
+				$entries = $xpath->evaluate($query);
+
+				foreach ($entries as $entry) {
+					$temp = trim($entry->ownerDocument->saveHTML($entry));
+					$temp = str_replace("<a", "<bold", $temp);
+					$temp = str_replace("</a>", "</bold>", $temp);
+
+					$temp = str_replace("<p>", "<span>", $temp);
+					$temp = str_replace("</p>", "</span>", $temp);
+
+					$start = strlen("<div>");
+					$length = strlen($temp)-$start*2-1;
+					$temp = substr($temp, $start,$length);
+					$temp = "<a>".trim($temp)."</a>";
+					
+					$fragment = $dom->createDocumentFragment();
+					$fragment->appendXml($temp);
+					$entry->parentNode->replaceChild($fragment,$entry);
+				}
+
+				$structuredBODY = $dom->saveHTML();
+				unset($dom);//echo $entries->length;
+
+				$level_name = array('zero','one','two','three','four','five');
+				for ($i=0; $i <count($level_name) ; $i++) { 
+					$structuredBODY = str_replace("L_$i", $level_name[$i].'_level', $structuredBODY);
+				}
 				
 				$specificBODY = str_replace("<structuredBODY/>", $structuredBODY, $styleBODY, $countTEMP);
-				$specificBODY = str_replace("<ul class = \"level_1\">","<ul class = \"one_level\">", $specificBODY);
-				$specificBODY = str_replace("<ul class = \"level_2\">","<ul class = \"two_level\">", $specificBODY);
-				$specificBODY = str_replace("<ul class = \"level_3\">","<ul class = \"three_level\">", $specificBODY);
-				$specificBODY = str_replace("<ul class = \"level_4\">","<ul class = \"four_level\">", $specificBODY);
-				$specificBODY = str_replace("<ul class = \"level_5\">","<ul class = \"five_level\">", $specificBODY);
+
 				break;
 			
 			default:
@@ -240,7 +271,8 @@ class Parser{
 		var_dump($var);
 		echo "</pre>";
 	}
-	
+
+/*--- SLIDE ---*/	
 	/* When called from toppest:
 		$div = $title.$body;
 		$deli_array =array('<h1>','<h2>');   $deli_index = 0;
@@ -281,6 +313,7 @@ class Parser{
 		return $structuredBODY;
 
 	}
+
 	private function splitSlide( $div, $deli_array,$deli_index){
 		$delimiter = $deli_array[$deli_index];
 
@@ -354,77 +387,97 @@ class Parser{
 	    $len = strpos($string,$end,$ini) - $ini;
 	    return $start.substr($string,$ini,$len).$end."\n";
 	}
+/*-------------*/
 
+/*--- LIST ---*/
 	/* When called from toppest:
 		$list = "<h1>$title</h1> $body";
 		$level = 1;
-
-		$uls = embedList($list,$level); // Array of <ul>s
-
-		$body_new = implode("",$divs);
+		$body_new = embedList($list,$level);
+	2nd version of convert list of (<h>+<p>s)s in to embeded list
+	Called embedList() recursivly
 	*/
 	private function listABLE($title, $rawBODY){		
 		$list = "<h1>".$title."</h1>".$rawBODY;
 		$level = 1;
-		$uls = $this->embedList($list,$level); // Array of <ul>s
 
-		$structuredBODY = implode("",$uls); //echo $structuredBODY;
+		$structuredBODY = $this->embedList($list,$level); // String
+
 		return $structuredBODY;
 	}
-	private function embedList($list, $level){
+
+	private function embedList($list, $level){ 
 		$delimiter= "<h$level>";
 		$deliEND = "</h$level>";
-		$deliFINAL = "<p>";
-		$subjectTAG = "a";
-		$uls = explode($delimiter, $list);
+		$subTAG = "div";
 
-		for($i = 1; $i<count($uls); $i++) {
-
-			list($ulSubject,$ulContent) = explode($deliEND, $uls[$i]);
-			
-			$ulSubject ="<$subjectTAG>$ulSubject</$subjectTAG>";
-
-			$levelNext = $level+1;
-			$deliNext = "<h$levelNext>";
-			if (strpos($ulContent, $deliNext)) {
-				# HAS Further UL
-				$temp = $this->embedList($ulContent, $levelNext);
-				$ulContent = implode("",$temp);
-			} elseif (strpos($ulContent, $deliFINAL)){
-				# NO Further UL, left is $deliFINAL = <p>s
-
-				$ulContent = str_replace("<a href","<bold href",$ulContent);
-				$ulContent = str_replace("</a>","</bold>",$ulContent);
-
-				// !! Repalce <p> with <li><a href=\"#\"><span>\n ???? with<li><a><p>\n
-				$deliReplace =  "<li><a href=\"#\"><span>";
-				// $temp = explode($deliFINAL, ' '.$ulContent);
-				// $temp = implode($deliReplace,$temp);
-				$ulContent = str_replace("<p>",$deliReplace,$ulContent);
-				
-				$deliReplace =  "</span></a></li>";
-				// $temp = explode("</p>", ' '.$temp);
-				// $temp = implode($deliReplace,$temp);
-				$ulContent = str_replace("</p>",$deliReplace,$ulContent);
-				
-				$ulContent = "<ul class = \"level_$levelNext\">\n".$ulContent."</ul>\n"; // echo $ulContent;
-			}
-
-			$uls[$i] = "$ulSubject \n$ulContent";
-			$uls[$i] = "<li>".$uls[$i]."</li>\n";
+		$newList = "";
+		$pos = strpos($list, $delimiter);
+		if ( $pos === false) {
+		# Input List is just Array of <p>s	
+			$newList = 	$this->wrapLI($list); 
 		
+		} else{
+		# Input List is Array of <p>s + (<H*> + <p>s)s
+			$uls = explode($delimiter, $list);
+			
+			#[ <p>s ]
+			if(trim($uls[0])!=""){ $uls[0] = $this->wrapLI($uls[0]); }
+			$newList .= $uls[0]."\n";
+
+			#[(<H*> + <p>s)s]
+			for($i = 1; $i<count($uls); $i++) {
+				list($ulSubject,$ulContent) = explode($deliEND, $uls[$i]);
+				$ulContent = $this->embedList($ulContent,$level+1);
+				$newList .= "<li>\n<$subTAG>$ulSubject</$subTAG>\n$ulContent</li>";
+			}
 		}
 
-		array_unshift($uls, "<ul class = \"level_$level\">\n");
-		array_push($uls, "</ul>\n");
-		// $uls[0] = "<ul class = \"level_$level\">\n"; // PREPEND
-		// $uls[count($uls)]="</ul>\n"; // APPEND
+		$uls="";
+		if(trim($newList)!=""){
+			$dom = new DOMDocument();
+			$dom->preserveWhiteSpace = FALSE; $dom->formatOutput = TRUE;
+			
+			$root = $dom->createElement("ul");
+			$root->setAttribute("class", "L_$level");
+			$dom->appendChild($root);
+			
+			$fragement = $dom->createDocumentFragment();
+			$fragement->appendXML("$newList");
+			$root->appendChild($fragement);
+			
+			$uls = $dom->saveHTML();
+			unset($dom);
+		}
+
 		return $uls;
 	}
 
+	private function wrapLI($list){
+		$dom = new DOMDocument();
+		$dom->preserveWhiteSpace = FALSE;
+		
+		$dom->loadXML("<ul>$list</ul>");
+		$root = $dom->documentElement;
+		
+		$newList = "";
+		if($root->hasChildNodes()){
+			foreach ($root->childNodes as $child) {
+				$temp = $child->ownerDocument->saveXML($child); //echo "$temp\n------\n";
+				if (trim($temp)!="") {
+					$newList .= "<li><div>$temp</div></li>\n";
+				}
+			}
+		}
+		unset($dom);
+		$newList = rtrim($newList, "\n"); //echo "$newList------\n";
+		
+		return $newList;
+	}
+/*-------------*/
 }
 
-// //-- For Testing --
+//-- For Testing --
 // $deli_array =array('<h1>','<h2>','<li>');
 
 // $most_detailed = 3;
@@ -433,7 +486,7 @@ class Parser{
 // $mdSrc = getcwd ()."/mdSrc/content.md";
 // $title ="Markdown Syntax";
 // $contentMD = file_get_contents($mdSrc);
-// $style = "Scroll";
+// $style = "Slidy";
 
 // $PARSER->main($title, $contentMD, $style);
 

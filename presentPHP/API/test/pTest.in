@@ -12,8 +12,14 @@
 		<p>(You can use this '.text' suffix trick to view the Markdown source for the content of each of the pages in this section, e.g. the
 		<a href="/projects/markdown/syntax.text">Syntax</a> and <a href="/projects/markdown/license.text">License</a> pages.)</p>
 		<p>Markdown is free software, available under a BSD-style open source license. See the <a href="/projects/markdown/license">License</a> page for more information.</p>
-<h1>Discussion List <a id="discussion-list"></a></h1>
+<h1>Discussion List </h1>
 	<p>I've set up a public <a href="http://six.pairlist.net/mailman/listinfo/markdown-discuss">mailing list for discussion about Markdown</a>. Any topic related to Markdown -- both its formatting syntax and its software -- is fair game for discussion. Anyone who is interested is welcome to join.</p>
 	<p>It's my hope that the mailing list will lead to good ideas for future improvements to Markdown.</p>
-<h1>Installation and Requirements <a id="install"></a></h1>
+<h1>Installation and Requirements</h1>
 	<p>Markdown requires Perl 5.6.0 or later. Welcome to the 21st Century. Markdown also requires the standard Perl library module <a href="http://search.cpan.org/dist/Digest-MD5/MD5.pm">Digest::MD5</a>, which is probably already installed on your server.</p>
+	<math >
+	  <mi>a</mi><msup><mi>x</mi><mn>2</mn></msup>
+	  <mo>+</mo> <mi>b</mi><mi>x</mi>
+	  <mo>+</mo> <mi>c</mi> <mo>=</mo> <mn>0</mn>
+	</math>
+	<p>(You can use this '.text' suffix trick to view the Markdown source for the content of each of the pages in this section.</p>
