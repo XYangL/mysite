@@ -2,6 +2,12 @@
 	<p><a href="http://daringfireball.net/projects/downloads/Markdown_1.0.1.zip">Markdown 1.0.1</a> (18 KB) -- 17 Dec 2004</p>
 	<p>A Cross Product Formula</p>
 	<p>When \(a \ne 0\), there are two solutions to \[ax^2 + bx + c = 0\] and they are $$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$</p>
+	<ol>
+		<li><p>Rename the "Markdown.pl" plug-in to "Markdown" (case is important). Movable Type requires plug-ins to have a ".pl" extension; Blosxom forbids it.</p></li>
+		<li><p>Copy the "Markdown" plug-in file to your Blosxom plug-ins folder. If you're not sure where your Blosxom plug-ins folder is, see the Blosxom documentation for information.</p></li>
+		<li><p>That's it. The entries in your weblog will now automatically be processed by Markdown.</p></li>
+		<li><p>If you'd like to apply Markdown formatting only to certain posts, rather than all of them, Markdown can optionally be used in conjunction with Blosxom's <a href="http://www.blosxom.com/plugins/meta/meta.htm">Meta</a> plug-in. First, install the Meta plug-in. Next, open the Markdown plug-in file in a text editor, and set the configuration variable <code>$g_blosxom_use_meta</code> to 1. Then, simply include a "<code>meta-markup: Markdown</code>" header line at the top of each post you compose using Markdown.</p></li>
+	</ol>
 <h1>Introduction</h1>
 	<p>Markdown is a text-to-HTML conversion tool for web writers. Markdown allows you to write using an easy-to-read, easy-to-write plain text format, then convert it to structurally valid XHTML (or HTML).</p>
 	<p>Thus, "Markdown" is two things: (1) a plain text formatting syntax; and (2) a software tool, written in Perl, that converts the plain text formatting to HTML. See the <a href="/projects/markdown/syntax">Syntax</a> page for details pertaining to Markdown's formatting syntax. You can try it out, right now, using the online <a href="/projects/markdown/dingus">Dingus</a>.</p>

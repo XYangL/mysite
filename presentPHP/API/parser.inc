@@ -30,7 +30,7 @@ class Parser{
 	# self::PARSER_FOLDER."/".self::CONFIG_FOLDER."/".$this->basicConfig;
 	private $basicConfig = "basic_config.xml"; # will be DOMDocument after construct
 	private $specificConfig = None;
-	private $deli_array = array('<h1>','<h2>');
+	private $deli_array = array('<h1>','<h2>','<h3>');
 	
 	# private vars linking different parts of Parser 1&2
 	private $rawBODY = ""; // private $rawBODY = "";
@@ -208,7 +208,6 @@ class Parser{
 				$dom = new DOMDocument();
 				$dom->preserveWhiteSpace = FALSE; $dom->formatOutput = TRUE;
 				$dom->loadXML($structuredBODY);
-				$root = $dom->documentElement;
 
 				$xpath = new DOMXPath($dom);
 				$query = '//li/div';
@@ -315,65 +314,76 @@ class Parser{
 	}
 
 	private function splitSlide( $div, $deli_array,$deli_index){
-		$delimiter = $deli_array[$deli_index];
-
-		// -- to do -- check how to decided when to stop splitting
-		if (strpos(" ".$div, $delimiter) == FALSE){
-			return array($div);
-		}
+		# Check if need to split $div 
+		if ($deli_index >= count($deli_array)){
+		# C1 : NOT have More $delimiter, so No need to split
+			$divs =  array($div);
 		
-		#Base 1. cut title+div into pieces separated by $delimiter
-		#$div should be prepended with ' ' a whitespace to ensure an outline slides as $divs[0]
-		#$divs[0] contained Ttitle & intro; Will be appended with $delimiter[content]
-		$divs = explode($delimiter, " ".$div);
-		$divs[0] .= "\n";
-
-		#Base 2. Add the subject ,$delimiter[content], of each div to outline slides
-		$subject = array('title');
-		if ($delimiter!='<li>') {
+		} else {
+		# C2: DO have More Detailed $delimiter
+			$delimiter = $deli_array[$deli_index];
 			
-			for($i = 1; $i<count($divs);$i++) {
+			if (strpos(" ".$div, $delimiter) === FALSE){
+			# C2-1 : NOT have $delimiter of this level, 
+			# so try $delimiter of Next Level which is more Detailed
+				$deli_index +=1;
+				$divs = $this->splitSlide($div, $deli_array,$deli_index);
+			
+			}else{
+			# C2-2 : DO have $delimiter of this level, 
+			# so start Split $div based on $delimiter
+			
+			#1. cut title+div into pieces separated by $delimiter
+				#$div should be prepended with ' ' a whitespace to ensure an outline slides as $divs[0]
+				$divs = explode($delimiter, " ".$div);
+				
+				#$divs[0] now contains title & will be treated as intro slide of this title setion, 
+				#so sub-titles of this section wrapped by $delimiter should be appended to it
+				$divs[0] .= "\n";
+
+			#2. Add the sub-title of each div to intro slide $divs[0]
+				$subTitle = array('subTitle');
+				if ($delimiter!='<li>') {
+					for($i = 1; $i<count($divs);$i++) {
 				#2.1 re-add $delimiter to get meanful $divs, except $div[0]:outline	
-				$divs[$i]=$delimiter.$divs[$i];
-				
-				#2.2 get the sutject of the slides
-				$subject[$i] = $this->get_string_between($divs[$i],$delimiter);
-				
-				#2.3 append the sutject to outline
-				$divs[0] .= $subject[$i];
-			}
-			// echo $divs[0]."\n------\n";
-		}
-
-		#Base 3/Fur: Check if need further split:
-		if ($deli_index < count($deli_array)-1) {
-		#Case2: Need to split further
-			#Fur 1: Update Parameters	
-			$deli_index +=1;
-			
-			$reslut = array($divs[0]);
-			for($i = 1; $i<count($divs);$i++) {
-				$divTemp = $divs[$i];
-				// $title = get_string_between($divTemp,$delimiter);
-			#Fur 2: Further	
-				$divTemp = $this->splitSlide( $divTemp, $deli_array,$deli_index);
-			
-			#Fur 3: if not toppest slides, Add Subject to all it splitted slides
-			#1st sub is outline, already contained subject, no need to add
-				if($deli_index >0){
-					for($sub_i = 1; $sub_i<count($divTemp);$sub_i++) {
-						$divTemp[$sub_i] = $subject[$i].$divTemp[$sub_i];
+						$divs[$i]=$delimiter.$divs[$i];
+						
+				#2.2 get the sutTitle of the slides
+						$subTitle[$i] = $this->get_string_between($divs[$i],$delimiter);
+						
+				#2.3 append the sutTitle to outline
+						$divs[0] .= $subTitle[$i];
 					}
-					// echo "\n##$i ## : "; var_dump($divTemp);
-					$reslut = array_merge($reslut,$divTemp);// $reslut += $divTemp;
 				}
 
+			#3. Try to further split divs:
+				#3.0 $reslut is an array of all the new divs; 
+				#so every new splitted array of divs will be appended to it
+				$reslut = array($divs[0]);
+
+				#3.1 Update Parameters	
+				$deli_index +=1;
+				for($i = 1; $i<count($divs);$i++) {
+				
+				#3.2 Further Split
+					$divTemp = $divs[$i];
+					$divTemp = $this->splitSlide( $divTemp, $deli_array,$deli_index);
+
+				#3.3 if not toppest slides, Add its own subTitle[$i] to all it splitted slides
+				#sub[0] is outline, already contained all following subject, no need to add
+					for($sub_i = 1; $sub_i<count($divTemp);$sub_i++) {
+						$divTemp[$sub_i] = $subTitle[$i].$divTemp[$sub_i];
+					}
+
+				#3.4 append new splitted array of divs to $result	
+					$reslut = array_merge($reslut,$divTemp);# $reslut += $divTemp;
+				}
+
+			#4. set results to return divs
+				$divs = $reslut; //echo implode("", $divs)."\n--------\n";
 			}
-
-			$divs = $reslut;
-		}#else {}
-		#Case 1: NO need to split further, since $delimiter is the most detailed  
-
+		}
+		
 		return $divs;
 	}
 
@@ -478,10 +488,9 @@ class Parser{
 }
 
 //-- For Testing --
-// $deli_array =array('<h1>','<h2>','<li>');
+// $deli_array =array('<h1>','<h2>','<h3>');
 
-// $most_detailed = 3;
-// $PARSER = new Parser("", array_slice($deli_array, 0, $most_detailed));
+// $PARSER = new Parser("", $deli_array);
 
 // $mdSrc = getcwd ()."/mdSrc/content.md";
 // $title ="Markdown Syntax";
@@ -490,6 +499,7 @@ class Parser{
 
 // $PARSER->main($title, $contentMD, $style);
 
+/* Output to File*/
 // if($PARSER->success){
 // 	// echo $PARSER->presentableHTML;	
 // 	file_put_contents('../pTest_out.html', $PARSER->presentableHTML);

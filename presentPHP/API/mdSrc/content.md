@@ -27,11 +27,9 @@ Thus, "Markdown" is two things: (1) a plain text formatting syntax; and (2) a so
 
 The overriding design goal for Markdown's formatting syntax is to make it as readable as possible. The idea is that a Markdown-formatted document should be publishable as-is, as plain text, without looking like it's been marked up with tags or formatting instructions. While Markdown's syntax has been influenced by several existing text-to-HTML filters, the single biggest source of inspiration for Markdown's syntax is the format of plain text email.
 
-The best way to get a feel for Markdown's formatting syntax is simply to look at a Markdown-formatted document. For example, you can view the Markdown source for the article text on this page here:
-<http://daringfireball.net/projects/markdown/index.text>
+The best way to get a feel for Markdown's formatting syntax is simply to look at a Markdown-formatted document. For example, you can view the Markdown source for the article text on this page here: <http://daringfireball.net/projects/markdown/index.text>
 
-(You can use this '.text' suffix trick to view the Markdown source for the content of each of the pages in this section, e.g. the
-[Syntax][s_src] and [License][l_src] pages.)
+(You can use this '.text' suffix trick to view the Markdown source for the content of each of the pages in this section, e.g. the [Syntax][s_src] and [License][l_src] pages.)
 
   [s_src]: /projects/markdown/syntax.text
   [l_src]: /projects/markdown/license.text
@@ -71,8 +69,7 @@ Markdown works with Movable Type version 2.6 or later (including Movable Type 3.
 	
 	Markdown translates your posts to HTML when you publish; the posts themselves are stored in your MT database in Markdown format.
 
-3.	If you also install SmartyPants 1.5 (or later), Markdown will offer a second text formatting option: "Markdown With SmartyPants". This option is the same as the regular "Markdown" formatter, except that it automatically uses SmartyPants to create typographically correct curly quotes, em-dashes, and ellipses. See
-	the [SmartyPants web page][sp] for more information.
+3.	If you also install SmartyPants 1.5 (or later), Markdown will offer a second text formatting option: "Markdown With SmartyPants". This option is the same as the regular "Markdown" formatter, except that it automatically uses SmartyPants to create typographically correct curly quotes, em-dashes, and ellipses. See	the [SmartyPants web page][sp] for more information.
 
 4.	To make Markdown (or "Markdown With SmartyPants") your default text formatting option for new posts, go to Weblog Config: Preferences.
 
@@ -89,8 +86,10 @@ Markdown works with Blosxom version 2.0 or later.
 1.  Rename the "Markdown.pl" plug-in to "Markdown" (case is important). Movable Type requires plug-ins to have a ".pl" extension; Blosxom forbids it.
 
 2.  Copy the "Markdown" plug-in file to your Blosxom plug-ins folder. If you're not sure where your Blosxom plug-ins folder is, see the Blosxom documentation for information.
- 3.  That's it. The entries in your weblog will now automatically be processed by Markdown.
- 4.	If you'd like to apply Markdown formatting only to certain posts, rather than all of them, Markdown can optionally be used in conjunction with Blosxom's [Meta][] plug-in. First, install the Meta plug-in. Next, open the Markdown plug-in file in a text editor, and set the configuration variable `$g_blosxom_use_meta` to 1. Then, simply include a "`meta-markup: Markdown`" header line at the top of each post you compose using Markdown.
+
+3.  That's it. The entries in your weblog will now automatically be processed by Markdown.
+
+4.	If you'd like to apply Markdown formatting only to certain posts, rather than all of them, Markdown can optionally be used in conjunction with Blosxom's [Meta][] plug-in. First, install the Meta plug-in. Next, open the Markdown plug-in file in a text editor, and set the configuration variable `$g_blosxom_use_meta` to 1. Then, simply include a "`meta-markup: Markdown`" header line at the top of each post you compose using Markdown.
 
   [meta]: http://www.blosxom.com/plugins/meta/meta.htm
 

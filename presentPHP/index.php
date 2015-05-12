@@ -12,7 +12,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['submitAuthorInput']=='true')
 	$style = $_POST['style'];
 	
 	// ------
-	$deli_array =array('<h1>','<h2>','<li>');
+	$deli_array =array('<h1>','<h2>','<h3>');
 	$most_detailed = 3;
 	$PARSER = new Parser("", array_slice($deli_array, 0, $most_detailed));
 	// -------
