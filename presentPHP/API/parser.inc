@@ -10,12 +10,13 @@ use \Michelf\Markdown;
 
 class Parser{
 	// private PARSER_FOLDER = getcwd ();
-	const CONFIG_FOLDER = "API/config";//
-	const BETA_FOLDER = "API/beta";//
+	const API_FOLDER = "API/";
+	const CONFIG_FOLDER = "config";//
+	const BETA_FOLDER = "beta";//
 	const CSS_FOLDER = "";
 	const JS_FOLDER = "";
 	
-	public $success = FALSE; # will be true if presentableHTML is parsered as designed
+	public $success = FALSE; # will be TRUE if presentableHTML is parsered as designed
 
 	# Input from User
 	public $title = "";
@@ -25,6 +26,7 @@ class Parser{
 	# Decided by $style according to paradigm.json; 
 	# $paradigm will be FALSE if the style is not supported
 	public $paradigm = "";
+	public $supportedStyle = "supported_style.json";
 
 	# If $style is suportted ($paradigm is NOT FALSE), _config.xml will be loaded 
 	# self::PARSER_FOLDER."/".self::CONFIG_FOLDER."/".$this->basicConfig;
@@ -40,19 +42,22 @@ class Parser{
 	
 	public $presentableHTML = "";
 
-	function __construct($basicConfig="",$deli_array =array()){
+	function __construct($basicConfig="",$deli_array =array(),$supportedStyle=""){
 		if ($basicConfig == "" ){ $basicConfig = $this->basicConfig; }
 		if ($deli_array == array()){ $deli_array = $this->deli_array;}
+		if ($supportedStyle == "" ){ $supportedStyle = $this->supportedStyle; }
 
 		$dom = new DOMDocument;
 		$dom->preserveWhiteSpace = FALSE;
 		$dom->formatOutput = TRUE;
-		$dom->load(self::CONFIG_FOLDER."/".$basicConfig);
+		$dom->load(self::API_FOLDER.self::CONFIG_FOLDER."/".$basicConfig);
 		$this->basicConfig = $dom;
 		unset($dom);
 
 		$this->deli_array = $deli_array;
 		
+		$supportedStyle = file_get_contents(self::API_FOLDER.$supportedStyle);
+		$this->supportedStyle = json_decode($supportedStyle, TRUE);
 	}
 
 	# called by User for converting content in Markdown to Presentable HTML
@@ -98,18 +103,11 @@ class Parser{
 	public function setParadigm($style=""){
 		if ($style == ""){ $style = $this->style; }
 
-		$paradigm = "";
-
-		// ----- TO-DO -----
-		// Need to updated as checking configs files
-		if ($style=="Slidy" || $style=="S5") {
-			$paradigm = "Slide";
-		} elseif ($style == "Scroll") {
-			$paradigm = "List";
-		} else {
+		$paradigm = $this->supportedStyle[$style]['paradigm'];
+		if($paradigm == NULL){
+			// var_dump( $paradigm);
 			$paradigm = FALSE;
 		}
-		// ----------------
 
 		return $paradigm;
 	}
@@ -142,7 +140,7 @@ class Parser{
 
 		# Construct $rawBODY: html>(head>title)+(body>rawBODY)
 		$titleInHead="\t<title>".$title."</title>";
-		$basicStyleInHead =file_get_contents(self::BETA_FOLDER."/"."Basic_head.in");
+		$basicStyleInHead =file_get_contents(self::API_FOLDER.self::BETA_FOLDER."/"."Basic_head.in");
 		$basicHEAD ="$titleInHead\n$basicStyleInHead";
 	
 		return $basicHEAD;
@@ -189,8 +187,8 @@ class Parser{
 
 		$specificHTML = "";
 
-		$styleHEAD = file_get_contents(self::BETA_FOLDER."/".$style."_head.in");
-		$styleBODY = file_get_contents(self::BETA_FOLDER."/".$style."_body.in");
+		$styleHEAD = file_get_contents(self::API_FOLDER.self::BETA_FOLDER."/".$style."_head.in");
+		$styleBODY = file_get_contents(self::API_FOLDER.self::BETA_FOLDER."/".$style."_body.in");
 
 		$specificHEAD = "$basicHEAD\n $styleHEAD\n";
 		
@@ -463,7 +461,7 @@ class Parser{
 		return $uls;
 	}
 
-	private function wrapLI($list){
+	private function wrapLI($list){ // return <li><div>$list</div></li>
 		$dom = new DOMDocument();
 		$dom->preserveWhiteSpace = FALSE;
 		
@@ -474,6 +472,7 @@ class Parser{
 		if($root->hasChildNodes()){
 			foreach ($root->childNodes as $child) {
 				$temp = $child->ownerDocument->saveXML($child); //echo "$temp\n------\n";
+				$temp = str_replace("\n", "", $temp);
 				if (trim($temp)!="") {
 					$newList .= "<li><div>$temp</div></li>\n";
 				}
@@ -481,7 +480,7 @@ class Parser{
 		}
 		unset($dom);
 		$newList = rtrim($newList, "\n"); //echo "$newList------\n";
-		
+
 		return $newList;
 	}
 /*-------------*/
@@ -495,11 +494,11 @@ class Parser{
 // $mdSrc = getcwd ()."/mdSrc/content.md";
 // $title ="Markdown Syntax";
 // $contentMD = file_get_contents($mdSrc);
-// $style = "Slidy";
+// $style = "Scroll";
 
 // $PARSER->main($title, $contentMD, $style);
 
-/* Output to File*/
+// /* Output to File*/
 // if($PARSER->success){
 // 	// echo $PARSER->presentableHTML;	
 // 	file_put_contents('../pTest_out.html', $PARSER->presentableHTML);

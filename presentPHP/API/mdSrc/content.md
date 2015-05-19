@@ -39,7 +39,7 @@ Markdown is free software, available under a BSD-style open source license. See 
   [pl]: /projects/markdown/license
 
 
-Discussion List <a id="discussion-list" />
+Discussion List 
 ================================
 
 I've set up a public [mailing list for discussion about Markdown] [ml]. Any topic related to Markdown -- both its formatting syntax and its software -- is fair game for discussion. Anyone who is interested is welcome to join.
@@ -49,7 +49,7 @@ It's my hope that the mailing list will lead to good ideas for future improvemen
   [ml]: http://six.pairlist.net/mailman/listinfo/markdown-discuss
 
 
-Installation and Requirements <a id="install" />
+Installation and Requirements
 ================================
 
 Markdown requires Perl 5.6.0 or later. Welcome to the 21st Century. Markdown also requires the standard Perl library module [Digest::MD5] [md5], which is probably already installed on your server.
@@ -110,7 +110,7 @@ Markdown works with BBEdit 6.1 or later on Mac OS X. It also works with BBEdit 5
 
 
 
-Configuration  <a id="configuration"></a>
+Configuration
 ================================
 
 By default, Markdown produces XHTML output for tags with empty elements.
@@ -149,7 +149,7 @@ Use the `--html4tags` command-line switch to produce HTML output from a Unix-sty
 Type `perldoc Markdown.pl`, or read the POD documentation within the Markdown.pl source code for more information.
 
 
-Acknowledgements <a id="acknowledgements" />
+Acknowledgements
 ================================
 
 [Aaron Swartz][] deserves a tremendous amount of credit for his feedback on the design of Markdown's formatting syntax. Markdown is *much* better thanks to Aaron's ideas, feedback, and testing. Also, Aaron's [html2text][] is a very handy (and free) utility for turning HTML into Markdown-formatted plain text.
