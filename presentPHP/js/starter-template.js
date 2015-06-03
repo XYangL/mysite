@@ -48,6 +48,7 @@ function preview(){
 		alert("Nothing is ready for preview");
 	}
 
+	$('#element_to_pop_up')[0].contentWindow.focus();
 
 };
 
@@ -60,6 +61,7 @@ function convert()
 		"S5"	:{"paradigm":"slide" 	, "file_name":"[S5]Markdown Syntax.html",},
 		"Scroll":{"paradigm":"scroll" 	, "file_name":"[scroll]Markdown Syntax.html"},
 		"Slidy"	:{"paradigm":"slide" 	, "file_name":"[slidy]Markdown Syntax.xhtml"},
+		"CAScroll"	:{"paradigm":"scroll" 	, "file_name":"[CAScroll]Markdown Syntax.xhtml"},
 	}
 
 	var radios = document.getElementById('paradigm');
@@ -83,4 +85,3 @@ function convert()
 		alert("NOT Support Paradigm! "+paradigm);
 	}
 };
-

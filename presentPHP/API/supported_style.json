@@ -1,5 +1,6 @@
 {
  "Slidy": {"file_name": "[slidy]Markdown Syntax.xhtml", "paradigm": "Slide", "config": "slidy_config.xml"},
  "Scroll": {"file_name": "[scroll]Markdown Syntax.html", "paradigm": "List", "config": "scroll_config.xml"},
- "S5": {"file_name": "[S5]Markdown Syntax.html", "paradigm": "Slide", "config": "S5_config.xml"}
+ "S5": {"file_name": "[S5]Markdown Syntax.html", "paradigm": "Slide", "config": "S5_config.xml"},
+ "CAScroll": {"file_name": "", "paradigm": "List", "config": "","js":"CAScroll.js", "css":"CAScroll.css"}
 }

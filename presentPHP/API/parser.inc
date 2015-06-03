@@ -10,7 +10,7 @@ use \Michelf\Markdown;
 
 class Parser{
 	// private PARSER_FOLDER = getcwd ();
-	const API_FOLDER = "API/";
+	const API_FOLDER = "API/";//
 	const CONFIG_FOLDER = "config";//
 	const BETA_FOLDER = "beta";//
 	const CSS_FOLDER = "";
@@ -199,6 +199,10 @@ class Parser{
 				break;
 			case 'Slidy':
 				$specificBODY = $structuredBODY; $countTEMP = 1;
+
+				break;
+			case 'CAScroll':
+				$specificBODY = str_replace("<structuredBODY/>", $structuredBODY, $styleBODY, $countTEMP);
 
 				break;
 			case 'Scroll':
@@ -494,7 +498,7 @@ class Parser{
 // $mdSrc = getcwd ()."/mdSrc/content.md";
 // $title ="Markdown Syntax";
 // $contentMD = file_get_contents($mdSrc);
-// $style = "Scroll";
+// $style = "CAScroll";
 
 // $PARSER->main($title, $contentMD, $style);
 

@@ -120,6 +120,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['submitAuthorInput']=='true')
 					<?php 
 					if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['submitAuthorInput']=='true'){
 						echo "<iframe id=\"present\" src=\"present.php\" ></iframe>";
+						echo "<script>$('#present')[0].contentWindow.focus();</script>";
 
 					} else {
 						echo "<iframe id=\"present\" ></iframe>";
@@ -151,15 +152,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['submitAuthorInput']=='true')
 									<optgroup label="Slide">
 										<option>S5</option>
 										<option>Slidy</option>
-										<option>Reveal.js</option>
+										<option disabled="disabled" >Reveal.js</option>
 									</optgroup>
 									<optgroup label="Flow">
 										<option data-subtext="Movie End Credit">Scroll</option>
-										<option data-subtext="Zooming Scroll List">ZSL</option>
+										<option data-subtext="Contaxt Aware Scroll" >CAScroll</option>
 									</optgroup>
 									<optgroup label="Canvas/ZUI">
-										<option>TBA</option>
-										<option>TBA</option>
+										<option disabled="disabled" >TBA</option>
+										<option disabled="disabled">TBA</option>
 									</optgroup>
 								</select>
 							</div>

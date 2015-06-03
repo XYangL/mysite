@@ -1,0 +1,119 @@
+/*Reset User Agent Style*/
+ p, pre, ul, ol{
+	margin: 0;
+}
+
+/*Copied from Bootstrap*/
+html {
+  font-family: sans-serif;
+  -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
+}
+
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.42857143;
+  color: #333;
+  background-color: #fff;
+}
+
+/*Basic Style*/
+div.contentDiv{
+	border-style: solid;
+	border-width: 2px;
+}
+
+ul,ol{
+	list-style-position: inside;
+	padding-left: 1%;
+	
+	width:98%;
+	border-radius:10px;
+
+}
+
+.L_1 { font-size:200%;	font-weight:500;}
+
+.L_2 { font-size:85%;	/*font-weight:400;*/}
+
+.L_3 { font-size:85%;	font-weight:400;}
+
+.L_4 { font-size:90%;	font-weight:400;}
+
+.L_5 { font-size:90%;	font-weight:300;}
+
+
+/*1. Expand & Shrink*/
+li >div
+{
+	padding-left : 5px;
+	padding-right: 5px;
+
+	/*margin-top: 5px;	*/
+	margin-bottom: 5px;
+	border-radius:5px;
+
+	transition: height 1s, background 1s, opacity 1s;
+
+	white-space:nowrap;
+	overflow:hidden; /*!! */
+	text-overflow:ellipsis;
+
+	/*opacity:0.5;*/
+}
+/**/
+li >div.highlight
+{
+	background:#5bc0de;/*rgb(0, 178, 255);#FFFF00;#d9edf7*/
+	
+	white-space:normal;
+
+	/*opacity:1;*/
+}
+
+
+li>ul >li>div, li>ol >li>div{
+	opacity:0.5;
+}
+/**/
+li>ul >li>div.highlight, li>ol >li>div.highlight{
+	opacity:1;
+}
+
+.highlight+ol >li>div, .highlight+ul >li>div{
+	opacity:1;
+}
+
+li >div >* {
+	
+	padding-top: 5px;
+	padding-bottom: 5px;
+
+	white-space:inherit;
+	overflow:inherit;
+	text-overflow:inherit;
+}
+
+
+/*2. Show & Hide : Default*/
+
+/*3. background & border*/
+
+li>ol, li>ul {
+	border: 1px solid transparent;
+}
+
+li > ol.HLChildLevel, li > ul.HLChildLevel{
+	border-color: #e1e1e8;
+	background: #f7f7f9;
+}
+
+
+li > .HLSameLevel{
+	background: #f7f7f9;
+}
+
+
+
+
