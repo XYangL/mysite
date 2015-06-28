@@ -2,30 +2,23 @@
 	"HTML": { 
 		"paradigm": "Basic", 
 		"format": "html",
-		"js":"", 
-		"css":"",
 		"dependence":[]
 	},
 
 	"Slide": { 
 		"paradigm": "Slide", 
 		"format": "html",
-		"js":"", 
-		"css":"",
 		"dependence":[]
 	},
 
 	"List": { 
 		"paradigm": "List", 
 		"format": "html",
-		"js":"", 
-		"css":"",
 		"dependence":[]
 	},
 
 	"S5": {
 		"paradigm": "Slide", 
-		"config": "S5_config.xml",
 		"format": "html",
 		"dependence":["S5\/"],
 		"dependenceDetails":["slides.css", "outline.css", "print.css", "opera.css", "slides.js"]
@@ -33,14 +26,12 @@
 
 	"Slidy": {
 		"paradigm": "Slide", 
-		"config": "slidy_config.xml",
 		"format": "xhtml",
 		"dependence":[]
 		},
 
 	"Scroll": {
 		"paradigm": "List", 
-		"config": "scroll_config.xml",
 		"format": "html",
 		"dependence":["Scroll\/"],
 		"dependenceDetails":["bootstrap.min.css", "basic.css", "bootstrap.min.js", "function.js", "initialize.js", "keyboard.js"]
@@ -49,8 +40,6 @@
 	"CAScroll": { 
 		"paradigm": "List", 
 		"format": "html",
-		"js":"CAScroll.js", 
-		"css":"CAScroll.css",
 		"dependence":["CAScroll\/"],
 		"dependenceDetails":["CAScroll.js", "CAScroll.css"]
 	}

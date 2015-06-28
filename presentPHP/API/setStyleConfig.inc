@@ -1,4 +1,36 @@
-<?php  
+<?php
+/* Used to genrate API/cofig/*style*.json for all supported styles
+which will be used by parser.inc
+
+- API/supported_style.json contains a list of supported sytle,
+  > for every style, there is a few key-value pairs,
+  > keys = [paradigm, format, dependence, dependenceDetails];
+  > 'dependence' are  the folder contains al the off line css/js files
+
+- API/config/head-body contains *style*_body/head.in
+  > the files will be loaded to set *style*[body/head] in *style*.json
+  > *style*[head/body] will uesd by parser.inc/setSpecificStyle(),
+  
+  > $specificHEAD = "$basicHEAD\n $styleHEAD\n";// Apped directly
+  
+  > $specificBODY = str_replace("<structuredBODY/>", $structuredBODY, $styleBODY);
+
+- API/*style*.json
+
+- To add/update a new style
+  1. add/update the key-value pairs in  supported_style.json
+  2. If the style need some offline js/css fils
+  	 - create a folder API/*Style*
+  	 - includs all the filels in that folder
+  	 - Add "dependence":["*style*\/"], in supported_style.json
+  3. if need, add *style*_head.in including the specific head parts
+  4. if need, add *style*_body.in & <structuredBODY/> will be replace by $structuredBODY;
+  5. execute this function : setStyleConfig.inc, 
+     all the *style*.json will be updated,
+     and new *style*.json will be added.
+  6. re-init the Parser() to refresh its $support_style list
+
+*/ 
 	$API_FOLDER = __DIR__;
 	$CONFIG_FOLDER = "config/xml";//
 	$HB_FOLDER = "config/head_body";//
