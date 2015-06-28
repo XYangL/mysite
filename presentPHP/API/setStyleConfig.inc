@@ -15,7 +15,10 @@ which will be used by parser.inc
   
   > $specificBODY = str_replace("<structuredBODY/>", $structuredBODY, $styleBODY);
 
-- API/*style*.json
+- API/*style*.json : every style must have its own .json
+  > key = ['name', 'oaradimg', 'head', 'body', 'format', 'dependence']
+  > 'dependence' is the file list of API/*Style*
+     or API/supported_style.json[*style*]['dependence']
 
 - To add/update a new style
   1. add/update the key-value pairs in  supported_style.json
