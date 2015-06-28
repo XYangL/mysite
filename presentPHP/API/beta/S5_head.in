@@ -1,6 +1,0 @@
-	<meta content="S5 1.1" name="version"/>
-	<link href="API/ui/default/slides.css" id="slideProj" media="projection" rel="stylesheet" type="text/css"/>
-	<link href="API/ui/default/outline.css" id="outlineStyle" media="screen" rel="stylesheet" type="text/css"/>
-	<link href="API/ui/default/print.css" id="slidePrint" media="print" rel="stylesheet" type="text/css"/>
-	<link href="API/ui/default/opera.css" id="operaFix" media="projection" rel="stylesheet" type="text/css"/>
-	<script src="API/ui/default/slides.js" type="text/javascript"></script>

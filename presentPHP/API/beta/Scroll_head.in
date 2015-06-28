@@ -1,6 +1,0 @@
-	<link href="API/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
-	<link href="API/css/basic.css" rel="stylesheet" type="text/css"/>
-	<script src="API/js/bootstrap.js" type="text/javascript"></script>
-	<script src="API/js/function.js" type="text/javascript"></script>
-	<script src="API/js/initialize.js" type="text/javascript"></script>
-	<script src="API/js/keyboard.js" type="text/javascript"></script>

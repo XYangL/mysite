@@ -10,9 +10,9 @@ use \Michelf\Markdown;
 
 class Parser{
 	// private PARSER_FOLDER = getcwd ();
-	const API_FOLDER = "API/";//
+	const API_FOLDER = __DIR__;//"API/"
 	const CONFIG_FOLDER = "config";//
-	const BETA_FOLDER = "beta";//
+	const HB_FOLDER = "config/head_body";//
 	const CSS_FOLDER = "";
 	const JS_FOLDER = "";
 	
@@ -26,11 +26,11 @@ class Parser{
 	# Decided by $style according to paradigm.json; 
 	# $paradigm will be FALSE if the style is not supported
 	public $paradigm = "";
-	public $supportedStyle = "supported_style.json";
+	public $supportedStyle = "";//supported_style.json
 
 	# If $style is suportted ($paradigm is NOT FALSE), _config.xml will be loaded 
 	# self::PARSER_FOLDER."/".self::CONFIG_FOLDER."/".$this->basicConfig;
-	private $basicConfig = "basic_config.xml"; # will be DOMDocument after construct
+	private $basicConfig = "xml/basic_config.xml"; # will be DOMDocument after construct
 	private $specificConfig = None;
 	private $deli_array = array('<h1>','<h2>','<h3>');
 	
@@ -42,22 +42,27 @@ class Parser{
 	
 	public $presentableHTML = "";
 
-	function __construct($basicConfig="",$deli_array =array(),$supportedStyle=""){
+	function __construct($basicConfig="",$deli_array =array()){
 		if ($basicConfig == "" ){ $basicConfig = $this->basicConfig; }
 		if ($deli_array == array()){ $deli_array = $this->deli_array;}
-		if ($supportedStyle == "" ){ $supportedStyle = $this->supportedStyle; }
 
 		$dom = new DOMDocument;
 		$dom->preserveWhiteSpace = FALSE;
 		$dom->formatOutput = TRUE;
-		$dom->load(self::API_FOLDER.self::CONFIG_FOLDER."/".$basicConfig);
+		$dom->load(self::API_FOLDER."/".self::CONFIG_FOLDER."/".$basicConfig);
 		$this->basicConfig = $dom;
 		unset($dom);
 
 		$this->deli_array = $deli_array;
 		
-		$supportedStyle = file_get_contents(self::API_FOLDER.$supportedStyle);
-		$this->supportedStyle = json_decode($supportedStyle, TRUE);
+		/* Get list support style from folder config, since every must has *.json*/
+		$this->supportedStyle = scandir(self::API_FOLDER."/".self::CONFIG_FOLDER);
+		$this->supportedStyle = array_filter($this->supportedStyle,  function($item){
+			return strpos($item, '.json');
+		});
+		foreach ($this->supportedStyle as &$value) { $value = explode('.json', $value)[0]; }
+		$this->supportedStyle = array_values($this->supportedStyle);/*reset key from 0*/
+	
 	}
 
 	# called by User for converting content in Markdown to Presentable HTML
@@ -68,17 +73,22 @@ class Parser{
 			return $this->presentableHTML;// ? return FALSE??
 		} 
 
-		#0 Check if the style is supported; If not support, the parser will be paused and return FALSE.
-		$this->paradigm = $this->setParadigm($style);
-		if( $this->paradigm == FLASE ){
+		#0 Check if the style is supported, 
+		#  If support, load *style*.json & set $paradigm
+		#  If not support, the parser will exit and return FALSE.
+		if (in_array($style, $this->supportedStyle)) {
+			$this->specificConfig = file_get_contents(self::API_FOLDER."/".self::CONFIG_FOLDER."/".$style.'.json');
+			$this->specificConfig = json_decode($this->specificConfig, TRUE);
+			$this->paradigm = $this->specificConfig['paradigm'];// print_r( $this->specificConfig);
+		} else {
 			$this->success = FALSE; $this->presentableHTML = "";
 			return $this->presentableHTML;// ? return FALSE??
 		}
-
+		
 		$this->title = $title;
 		$this->contentMD = $contentMD;
 		$this->style = $style;
-		
+
 		# A Parser 1.1
 		$this->rawBODY = $this->md2html($this->contentMD);
 
@@ -96,20 +106,6 @@ class Parser{
 		
 		return $this->success;
 		
-	}
-
-	#if $style is suportted, set $paradigm [[& $configs ???? ]]  
-	#Or, set $paradigm = FALSE
-	public function setParadigm($style=""){
-		if ($style == ""){ $style = $this->style; }
-
-		$paradigm = $this->supportedStyle[$style]['paradigm'];
-		if($paradigm == NULL){
-			// var_dump( $paradigm);
-			$paradigm = FALSE;
-		}
-
-		return $paradigm;
 	}
 
 	# A Parser 1.1
@@ -140,7 +136,7 @@ class Parser{
 
 		# Construct $rawBODY: html>(head>title)+(body>rawBODY)
 		$titleInHead="\t<title>".$title."</title>";
-		$basicStyleInHead =file_get_contents(self::API_FOLDER.self::BETA_FOLDER."/"."Basic_head.in");
+		$basicStyleInHead =file_get_contents(self::API_FOLDER."/".self::HB_FOLDER."/"."Basic_head.in");
 		$basicHEAD ="$titleInHead\n$basicStyleInHead";
 	
 		return $basicHEAD;
@@ -163,7 +159,9 @@ class Parser{
 			case 'List':
 				$structuredBODY = $this->listABLE($title, $rawBODY); # String
 				break;
-			
+			case 'Basic':
+				$structuredBODY = $rawBODY;
+				break;
 			default:
 				# code...
 				break;
@@ -187,69 +185,57 @@ class Parser{
 
 		$specificHTML = "";
 
-		$styleHEAD = file_get_contents(self::API_FOLDER.self::BETA_FOLDER."/".$style."_head.in");
-		$styleBODY = file_get_contents(self::API_FOLDER.self::BETA_FOLDER."/".$style."_body.in");
-
+		$styleHEAD = $this->specificConfig['head'];
 		$specificHEAD = "$basicHEAD\n $styleHEAD\n";
 		
-		$countTEMP = 0;
-		switch ($style) {
-			case 'S5':				
-				$specificBODY = str_replace("<structuredBODY/>", $structuredBODY, $styleBODY, $countTEMP);
-				break;
-			case 'Slidy':
-				$specificBODY = $structuredBODY; $countTEMP = 1;
-
-				break;
-			case 'CAScroll':
-				$specificBODY = str_replace("<structuredBODY/>", $structuredBODY, $styleBODY, $countTEMP);
-
-				break;
-			case 'Scroll':
-
-				$dom = new DOMDocument();
-				$dom->preserveWhiteSpace = FALSE; $dom->formatOutput = TRUE;
-				$dom->loadXML($structuredBODY);
-
-				$xpath = new DOMXPath($dom);
-				$query = '//li/div';
-				$entries = $xpath->evaluate($query);
-
-				foreach ($entries as $entry) {
-					$temp = trim($entry->ownerDocument->saveHTML($entry));
-					$temp = str_replace("<a", "<bold", $temp);
-					$temp = str_replace("</a>", "</bold>", $temp);
-
-					$temp = str_replace("<p>", "<span>", $temp);
-					$temp = str_replace("</p>", "</span>", $temp);
-
-					$start = strlen("<div>");
-					$length = strlen($temp)-$start*2-1;
-					$temp = substr($temp, $start,$length);
-					$temp = "<a>".trim($temp)."</a>";
-					
-					$fragment = $dom->createDocumentFragment();
-					$fragment->appendXml($temp);
-					$entry->parentNode->replaceChild($fragment,$entry);
-				}
-
-				$structuredBODY = $dom->saveHTML();
-				unset($dom);//echo $entries->length;
-
-				$level_name = array('zero','one','two','three','four','five');
-				for ($i=0; $i <count($level_name) ; $i++) { 
-					$structuredBODY = str_replace("L_$i", $level_name[$i].'_level', $structuredBODY);
-				}
-				
-				$specificBODY = str_replace("<structuredBODY/>", $structuredBODY, $styleBODY, $countTEMP);
-
-				break;
-			
-			default:
-				# code...
-				break;
+		$styleBODY = $this->specificConfig['body'];
+		
+		$isUpdated = 0;
+		if($styleBODY == ""){
+			$specificBODY = $structuredBODY; $isUpdated = 1;
+		} else {
+			$specificBODY = str_replace("<structuredBODY/>", $structuredBODY, $styleBODY, $isUpdated);
 		}
-		if ($countTEMP != 1) {
+
+		if ($style == 'Scroll') {
+			$dom = new DOMDocument();
+			$dom->preserveWhiteSpace = FALSE; $dom->formatOutput = TRUE;
+			$dom->loadXML($structuredBODY);
+
+			$xpath = new DOMXPath($dom);
+			$query = '//li/div';
+			$entries = $xpath->evaluate($query);
+
+			foreach ($entries as $entry) {
+				$temp = trim($entry->ownerDocument->saveHTML($entry));
+				$temp = str_replace("<a", "<bold", $temp);
+				$temp = str_replace("</a>", "</bold>", $temp);
+
+				$temp = str_replace("<p>", "<span>", $temp);
+				$temp = str_replace("</p>", "</span>", $temp);
+
+				$start = strlen("<div>");
+				$length = strlen($temp)-$start*2-1;
+				$temp = substr($temp, $start,$length);
+				$temp = "<a>".trim($temp)."</a>";
+				
+				$fragment = $dom->createDocumentFragment();
+				$fragment->appendXml($temp);
+				$entry->parentNode->replaceChild($fragment,$entry);
+			}
+
+			$structuredBODY = $dom->saveHTML();
+			unset($dom);//echo $entries->length;
+
+			$level_name = array('zero','one','two','three','four','five');
+			for ($i=0; $i <count($level_name) ; $i++) { 
+				$structuredBODY = str_replace("L_$i", $level_name[$i].'_level', $structuredBODY);
+			}
+			
+			$specificBODY = str_replace("<structuredBODY/>", $structuredBODY, $styleBODY, $countTEMP);
+		}
+		
+		if ($isUpdated != 1) {
 			echo "Parser Error : replace <structuredBODY/> $countTEMP times!";
 		}
 
@@ -257,7 +243,6 @@ class Parser{
 		$specificHTML .="<head>\n$specificHEAD</head>\n";
 		$specificHTML .="<body>\n$specificBODY</body>\n";
 		$specificHTML .="</html>\n";
-		// echo $specificHTML;
 		return $specificHTML;
 	}
 
@@ -490,7 +475,7 @@ class Parser{
 /*-------------*/
 }
 
-//-- For Testing --
+// //-- For Testing --
 // $deli_array =array('<h1>','<h2>','<h3>');
 
 // $PARSER = new Parser("", $deli_array);
@@ -498,7 +483,7 @@ class Parser{
 // $mdSrc = getcwd ()."/mdSrc/content.md";
 // $title ="Markdown Syntax";
 // $contentMD = file_get_contents($mdSrc);
-// $style = "CAScroll";
+// $style = "Slidy";
 
 // $PARSER->main($title, $contentMD, $style);
 

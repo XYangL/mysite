@@ -73,7 +73,12 @@ window.onload = function () {
 
 function isConvertable(){
 	var alertInfo = '';
-	if (isSupport()) {
+
+	/*Check if style is supported*/
+	// var supported_style =["Slidy","Scroll","S5","CAScroll","HTML","Slide","List"]; // Init in Editor.php
+	var radios = document.getElementById('ps-style');
+	var style = radios.options[radios.selectedIndex].text; console.log(style);
+	if ($.inArray(style, supported_style) > -1) {//isSupport()
 		var title = $('#ps-title').val();
 		var contentMD = $('#demo-notes').val();
 		if (title!=''){
@@ -92,26 +97,6 @@ function isConvertable(){
 	$('#ps-alert-content').html(alertInfo);
 	$('#ps-alert >a').addClass('btn-danger');
 	$('#ps-alert').show();
-	return false;
-}
-
-function isSupport(){
-	var supported_style =
-	{
-		"S5"	:{"paradigm":"slide" 	, "file_name":"[S5]Markdown Syntax.html",},
-		"Scroll":{"paradigm":"scroll" 	, "file_name":"[scroll]Markdown Syntax.html"},
-		"Slidy"	:{"paradigm":"slide" 	, "file_name":"[slidy]Markdown Syntax.xhtml"},
-		"CAScroll"	:{"paradigm":"scroll" 	, "file_name":"[CAScroll]Markdown Syntax.xhtml"},
-	}
-	
-	var radios = document.getElementById('ps-style');
-	var style = radios.options[radios.selectedIndex].text; //console.log(style);
-	for (var key in supported_style)	{
-		if (key == style){
-			return true;
-			break;
-		}
-	}
 	return false;
 }
 

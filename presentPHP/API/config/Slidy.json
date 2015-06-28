@@ -1,0 +1,8 @@
+{
+    "name": "Slidy",
+    "paradigm": "Slide",
+    "head": "\t<link href=\"http:\/\/www.w3.org\/Talks\/Tools\/Slidy2\/styles\/slidy.css\" rel=\"stylesheet\" type=\"text\/css\"\/>\n\t<script charset=\"utf-8\" src=\"http:\/\/www.w3.org\/Talks\/Tools\/Slidy2\/scripts\/slidy.js\" type=\"text\/javascript\"><\/script>",
+    "body": "",
+    "format": "xhtml",
+    "dependence": []
+}

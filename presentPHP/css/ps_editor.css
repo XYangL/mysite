@@ -6,10 +6,11 @@ body {
 /*Custom*/
 #ps-previewPopup { 
 	display:none; 
-	height:90%;
 	width:90%;
+	height:67.5%;
 	max-width: 1024px;
 	max-height: 768px;
+	background-color: white;
 }
 
 div#md2ps{

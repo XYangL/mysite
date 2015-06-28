@@ -1,0 +1,20 @@
+{
+    "name": "S5",
+    "paradigm": "Slide",
+    "head": "\t<meta content=\"S5 1.1\" name=\"version\"\/>\n\t<link href=\"API\/S5\/slides.css\" id=\"slideProj\" media=\"projection\" rel=\"stylesheet\" type=\"text\/css\"\/>\n\t<link href=\"API\/S5\/outline.css\" id=\"outlineStyle\" media=\"screen\" rel=\"stylesheet\" type=\"text\/css\"\/>\n\t<link href=\"API\/S5\/print.css\" id=\"slidePrint\" media=\"print\" rel=\"stylesheet\" type=\"text\/css\"\/>\n\t<link href=\"API\/S5\/opera.css\" id=\"operaFix\" media=\"projection\" rel=\"stylesheet\" type=\"text\/css\"\/>\n\t<script src=\"API\/S5\/slides.js\" type=\"text\/javascript\"><\/script>",
+    "body": "\t<div class=\"layout\">\n\t\t<div id=\"controls\">\n\t\t<\/div>\n\t\t<div id=\"currentSlide\">\n\t\t<\/div>\t\n\t\t<div id=\"header\">\n\t\t<\/div>\n\t\t<div id=\"footer\">\n\t\t<\/div>\n\t<\/div>\n\t<div class=\"presentation\">\n\t\t<structuredBODY\/>\n\t<\/div>",
+    "format": "html",
+    "dependence": [
+        "slides.js",
+        "slides.css",
+        "s5-core.css",
+        "print.css",
+        "pretty.css",
+        "outline.css",
+        "opera.css",
+        "iepngfix.htc",
+        "framing.css",
+        "bodybg.gif",
+        "blank.gif"
+    ]
+}

@@ -62,6 +62,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 
 	<!-- Custom Setting -->
 	<link href="css/ps_editor.css" rel="stylesheet" />
+	<script>
+	<?php  
+		echo "supported_style =[\"".implode( "\",\"" , $PARSER->supportedStyle)."\"];" ,"\n\t";
+	?>
+	</script>
 
 </head>
 <body>
@@ -125,9 +130,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 								<div class="">
 									<select id="ps-style" class="selectpicker" name="ps-style"> <!-- multiple data-max-options="1" title="Choose one style ..." -->
 										<optgroup label="Paradigm">
-											<option disabled="disabled" data-subtext="Without Style" >Raw HTML</option>
-											<option disabled="disabled" >Slide</option>
-											<option disabled="disabled" >List / Flow</option>
+											<option data-subtext="Without Style" >HTML</option>
+											<option >Slide</option>
+											<option data-subtext="Flow">List</option>
 										</optgroup>
 										<optgroup label="Slide">
 											<option >S5</option>
@@ -135,7 +140,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 											<option  disabled="disabled" >Reveal.js</option>
 										</optgroup>
 										<optgroup label="Flow">
-											<option  disabled="disabled" data-subtext="Movie End Credit">Scroll</option>
+											<option  disabled="disabled" data-subtext="Movie End Credit">Flow</option>
+											<option  >Scroll</option>
 											<option  data-subtext="Contaxt Aware" >CAScroll</option>
 										</optgroup>
 										<optgroup label="Canvas/ZUI">

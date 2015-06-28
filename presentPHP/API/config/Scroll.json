@@ -1,0 +1,16 @@
+{
+    "name": "Scroll",
+    "paradigm": "List",
+    "head": "\t<link href=\"API\/Scroll\/bootstrap.min.css\" rel=\"stylesheet\" type=\"text\/css\"\/>\n\t<link href=\"API\/Scroll\/basic.css\" rel=\"stylesheet\" type=\"text\/css\"\/>\n\t<script src=\"API\/Scroll\/bootstrap.min.js\" type=\"text\/javascript\"><\/script>\n\t<script src=\"API\/Scroll\/function.js\" type=\"text\/javascript\"><\/script>\n\t<script src=\"API\/Scroll\/initialize.js\" type=\"text\/javascript\"><\/script>\n\t<script src=\"API\/Scroll\/keyboard.js\" type=\"text\/javascript\"><\/script>",
+    "body": "\t<div class=\"contentDiv\">\n\t\t<structuredBODY\/>\n\t<\/div>\n\t<div class=\"preziDiv\">\n\t\t<ul>\n\t\t\t<li>\n\t\t\t\t<a href=\"#\">\n\t\t\t\t<\/a>\n\t\t\t<\/li>\n\t\t<\/ul>\n\t<\/div>\n\t<div class=\"modeDiv\">\n\t\t<span class=\"label\">\n\t\t\tpresentation\n\t\t<\/span>\n\t<\/div>\n\t<div class=\"nav_chapter tabbable tabs-below\">\n\t<\/div>\n\t<div class=\"pillsDiv\">\n\t\t<ul class=\"nav nav-pills\">\n\t\t\t<li>\n\t\t\t\t<a href=\"#\">\n\t\t\t\t\t&lt;=\n\t\t\t\t<\/a>\n\t\t\t<\/li>\n\t\t\t<li>\n\t\t\t\t<a href=\"#\">\n\t\t\t\t\t=&gt;\n\t\t\t\t<\/a>\n\t\t\t<\/li>\n\t\t\t<li>\n\t\t\t\t<a href=\"#\">\n\t\t\t\t\tPre\n\t\t\t\t<\/a>\n\t\t\t<\/li>\n\t\t\t<li>\n\t\t\t\t<a href=\"#\">\n\t\t\t\t\tNav\n\t\t\t\t<\/a>\n\t\t\t<\/li>\n\t\t\t<li>\n\t\t\t\t<a href=\"#\">\n\t\t\t\t\tImp\n\t\t\t\t<\/a>\n\t\t\t<\/li>\n\t\t<\/ul>\n\t<\/div>\n\t<div class=\"testDiv\">\n\t\t<span class=\"label\">\n\t\t<\/span>\n\t<\/div>\n\t<script type=\"text\/javascript\">\n\t$(\"[rel=tooltip]\").tooltip();\n\t<\/script>",
+    "format": "html",
+    "dependence": [
+        "mouse.js",
+        "keyboard.js",
+        "initialize.js",
+        "function.js",
+        "bootstrap.min.js",
+        "bootstrap.min.css",
+        "basic.css"
+    ]
+}
