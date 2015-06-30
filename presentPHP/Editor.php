@@ -5,6 +5,7 @@ require 'API/parser.inc';
 $PARSER = new Parser();
 $PARSER->success = false;
 $mode = 'default';
+$uploadImage = 'true';
 if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 	$title = $_POST['ps-title'];
 	$contentMD = $_POST['Demo']['notes'];//$contentMD = $_POST['contentMD'];
@@ -13,20 +14,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 	// ------
 	$deli_array =array('<h1>','<h2>','<h3>');
 	$most_detailed = 3;
-	$PARSER = new Parser("", array_slice($deli_array, 0, $most_detailed));
+	$PARSER = new Parser("", array_slice($deli_array, 0, $most_detailed));// ? $most_detailed
 	// -------
 
 	$PARSER->main($title, $contentMD, $style);
 	
 	if($PARSER->success){	
 		$_SESSION['html-parsed']= $PARSER->presentableHTML;
+		
+		/*Upload Image List*/
+		if ($_POST['ps-imageNum'] != '0') {
+			$uploadImage = $PARSER->upload('ps-image-', intval($_POST['ps-imageNum']), $_FILES);
+		} 
+
+		/*Export present.html, dependences & uploaded images*/
+		if ($mode == 'export') { $PARSER->download(); }
 	} else{
 		echo 'Error: Success==FALSE';
 	}
 } else{
 	$title = "Markdown Syntax";
 	$contentMD = file_get_contents("API/mdSrc/"."content.md");
-	$style ="S5";
+	// $style ="S5";
 }
 ?>
 <!DOCTYPE html>
@@ -43,7 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 
 	<!-- Optional theme -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css" / >
-		
+
 	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
 	<!--[if lt IE 9]>
 		<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
@@ -65,6 +74,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 	<script>
 	<?php  
 		echo "supported_style =[\"".implode( "\",\"" , $PARSER->supportedStyle)."\"];" ,"\n\t";
+		echo "imagesFolder = \"".$PARSER::IMAGE_FOLDER."/\";" ,"\n\t";
 	?>
 	</script>
 
@@ -95,8 +105,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 
 	<div>
 		<div class="container"><div id="md2ps" class="row">
-			<form id="authorInput" name="authorInput" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method = "post" >
+			<form id="authorInput" name="authorInput" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method = "post" enctype="multipart/form-data">
 				<input type="hidden" id="ps-mode"  name="ps-mode" value="<?php echo $mode ?>" />
+				<input type="hidden" id="ps-imageNum"  name="ps-imageNum" value="0" />
 				<input type="text" id="ps-title" class="form-control" name="ps-title" placeholder="Presentation Title"	value="<?php if ($title!='') {echo $title;} ?>">
 				<br/>
 
@@ -115,37 +126,40 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 							</div>
 							<div class="btn-group">
 								<button type="button" id="demo-notes-btn-5" class="btn  btn-default" title="URL/Link" onclick="markUp(5, &quot;#demo-notes&quot;)"><i class='glyphicon glyphicon-link'></i></button>
-								<button type="button" id="demo-notes-btn-6" class="btn  btn-default" title="Image" onclick="markUp(6, &quot;#demo-notes&quot;)"><i class='glyphicon glyphicon-picture'></i></button>
+								<button type="button" id="demo-notes-btn-6" class="btn  btn-default" title="Image"><i class='glyphicon glyphicon-picture'></i></button><!-- markUp(6, &quot;#demo-notes&quot;) -->
+							</div>
+							<div id="ps-imageList"  style='display:none;'>
+								<input type='file' id='ps-image-0' name='ps-image-0' onchange='image(this)' accept='image/*' />
 							</div>
 
 							<div class="btn-group">
 								<button type="button" id="demo-notes-btn-9" class="btn  btn-default "  title="Bulleted List" onclick="markUp(9, &quot;#demo-notes&quot;)"><i class='glyphicon glyphicon-list'></i></button>
 								<button type="button" id="demo-notes-btn-14" class="btn  btn-default " title="Inline Code" onclick="markUp(14, &quot;#demo-notes&quot;)"><div style="margin-top: -4px; margin-bottomInline Code: -1px;">
-										<span style="font-size: 1.2em;">&lsaquo;</span>/<span style="font-size: 1.2em;">&rsaquo;</span>
+									<span style="font-size: 1.2em;">&lsaquo;</span>/<span style="font-size: 1.2em;">&rsaquo;</span>
 								</div></button>
 								<button type="button" id="demo-notes-btn-15" class="btn  btn-default " title="Code Block" onclick="markUp(15, &quot;#demo-notes&quot;)"><i class='glyphicon glyphicon-sound-stereo'></i></button>
 							</div>
 
 							<div class="btn-group" >
-								<div class="">
-									<select id="ps-style" class="selectpicker" name="ps-style"> <!-- multiple data-max-options="1" title="Choose one style ..." -->
+								<div class="row-fluid">
+									<select id="ps-style" class="selectpicker show-tick span1" data-width="120px" name="ps-style"> <!-- multiple data-max-options="1" title="Choose one style ..." -->
 										<optgroup label="Paradigm">
-											<option data-subtext="Without Style" >HTML</option>
-											<option >Slide</option>
-											<option data-subtext="Flow">List</option>
+											<option  <?php if ($style == "HTML" ) {echo "selected";} ?> data-subtext="Without Style" >HTML</option>
+											<option  <?php if ($style == "Slide" ) {echo "selected";} ?> >Slide</option>
+											<option  <?php if ($style == "List" ) {echo "selected";} ?> data-subtext="Flow" >List</option>
 										</optgroup>
 										<optgroup label="Slide">
-											<option >S5</option>
-											<option >Slidy</option>
-											<option  disabled="disabled" >Reveal.js</option>
+											<option  <?php if ($style == "S5" ) {echo "selected";} ?> >S5</option>
+											<option  <?php if ($style == "Slidy" ) {echo "selected";} ?> >Slidy</option>
+											<option  <?php if ($style == "js" ) {echo "selected";} ?>  disabled="disabled" >Reveal.js</option>
 										</optgroup>
 										<optgroup label="Flow">
-											<option  disabled="disabled" data-subtext="Movie End Credit">Flow</option>
-											<option  >Scroll</option>
-											<option  data-subtext="Contaxt Aware" >CAScroll</option>
+											<option  <?php if ($style == "Flow" ) {echo "selected";} ?>  disabled="disabled" data-subtext="Movie End Credit">Flow</option>
+											<option  <?php if ($style == "Scroll" ) {echo "selected";} ?>  >Scroll</option>
+											<option  <?php if ($style == "CAScroll" ) {echo "selected";} ?>  data-subtext="Contaxt Aware" >CAScroll</option>
 										</optgroup>
 										<optgroup label="Canvas/ZUI">
-											<option  disabled="disabled" >TBA</option>
+											<option  <?php if ($style == "TBA" ) {echo "selected";} ?>  disabled="disabled" >TBA</option>
 										</optgroup>
 									</select>
 								</div>
@@ -176,11 +190,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 
 								<div class="btn-group">
 									<div class="col-sm-6" style=" ">
-										<input id="ps-fileInput" type="file" class="file form-control">
+										<input id="ps-fileInput" name="ps-fileInput" type="file" class="file">
 									</div>
-									 <!-- <input type="file" id="ps-fileInput" class="btn btn-sm btn-default" title="Import Content"> -->
-
-
 								</div>
 								<div class="btn-group">
 									<button type="button" id="ps-reset" class="btn btn-sm btn-default" value="Reset" title="Reset all Input"><span class="glyphicon glyphicon-remove"></span> Reset</button>
@@ -240,6 +251,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 
 	<!-- Custom Setting -->
 	<script src="js/ps_editor.js"></script>  
+
+
+	<!-- Show alert if failed to upload image -->
+	<?php 
+	if ($_POST['ps-mode']!='default' && $uploadImage != 'true') {
+		$alertMessage = 	"$('#ps-alert-content').html('".$uploadImage."');";
+		$alertMessage.="$('#ps-alert >a').addClass('btn-danger');";
+		$alertMessage.="$('#ps-alert').show();" ;
+
+		echo "<script>". $alertMessage."</script>";
+	}
+	?>
 
 </body>
 </html>

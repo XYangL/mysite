@@ -1,6 +1,6 @@
-	<link href="API/Scroll/bootstrap.min.css" rel="stylesheet" type="text/css"/>
-	<link href="API/Scroll/basic.css" rel="stylesheet" type="text/css"/>
-	<script src="API/Scroll/bootstrap.min.js" type="text/javascript"></script>
-	<script src="API/Scroll/function.js" type="text/javascript"></script>
-	<script src="API/Scroll/initialize.js" type="text/javascript"></script>
-	<script src="API/Scroll/keyboard.js" type="text/javascript"></script>
+	<link href="Scroll/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+	<link href="Scroll/basic.css" rel="stylesheet" type="text/css"/>
+	<script src="Scroll/bootstrap.min.js" type="text/javascript"></script>
+	<script src="Scroll/function.js" type="text/javascript"></script>
+	<script src="Scroll/initialize.js" type="text/javascript"></script>
+	<script src="Scroll/keyboard.js" type="text/javascript"></script>

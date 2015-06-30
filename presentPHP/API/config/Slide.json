@@ -1,7 +1,7 @@
 {
     "name": "Slide",
     "paradigm": "Slide",
-    "head": "",
+    "head": "\t<style>\n\tdiv.slide{\n\t  margin-top:10px;\n\t  border:2px solid black;\n\t  padding:5px;\n\t}\n\t<\/style>",
     "body": "",
     "format": "html",
     "dependence": []

@@ -1,7 +1,7 @@
 // JavaScript Document
 
 $(function(){
- 
+    console.log('keyboard.js');
  	$(this).keydown(function(event){
 		
         switch (event.which)

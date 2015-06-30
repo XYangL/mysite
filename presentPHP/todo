@@ -1,0 +1,20 @@
+Next:
+- [new] add div to show list of markdown syntax examples
+- [new] support upload image if it is not add via clicking toolbar
+- [new] update example of content.md
+- [new] image and other items should be checked when listABLE() in parser.inc, 
+        e.g. image should be a single item for list
+
+- [new] get download dependences from parsered html to suppot 'export' right after 'preview'
+        so simple input in text without click 'image' in toolbar can also download/upload images
+
+- Update the use of basci_head.in & basic_cofig.xml in parser.inc
+- add new style ‘ioslide’ in Editor.php
+
+Future:
+- confirm functions for toolbar
+- Height of textarea#demo-notes
+- check md.lib used in parser.inc for markdown-extra support
+- [new] Support add new Style via Editor.php
+- [new] Update Uedo/Rndo related to Ctrl+Z/Y & toolbar more meaningfully
+- [new] Add help of MathJax input 

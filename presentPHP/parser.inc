@@ -435,7 +435,6 @@ class Parser{
 				$uploadImage = "Sorry, fail to upload image: ".$image["name"]." of 0 size.";
 			} else {
 				if (move_uploaded_file($image["tmp_name"], $target_file)) {
-					 chmod($target_file, 0744);
 					$this->images[] = $target_file;// Append the image to image list for later downloads
 				} else {
 					$uploadImage = "Sorry, fail to upload image: ".$image["name"].".";

@@ -1,5 +1,24 @@
-
 $(function(){
+	console.log('initialize.js');
+	$('li >div a').replaceWith(function(){
+    	return $("<bold href=\""+ $(this).attr('href')+"\" />").append($(this).contents());
+	});
+
+	$('li >div >p').replaceWith(function(){
+    	return $("<span />").append($(this).contents());
+	});
+
+	$('li >div').replaceWith(function(){
+    	return $("<a />").append($(this).contents());
+	});
+
+	levNameList = ['zero','one','two','three','four','five'];
+	for (levIndex=0; levIndex <levNameList.length ; levIndex++) { 
+		$('ul.L_'+levIndex).each(function(){
+			$(this).removeClass('L_'+levIndex);
+			$(this).addClass(levNameList[levIndex]+'_level');
+		});
+	}
 
 	//get_selected_chapter(0);
 	
@@ -24,4 +43,6 @@ $(function(){
     scroll_to_show_related_update(prezing_item_index);
    
 });
+
+$
 

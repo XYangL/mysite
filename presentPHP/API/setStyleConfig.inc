@@ -52,7 +52,7 @@ which will be used by parser.inc
 
 		$deplist = array();
 		foreach ($style['dependence'] as $dep) {
-			$dep = __DIR__."/".$dep;
+			$dep = __DIR__."/"."../".$dep;
 			$dep =array_slice(scandir($dep, 1), 0, -2);
 			$deplist = array_merge($deplist, $dep);
 		}

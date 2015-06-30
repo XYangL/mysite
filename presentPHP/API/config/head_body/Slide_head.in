@@ -1,0 +1,7 @@
+	<style>
+	div.slide{
+	  margin-top:10px;
+	  border:2px solid black;
+	  padding:5px;
+	}
+	</style>

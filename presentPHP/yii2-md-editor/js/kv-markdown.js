@@ -196,10 +196,11 @@ function markUp(btn, source) {
         link = prompt('Insert Hyperlink', 'http://')
         str = (link != null && link != '' && link != 'http://') ? '[' + txt + '](' + link + ')' : txt
     }
-    // Image
+    // Image -- Revised for PS
     else if (btn == 6) {
-        link = prompt('Insert Image Hyperlink', 'http://')
-        str = (link != null && link != '' && link != 'http://') ? '![' + txt + '](' + link + ' "enter image title here")' : txt
+        // link = prompt('Insert Image Hyperlink', 'http://')
+        link = imagesFolder.concat($('#ps-imageList >input:last')[0].files[0].name);
+        str = (link != null && link != '' && link != 'http://') ? '![' + txt + '](' + link + ' "enter image title here")' : txt;
     }
     // Add Indent
     else if (btn == 7) {
