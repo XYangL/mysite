@@ -4,8 +4,7 @@ which will be used by parser.inc
 
 - API/supported_style.json contains a list of supported sytle,
   > for every style, there is a few key-value pairs,
-  > keys = [paradigm, format, dependence, dependenceDetails];
-  > 'dependence' are  the folder contains al the off line css/js files
+  > keys = [paradigm, format, dependFolders, dependenceDetails];
 
 - API/config/head-body contains *style*_body/head.in
   > the files will be loaded to set *style*[body/head] in *style*.json
@@ -17,8 +16,9 @@ which will be used by parser.inc
 
 - API/*style*.json : every style must have its own .json
   > key = ['name', 'oaradimg', 'head', 'body', 'format', 'dependence']
-  > 'dependence' is the file list of API/*Style*
-     or API/supported_style.json[*style*]['dependence']
+  > 'dependence' is the connected file list of every folder 
+  > in supported_style.json[*style*][dependFolders]
+
 
 - To add/update a new style
   1. add/update the key-value pairs in  supported_style.json
@@ -50,13 +50,17 @@ which will be used by parser.inc
 		$styleHEAD = ($styleHEAD) ? $styleHEAD : '' ;
 		$styleBODY = ($styleBODY) ? $styleBODY : '' ;
 
-		$deplist = array();
-		foreach ($style['dependence'] as $dep) {
-			$dep = __DIR__."/"."../".$dep;
-			$dep =array_slice(scandir($dep, 1), 0, -2);
-			$deplist = array_merge($deplist, $dep);
+		$depDetails = array();
+		foreach ($style['dependFolders'] as $depFolder) {
+			$depTemp = $API_FOLDER."/"."../".$depFolder;
+			$depTemp =array_slice(scandir($depTemp, 1), 0, -2);
+			foreach ($depTemp as &$value) {
+				$value = $depFolder.'/'.$value;
+			}
+			$depDetails = array_merge($depDetails, $depTemp);
+			unset($depTemp);
 		}
-		$style['dependence'] = $deplist;//print_r($deplist);
+		$style['dependence'] = $depDetails;
 
 		$style = array(
 			'name' => $name, 

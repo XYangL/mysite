@@ -5,16 +5,16 @@
     "body": "\t<div class=\"layout\">\n\t\t<div id=\"controls\">\n\t\t<\/div>\n\t\t<div id=\"currentSlide\">\n\t\t<\/div>\t\n\t\t<div id=\"header\">\n\t\t<\/div>\n\t\t<div id=\"footer\">\n\t\t<\/div>\n\t<\/div>\n\t<div class=\"presentation\">\n\t\t<structuredBODY\/>\n\t<\/div>",
     "format": "html",
     "dependence": [
-        "slides.js",
-        "slides.css",
-        "s5-core.css",
-        "print.css",
-        "pretty.css",
-        "outline.css",
-        "opera.css",
-        "iepngfix.htc",
-        "framing.css",
-        "bodybg.gif",
-        "blank.gif"
+        "S5\/slides.js",
+        "S5\/slides.css",
+        "S5\/s5-core.css",
+        "S5\/print.css",
+        "S5\/pretty.css",
+        "S5\/outline.css",
+        "S5\/opera.css",
+        "S5\/iepngfix.htc",
+        "S5\/framing.css",
+        "S5\/bodybg.gif",
+        "S5\/blank.gif"
     ]
 }

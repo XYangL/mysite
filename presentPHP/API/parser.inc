@@ -14,6 +14,7 @@ class Parser{
 	const CONFIG_FOLDER = "config";//
 	const HB_FOLDER = "config/head_body";//
 	const IMAGE_FOLDER = "images";
+	const EXPORT_FOLDER = "export";
 	const CSS_FOLDER = "";
 	const JS_FOLDER = "";
 	
@@ -42,7 +43,6 @@ class Parser{
 	private $specificHTML = "";
 	
 	public $presentableHTML = "";
-	public $images = array();
 
 	function __construct($basicConfig="",$deli_array =array()){
 		if ($basicConfig == "" ){ $basicConfig = $this->basicConfig; }
@@ -81,7 +81,6 @@ class Parser{
 			$this->specificConfig = file_get_contents(self::API_FOLDER."/".self::CONFIG_FOLDER."/".$style.'.json');
 			$this->specificConfig = json_decode($this->specificConfig, TRUE);
 			$this->paradigm = $this->specificConfig['paradigm'];// print_r( $this->specificConfig);
-			$this->images = array(); // Reset upload image list
 		} else {
 			$this->success = FALSE; $this->presentableHTML = "";
 			return $this->presentableHTML;// ? return FALSE??
@@ -423,7 +422,7 @@ class Parser{
 /*-------------*/
 
 	public function upload($filePre, $fileNum, $fileList){
-		$uploadResult = 'true';
+		$failedList = array();
 		for ($i=0; $i < $fileNum ; $i++) { 
 			$image=$fileList[$filePre.$i];
 			$target_dir = self::IMAGE_FOLDER."/";
@@ -432,63 +431,70 @@ class Parser{
 
 			// Check file size
 			if ($image["size"] == 0) {
-				$uploadImage = "Sorry, fail to upload image: ".$image["name"]." of 0 size.";
+				$failedList []= $image["name"]." of size 0 ";
 			} else {
 				if (move_uploaded_file($image["tmp_name"], $target_file)) {
-					 chmod($target_file, 0744);
-					$this->images[] = $target_file;// Append the image to image list for later downloads
+					chmod($target_file, 0744);
 				} else {
-					$uploadImage = "Sorry, fail to upload image: ".$image["name"].".";
+					$failedList []= $image["name"]."; ";
 				}
 			}
 		}
+		$uploadResult = empty($failedList) ? 'success':'Upload Failed: '.implode(', ', $failedList).'.';
 		return $uploadResult;
 	}
 
-	public function download(){
-		# get the filename list to be downloaded : css/js dependences & images
-		$stylePrefix = self::API_FOLDER.'/..'.'/'.$this->style.'/';
-		$files = array();
-		foreach ($this->specificConfig['dependence'] as $value) {
-			$files[] = $stylePrefix .$value;
-		}
+	private function download($files){
+		$failedList = array();	
+		# $files is the name list of uploaded files, 
+		# and should be locaed in server root, where is API located
+		$srcPrefix = self::API_FOLDER.'/..'.'/';//var_dump($files);
 
 		# create new zip opbject
 		$zip = new ZipArchive();
 
 		# create a temp file & open it
-		$tmp_file = tempnam(self::API_FOLDER.'/'.'zip','');
-		$zip->open($tmp_file, ZipArchive::CREATE);
+		$tmpFile = $srcPrefix.self::EXPORT_FOLDER.'/'."present.zip";
+		if ($zip->open($tmpFile, ZipArchive::OVERWRITE)) {
+			# loop through each file & add it to zip
+			foreach($files as $file){
+				if(file_exists($srcPrefix.$file) && is_readable($srcPrefix.$file)) {
+					$failedList []= $zip->addFile($srcPrefix.$file, $file)? "":"Failed to add $file ";
+				} else{
+					$failedList []="$file NOT Addable ";
+				}
+			}
 
-		# loop through each dependence file & add it to zip
-		foreach($files as $file){
-			$download_file = file_get_contents($file);
-			$zip->addFromString($this->style.'/'.basename($file),$download_file);
-			// $zip->addFile(self::API_FOLDER.'/..'.'/'.$file, $this->style.'/'.basename($file));
+			# add the converted/parsered HTML to zip 
+			$zip->addFromString('present.html',$this->presentableHTML);
+
+			# close zip
+			$failedList[] = $zip->close()? "": "Fail to close Zip ";
+			chmod($tmpFile, 0744); 
+
+		} else{
+			$failedList []= "Failed to create Zip ";
 		}
+		$failedList = array_diff($failedList, array(''));
+		return array($tmpFile, $failedList);
+	}
 
-		# loop through each images & add it to zip
-		foreach($this->images as $file){
-			$zip->addFile(self::API_FOLDER.'/..'.'/'.$file, $file);
-		}
-
-		// for( $i = 0; $i < $zip->numFiles; $i++ ){ 
-		// 	$stat = $zip->statIndex( $i ); 
-		// 	echo "<br/>"; print_r( basename( $stat['name'] ) . PHP_EOL ); 
-		// }
-
-		# add the converted/parsered HTML to zip 
-		$zip->addFromString('present.html',$this->presentableHTML);
+	public function export(){
+		# get the image src list
+		$domExport = new DOMDocument;
+		$domExport->loadXML($this->presentableHTML);
+		$imagesList = array();
+		foreach ($domExport->getElementsByTagName('img') as $img) {
+			$imagesList[]= $img->getAttribute('src');
+		}	
+		unset($domExport);
 		
-		# close zip
-		$zip->close();
-
-		# send the file to the browser as a download
-		header('Content-disposition: attachment; filename=Present.zip');
-		header('Content-type: application/zip');
-		readfile($tmp_file);
-
-		// unlink($tmp_file);
+		$files = array_merge($this->specificConfig['dependence'],$imagesList);
+		list($tmpFile, $failedList) = $this->download($files);
+		
+		$exportResult = empty($failedList) ? 'success':'Export Failed: '.implode(', ', $failedList).'.';
+		
+		return array($tmpFile, $exportResult);
 	}
 
 }
@@ -501,16 +507,15 @@ class Parser{
 // $mdSrc = getcwd ()."/mdSrc/content.md";
 // $title ="Markdown Syntax";
 // $contentMD = file_get_contents($mdSrc);
-// $style = "Slidy";
+// $style = "CAScroll";
 
 // $PARSER->main($title, $contentMD, $style);
-// $PARSER->images[]= "images/md.png";
-// $PARSER->download();
 
 // /* Output to File*/
 // if($PARSER->success){
-// 	// echo $PARSER->presentableHTML;	
-// 	file_put_contents('../pTest_out.html', $PARSER->presentableHTML);
+// 	echo $PARSER->export()[1];
+// 	//echo $PARSER->presentableHTML;	
+// 	// file_put_contents('../pTest_out.html', $PARSER->presentableHTML);
 // } else{
 // 	echo 'Error: Success==FALSE';
 // }

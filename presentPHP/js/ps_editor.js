@@ -6,14 +6,14 @@ if (false) {
 	window.ontouchstart = function(){};
 }
 
-/* For Bootstrap Initialize */
-// initialize with defaults
-$("#fileInput").fileinput();
-$("#cssInput").fileinput();
-
 window.onload = function () {
 	if($('#ps-mode').val() == 'preview'){
-		preveiw();
+		/*Show the preview iframe as popup*/
+		document.getElementById('ps-previewPopup').src='present.php';
+		$('#ps-previewPopup').bPopup({
+			position: ['auto', 'auto']
+		});
+		$('#ps-previewPopup')[0].contentWindow.focus();
 	}
 
 	/*Reset the color of buttons generated from bootstrap-select*/ 
@@ -38,45 +38,46 @@ window.onload = function () {
 		} else {
 			fileDisplayArea.value = '';
 			$('#ps-title').val('');
-			$('#ps-alert-content').html('<strong>Invalid File Type.</strong> Please Choose a text file !</a>');
-			$('#ps-alert >a').addClass('btn-danger');
-			$('#ps-alert').show();
+			
+			showAlert('btn-danger','<strong>Invalid File Type.</strong> Please Choose a text file !</a>');
 		}
 	});
 
-	// Image
+	/* Image Button @ toolbar, will active a <input/file> & call image() if select sth. */
 	$('#demo-notes-btn-6').click(function () {
 		$('#ps-imageList >input:last').click();
-		// $('#ps-image-'.concat($('#ps-imageNum').val())).click();
 	});
 
 	$('#ps-reset').click(function () {
-		$('#ps-alert').hide();//$('#ps-alert').hide();
+		$('#ps-alert').hide();
 		
-		$('#ps-alert >a').removeClass('btn-danger').removeClass('btn-success');
 		$('#ps-title').val('');
 		$('#demo-notes').val('');
 		$('#ps-style').selectpicker('val', 'HTML');// $('#ps-style').reset()
 	});
 
 	$('#ps-preview').click(function () {
-		$('#ps-alert').hide();//$('#ps-alert').hide();
-		$('#ps-alert >a').removeClass('btn-danger').removeClass('btn-success');
+		$('#ps-alert').hide();
+		
 		if (isConvertable()) {
 			convert('preview');
 		}
 	});
 
 	$('#ps-export-md').click(function(event) {
+		$('#ps-alert').hide();
+
 		if($('#demo-notes').val() !=''){
 			var blob = new Blob([$('#demo-notes').val()], {type: "text/plain;charset=utf-8"});
 			saveAs(blob, ($('#ps-title').val()|| 'content') + ".md");
+		} else{
+			showAlert('btn-danger', "Content is Empty!");
 		}
 	});
 
 	$('#ps-export-html').click(function(event) {
 		$('#ps-alert').hide();
-		$('#ps-alert >a').removeClass('btn-danger').removeClass('btn-success');
+		
 		if (isConvertable()) {
 			convert('export');
 		}
@@ -121,9 +122,7 @@ function isConvertable(){
 		alertInfo = '<strong>Invalid Style !</strong></a>';
 	};
 
-	$('#ps-alert-content').html(alertInfo);
-	$('#ps-alert >a').addClass('btn-danger');
-	$('#ps-alert').show();
+	showAlert('btn-danger', alertInfo);
 	return false;
 };
 
@@ -134,20 +133,9 @@ function convert( mode)
 	f.submit();
 };
 
-function preveiw(){
-	var src = 'present.php';//document.getElementById('present').src;
-	var src_def = "http://127.0.0.1:8000/PresentSystem/"
-	if (src != src_def ){
-		// alert("open "+src+" in a new window");
-		// window.open(src, '_blank');
-		document.getElementById('ps-previewPopup').src=src;
-		$('#ps-previewPopup').bPopup({
-			position: ['auto', 'auto']
-		});
-	} else {
-		alert("Nothing is ready for preview");
-	}
-
-	$('#ps-previewPopup')[0].contentWindow.focus();
-};
-
+function showAlert(kind, msg){
+	$('#ps-alert-content').html(msg);
+	$('#ps-alert >a').attr('class','btn btn-sm disabled');
+	$('#ps-alert >a').addClass(kind);
+	$('#ps-alert').show();
+}

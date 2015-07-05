@@ -2,45 +2,45 @@
 	"HTML": { 
 		"paradigm": "Basic", 
 		"format": "html",
-		"dependence":[]
+		"dependFolders":[]
 	},
 
 	"Slide": { 
 		"paradigm": "Slide", 
 		"format": "html",
-		"dependence":[]
+		"dependFolders":[]
 	},
 
 	"List": { 
 		"paradigm": "List", 
 		"format": "html",
-		"dependence":[]
+		"dependFolders":[]
 	},
 
 	"S5": {
 		"paradigm": "Slide", 
 		"format": "html",
-		"dependence":["S5\/"],
-		"dependenceDetails":["slides.css", "outline.css", "print.css", "opera.css", "slides.js"]
+		"dependFolders":["S5"],
+		"dependDetails":["slides.css", "outline.css", "print.css", "opera.css", "slides.js"]
 		},
 
 	"Slidy": {
 		"paradigm": "Slide", 
 		"format": "xhtml",
-		"dependence":[]
+		"dependFolders":[]
 		},
 
 	"Scroll": {
 		"paradigm": "List", 
 		"format": "html",
-		"dependence":["Scroll\/"],
-		"dependenceDetails":["bootstrap.min.css", "basic.css", "bootstrap.min.js", "function.js", "initialize.js", "keyboard.js"]
+		"dependFolders":["Scroll"],
+		"dependDetails":["bootstrap.min.css", "basic.css", "bootstrap.min.js", "function.js", "initialize.js", "keyboard.js"]
 		},
 
 	"CAScroll": { 
 		"paradigm": "List", 
 		"format": "html",
-		"dependence":["CAScroll\/"],
-		"dependenceDetails":["CAScroll.js", "CAScroll.css"]
+		"dependFolders":["CAScroll"],
+		"dependDetails":["CAScroll.js", "CAScroll.css"]
 	}
 }

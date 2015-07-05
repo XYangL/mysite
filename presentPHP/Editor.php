@@ -5,7 +5,7 @@ require 'API/parser.inc';
 $PARSER = new Parser();
 $PARSER->success = false;
 $mode = 'default';
-$uploadImage = 'true';
+$uploadResult = 'success'; $exportResult = 'success';
 if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 	$title = $_POST['ps-title'];
 	$contentMD = $_POST['Demo']['notes'];//$contentMD = $_POST['contentMD'];
@@ -24,13 +24,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 		
 		/*Upload Image List*/
 		if ($_POST['ps-imageNum'] != '0') {
-			$uploadImage = $PARSER->upload('ps-image-', intval($_POST['ps-imageNum']), $_FILES);
+			$uploadResult = $PARSER->upload('ps-image-', intval($_POST['ps-imageNum']), $_FILES);
 		} 
 
 		/*Export present.html, dependences & uploaded images*/
-		if ($mode == 'export') { $PARSER->download(); }
+		if ($mode == 'export') {
+			list($tempFile, $exportResult) = $PARSER->export();
+			$tempFile  = "export/present.zip";
+		}
 	} else{
-		echo 'Error: Success==FALSE';
+		// echo 'Error: Success==FALSE';
+		$mode = 'failed';
 	}
 } else{
 	$title = "Markdown Syntax";
@@ -253,16 +257,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 	<script src="js/ps_editor.js"></script>  
 
 
-	<!-- Show alert if failed to upload image -->
+	<!-- Show alert if failed to upload image or export html-->
 	<?php 
-	if ($_POST['ps-mode']!='default' && $uploadImage != 'true') {
-		$alertMessage = 	"$('#ps-alert-content').html('".$uploadImage."');";
-		$alertMessage.="$('#ps-alert >a').addClass('btn-danger');";
-		$alertMessage.="$('#ps-alert').show();" ;
-
-		echo "<script>". $alertMessage."</script>";
+	if ($mode!='default') {
+		if ($uploadResult != 'success') {
+			echo "<script>". "showAlert('btn-danger', '$uploadResult');" ."</script>";	
+		} else if ($exportResult != 'success') {
+			echo "<script>". "showAlert('btn-danger', '$exportResult');" ."</script>";	
+		}
+		
 	}
 	?>
-
+	
+	<!-- Set Download src for Exprot mode -->
+	<iframe id="exportSrc" style="display:none;" <?php echo "src = \"$tempFile\""; ?> > </iframe>
+	<script>
+		function Download(url) {
+			document.getElementById('exportSrc').src = url;
+			alert('this');
+		};
+	</script>
 </body>
 </html>
