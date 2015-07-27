@@ -7,6 +7,7 @@ spl_autoload_register(function($class){
 
 # Get Markdown class
 use \Michelf\Markdown;
+use \Michelf\MarkdownExtra;
 
 class Parser{
 	// private PARSER_FOLDER = getcwd ();
@@ -118,7 +119,7 @@ class Parser{
 		$rawBODY="";
 		
 		#Convert content via the Markdown parser; Returned is list of <p>s+<h*>s
-		$rawBODY = Markdown::defaultTransform($contentMD);
+		$rawBODY = MarkdownExtra::defaultTransform($contentMD);
 
 		#Math
 		// ??workable now, but need check Latex in multilines & past input example
@@ -231,11 +232,20 @@ class Parser{
 		$body_new = implode("",$divs);
 	*/
 	private function slideABLE($title, $rawBODY){
-		$div =  $rawBODY; // !!!! ??? title + rawBODY
+		#0 Check if has footnote:
+		$fnDel = '<div class="footnotes">';
+		list($div, $footnote)= explode($fnDel, $rawBODY);
+
+		// $div =  $rawBODY; // !!!! ??? title + rawBODY
 		
 		#1. Split body into slides : splitSlide($div, $deli_array,$deli_index)
 		$divs = $this->splitSlide($div, $this->deli_array, 0);
 		
+		#1.5 Append footnote as a single slide:
+		if ($footnote!=null) {
+			$divs[] ="<h1>Footnotes</h1>".$fnDel.substr($footnote,7);
+		}
+
 		#2. Put every slides in a div.slide
 		$START = "<div class=\"slide\">";
 		$END = "</div>";
@@ -354,11 +364,18 @@ class Parser{
 	Called embedList() recursivly
 	*/
 	private function listABLE($title, $rawBODY){		
+		#0 Check if has footnote:
+		$fnDel = '<div class="footnotes">';
+		list($rawBODY, $footnote)= explode($fnDel, $rawBODY);
+		
 		$list = "<h1>".$title."</h1>".$rawBODY;
 		$level = 1;
 
 		$structuredBODY = $this->embedList($list,$level); // String
-
+		#0 Append footnote as a single div, same level as ul.L1:
+		if ($footnote!=null) {
+			$structuredBODY .=$fnDel.substr($footnote,7);
+		}
 		return $structuredBODY;
 	}
 
@@ -504,7 +521,7 @@ class Parser{
 
 // $PARSER = new Parser("", $deli_array);
 
-// $mdSrc = getcwd ()."/mdSrc/content.md";
+// $mdSrc = getcwd ()."/mdSrc/MD Syntax Extra.md";
 // $title ="Markdown Syntax";
 // $contentMD = file_get_contents($mdSrc);
 // $style = "CAScroll";
@@ -515,7 +532,7 @@ class Parser{
 // if($PARSER->success){
 // 	echo $PARSER->export()[1];
 // 	//echo $PARSER->presentableHTML;	
-// 	// file_put_contents('../pTest_out.html', $PARSER->presentableHTML);
+// 	file_put_contents('../pTest_out.html', $PARSER->presentableHTML);
 // } else{
 // 	echo 'Error: Success==FALSE';
 // }

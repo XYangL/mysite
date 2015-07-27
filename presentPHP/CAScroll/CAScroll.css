@@ -19,121 +19,177 @@ body {
 }
 
 /*Basic Style*/
-div.contentDiv{
-	border-style: solid;
-	border-width: 2px;
-	max-width: 1024px;
-}
-
-ul,ol{
-	list-style-position: inside;
-	padding-left: 15px;
-	width:98%;
-	border-radius:10px;
-
-}
-
 .L_1 { font-size:200%;	font-weight:500;}
-
 .L_2 { font-size:85%;	/*font-weight:400;*/}
-
 .L_3 { font-size:85%;	font-weight:400;}
-
 .L_4 { font-size:90%;	font-weight:400;}
-
 .L_5 { font-size:90%;	font-weight:300;}
 
+.contentDiv ul,.contentDiv ol{
+	list-style-position: inside; /* !! Bullet is hidden since li[overflow:hide]*/
+	padding-left: 15px;
+	/*padding-right: 15px;*/
+	width:98%;
+	border-radius:10px;
+}
 
 /*1. Expand & Shrink*/
-li >div
-{
-
+.contentDiv li >div{
 	padding-left : 5px;
 	padding-right: 5px;
 
-	margin-bottom: 7px;/*5*/
+	margin-bottom: 5px;
 	border-radius:10px;
 
 	height: 1em;
-	transition: height 1s, opacity 1s;
-
+	overflow:hidden; /*!!*/
 	white-space:nowrap;
-	overflow:hidden; /*!! */
 	text-overflow:ellipsis;
 
+	transition: height 1s, opacity 1s;
 }
-li >div.highlight
-{
+.contentDiv li >div.highlight{
 	/*opacity: 0.5;*/
 	/*background:#f0ad4e;*/
 	white-space:normal;
-	/*overflow:hidden;*/
-	/*text-overflow:ellipsis;*/
-	
 }
 
-
-li >div >* {
+.contentDiv li >div >* {
+	padding-top: 5px;
+	padding-bottom: 5px;
 
 	white-space:inherit;
 	overflow:inherit;
 	text-overflow:inherit;
-
-	padding-top: 6px;/*5*/
-	padding-bottom: 11px;/*5*/
-
 }
 
-.L_4 >li >div >*{
+.contentDiv .L_4 >li >div >*{
 	padding-top: 0px;
 	padding-bottom: 0px;
 }
 
+
 /*2. Show & Hide : Default*/
 
 
-/*3. HL Posiition*/
-/* v3 Static Highilght Background*/
+/*3. HL Posiition v3 Static Highilght Background*/
 .hlBackground {
 	background:#5bc0de;
 	border-radius:5px;
 
-	position:fixed;
-
-	transition: height 1s, left 1s, width 1s;
 	z-index: -1;
+	/*width:100%;*/ /* init and set via jQuery */
+	transition: height 1s, left 1s, width 1s; /*!!*/
 }
 
 
 /*4. background & border*/
-/*li>ol, li>ul {
-	border: 10px solid transparent;
-	transition: border-width 1s;
-}*/
-
-
-/*5. Opacity*/
-li>ul >li>div, li>ol >li>div{
-	opacity:0.5;
-}
-li>ul >li>div.highlight, li>ol >li>div.highlight{
-	opacity:1;
-}
-.highlight+ol >li>div, .highlight+ul >li>div{
-	opacity:1;
+.contentDiv li > .HLSameLevel {
+	background: rgba(247,247,249,0.25);/*#f7f7f9;*/
 }
 
-li > .HLSameLevel >*{
-	background: rgba(247,247,249,0.2);/*#f7f7f9;*/
-}
-
-li > ol.HLChildLevel, li > ul.HLChildLevel{
+.contentDiv li > ol.HLChildLevel, .contentDiv li > ul.HLChildLevel{
 	/*border-color: #e1e1e8;*/
 	background: rgb(247,247,249);
 }
 
-/*.HLChildLevel >li >div{
-	opacity: 0.75;
-}*/
+/*5. Opacity*/
+.contentDiv li>ul >li>div, .contentDiv li>ol >li>div{
+	opacity:0.5;
+}
+.contentDiv li>ul >li>div.highlight, .contentDiv li>ol >li>div.highlight{
+	opacity:1;
+}
+.contentDiv .highlight+ol >li>div, .contentDiv .highlight+ul >li>div{
+	opacity:1;
+}
 
+
+/*6. User Defined Relationship */
+/*Styles for div.relateDiv, similar to popover of bootstrap*/
+.relateDiv{
+	padding: 1px;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-style: normal;
+	font-weight: normal;
+	letter-spacing: normal;
+	line-break: auto;
+	line-height: 1.42857143;
+	text-align: left;
+	text-align: start;
+	text-decoration: none;
+	text-shadow: none;
+	text-transform: none;
+	white-space: normal;
+	word-break: normal;
+	word-spacing: normal;
+	word-wrap: normal;
+	font-size: 125%;/*font-size: 14px;*/
+	background-color: #ffffff;
+	-webkit-background-clip: padding-box;
+	background-clip: padding-box;
+	border: 1px solid #cccccc;
+	border: 1px solid rgba(0, 0, 0, 0.2);
+	border-radius: 6px;
+	-webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+/*Styels related to positoin & width*/
+.relateDiv >*{
+  padding: 9px 14px;
+  background:rgba(247,247,249,0.25);/**/
+}
+
+.relateDiv >div >div >ul {
+	padding-left: 28px;
+}
+.relateDiv >div >div{
+	display: inline-block;    
+    clear: both;
+	margin: auto;
+}
+.relateDiv >div>div:not(.hlSupport){
+	/*display: none;*/
+}
+
+.relateDiv img{
+	width: 100%;
+}
+
+/*Similar to 7.3*/
+.relateDiv{
+	margin-left: 10px;
+ 	margin-right: 10px;
+	/*display:none;*/
+	
+	position: absolute;
+}
+
+.contentWrap {
+	/*border: 5px solid red;*/
+
+	width:98wh;
+	max-width:800px;
+	/*margin:auto;*//* set position in specificOrganizeBODY to make it centerered*/
+
+	position: relative;
+	/*left:0;*/
+}
+
+.contentDiv{
+	/*border: solid 2px;*/
+	
+	/*0. Scrollable*//*!!Important for makeing div scrollable */ 
+	overflow-y:hidden;
+	/*overflow:scroll;*/
+	
+	height:95vh;
+	width: 100%;
+}
+
+.hlBackground{
+	/*width: 100%;*/
+	position:absolute;
+}
 
