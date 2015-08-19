@@ -26,12 +26,13 @@ body {
 .L_5 { font-size:90%;	font-weight:300;}
 
 .contentDiv ul,.contentDiv ol{
-	list-style-position: inside; /* !! Bullet is hidden since li[overflow:hide]*/
+	list-style-position: inside; /* Bullet is hidden since li[overflow:hide]*/
 	padding-left: 15px;
 	/*padding-right: 15px;*/
 	width:98%;
 	border-radius:10px;
 }
+
 
 /*1. Expand & Shrink*/
 .contentDiv li >div{
@@ -42,16 +43,16 @@ body {
 	border-radius:10px;
 
 	height: 1em;
-	overflow:hidden; /*!!*/
+	transition: height 1s, opacity 1s;
+
+	overflow:hidden; /*!! */
 	white-space:nowrap;
 	text-overflow:ellipsis;
-
-	transition: height 1s, opacity 1s;
 }
 .contentDiv li >div.highlight{
 	/*opacity: 0.5;*/
 	/*background:#f0ad4e;*/
-	white-space:normal;
+	white-space:normal;	
 }
 
 .contentDiv li >div >* {
@@ -76,10 +77,9 @@ body {
 .hlBackground {
 	background:#5bc0de;
 	border-radius:5px;
-
+	
+	transition: height 1s, left 1s, width 1s;
 	z-index: -1;
-	/*width:100%;*/ /* init and set via jQuery */
-	transition: height 1s, left 1s, width 1s; /*!!*/
 }
 
 
@@ -92,6 +92,7 @@ body {
 	/*border-color: #e1e1e8;*/
 	background: rgb(247,247,249);
 }
+
 
 /*5. Opacity*/
 .contentDiv li>ul >li>div, .contentDiv li>ol >li>div{
@@ -149,9 +150,6 @@ body {
     clear: both;
 	margin: auto;
 }
-.relateDiv >div>div:not(.hlSupport){
-	/*display: none;*/
-}
 
 .relateDiv img{
 	width: 100%;
@@ -168,7 +166,6 @@ body {
 
 .contentWrap {
 	/*border: 5px solid red;*/
-
 	width:98wh;
 	max-width:800px;
 	/*margin:auto;*//* set position in specificOrganizeBODY to make it centerered*/
@@ -183,13 +180,12 @@ body {
 	/*0. Scrollable*//*!!Important for makeing div scrollable */ 
 	overflow-y:hidden;
 	/*overflow:scroll;*/
-	
-	height:95vh;
+
+	height: 95vh;
 	width: 100%;
 }
 
 .hlBackground{
-	/*width: 100%;*/
 	position:absolute;
 }
 

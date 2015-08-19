@@ -96,13 +96,18 @@ var specificOrganizeBODY = function(){
 		});
 	}
 	/* Init relateDiv, fill it, & inset into DOM*/
+	// 0.0 init RelateDiv
 	relateDiv = $("<div/>", {class: "relateDiv"});
 	relateDiv.append( $('<div/>'));
+
+	// 0.1 Get Footnote & Replace
+	// 0.2 Get Img & Replace
 	fillRelateDiv(relateDiv);
+
+	// 0.3 Add RelateDiv to body
 	relateDiv.insertAfter(root.parent());
 
 	/*7. Other special requirement of CAScroll on DOM structure */
-	
 	/* convert ol>li to div+ol>li>div:first-child */
 	ol = root.find('ol');
 	ol.children().wrapInner("<div></div>");
@@ -123,6 +128,7 @@ var specificOrganizeBODY = function(){
 	/* wrap title = ul>li>div:first-child with <p> */
 	var firstTitle = root.find('ul>li>div:first-child').first();
 	firstTitle.html("".concat("<p>",firstTitle.html(),"</p>"));
+
 	root.find('li>div~ul').parent().children(':first-child').each(function(index, el) {// div
 		if($(this).has('p:first-child').size()==0){
 			$(this).wrapInner('<p/>'); //console.log($(this).html());
@@ -130,158 +136,17 @@ var specificOrganizeBODY = function(){
 	});
 }
 
-var triggerAnimate = function(unit,mode){
-	if (unit == 0){	return 0; }
-	var scroll = function(){
-		//5 change .HL /* Reset .highlight target : change from shrink to expand */
-		shrink.removeClass('highlight');
-		expand.addClass('highlight');
-
-		//6 setHeight()	/*1. Expand & Shrink : via resetting height */
-		var oneLineH = setHeight(shrink, "one-line");
-		var fullH = setHeight(expand, "full");	
-
-		//7
-		setRDivTop(relateTarget, fullH);
-
-		//8 
-		if (relateTarget.RLI != null) {
-			showRDiv();
-		}
-
-		//9	/*2. Show & Hide on the related items : based on the unit */
-		var slideUpHeight = 0;  var slideDownHeight = 0;
-		if(unit > 0){ // NEXT
-			slideUpHeight += shrinkOldHeight-oneLineH;
-
-			// -1- show the detailed of expand
-			expand.nextAll('ol,ul').slideDown('slow');//ol
-			
-			// -2- hide the detailed of shrink's previous sibling
-			var slideUP = shrink.parent().prev().children('ul[style!="display: none;"], ol[style!="display: none;"]');	
-			if(slideUP.size() !=0) 
-			{
-				slideUpHeight +=slideUP.outerHeight(true);
-				slideUP.slideUp('slow');
-			}
-
-			// -5- More to support usable Prev
-			if (mode== 'key'&& unit >1){ // press Down, skip details
-				slideUP = shrink.nextAll('ol,ul');
-				if(slideUP.size() !=0) 
-				{
-					slideUpHeight += slideUP.outerHeight(true);
-					slideUP.slideUp('slow');
-				}
-			}
-
-		} else if (unit < 0){ // PREV
-			// -3- hide the detailed of shirnk
-			shrink.nextAll('ol,ul').slideUp('slow');//ol
-			
-			if(unit == -1){
-			// -4- show the detailed of expand's previous sibling
-				var slideDown = expand.parent().prev().children('ul[style="display: none;"], ol[style="display: none;"]');
-				if(slideDown.size() !=0) 
-				{
-					slideDownHeight = slideDown.outerHeight(true);
-					slideDown.slideDown('slow');
-				}
-
-			} else{// UP
-			// -1- show the detailed of expand
-				expand.nextAll('ol,ul').slideDown('slow');//ol
-			}
-		}
-
-		//10 
-		setHLB(expand, fullH);
-
-		//11/* 4. Background : on related items */
-		$('.HLChildLevel').removeClass('HLChildLevel');
-		expand.nextAll('ol,ul').addClass('HLChildLevel');//ol
-
-		$('.HLSameLevel').removeClass('HLSameLevel');
-		expand.parent().parent().addClass('HLSameLevel');//ol
-		
-		//12/*0. Scrollable*/
-		var reviseTop = expandTop - shrinkTop + slideDownHeight - slideUpHeight;
-		// if (mode=='click') {
-			targetTop = root.scrollTop();
-		// };
-		targetTop += reviseTop;
-		root.animate({scrollTop:targetTop},'slow');
-
-	}
-
-	//1
-	var shrink = divs.eq(index);
-	var expand = divs.eq(index+unit);
-
-	/* Get original position.top for computing $revise and other use later */
-	/* !! Must Before reset .highlight */
-	var shrinkOldHeight = shrink.height();
-	var shrinkTop = $('.hlBackground').position().top;
-	var expandTop = expand.position().top;
-
-	//2
-	var relateTarget = hasRDiv(expand);
-	
-	//3
-	setRDivLeft(relateTarget);
-
-	//4
-	var targetLeft = initLeft - (relateTarget.width) /2;
-	(relateTarget.RLI == null) && (relateDiv.css('display') == 'none') ? scroll() 
-			: $('.contentWrap').animate({left:targetLeft},'slow', function(){
-				scroll();
-			});
-
-	/*---v4-8--Scrollable Highlight-------*/
-	// $('.highlight').css('background', '');
-	// $('.hlBackground').css('background', '#5bc0de');
-};
-
-var setHeight = function(object, mode){
-	var temp = 0;
-	
-	if (mode === "one-line") {
-	/* shrink, NOT highlight */ /*---v4-6--new one-line height-------*/
-		temp = object.next().children().outerHeight();
-	} else if (mode === "full") {
-	/* expand, IS highlight */
-		if(object.children().first().attr('class')=="MathJax_Preview"){
-		/* for set  'MathJax' in highlight */
-			temp = object.height();
-		} else {
-			object.children().each(function(){
-				temp += $(this).height();
-				temp += parseInt( $(this).css("padding-top").replace("px", ""));
-				temp += parseInt( $(this).css("padding-bottom").replace("px", ""));
-			});
-		}
-	}
-
-	object.height(temp);	
-	return temp;
-}
-
-var initWrap = function(){
-	initLeft = ($('body').outerWidth()-$('.contentWrap').outerWidth())/2;
-	$('.contentWrap').css('left', initLeft );
-}
-
 var initHLB = function(base, temp){ 
 	/*  Depend on base - $('.highlight')
-		Only set Top when init, and then keep it without change */
+		Only set Top when init, and then keep it without change*/
 	HLBack.css("top",base.position().top);// HLBack.css(base.position());
-	setHLB(base, temp);
+	updateHLB(base, temp);
 }
 
-var setHLB = function(base, temp){
+var updateHLB = function(base, temp){
 	/*	Depend on base - $('.highlight')
 		HLB.height has transition, which need to be varied to final value,
-		so get its height from temp,  instead of using .outHeight() directly */
+		so get its height from temp,  instead of using .outHeight() directly*/
 	HLBack.css("left",base.position().left); // HLBack.css(base.position());
 
 	// HLBack.height(base.outerHeight());
@@ -290,10 +155,16 @@ var setHLB = function(base, temp){
 	HLBack.width(base.outerWidth());
 }
 
+var initWrap = function(){
+	/* The whole .contentWrap should be in the center of the screen*/
+	initLeft = ($('body').outerWidth()-$('.contentWrap').outerWidth())/2;
+	$('.contentWrap').css('left', initLeft );
+}
+
 var initRDiv = function () {
 	/*relateDiv.max-width = 50wh, 
 	  contentDiv.width = 98wh, max-width = 1024,
-	  so if wh<2048/0.98, relative Div will be overlapped by contentDiv */
+	  so if wh<2048/0.98, relative Div will be overlapped by contentDiv*/
 	relateDiv.css('left', initLeft);
 	
 	/*.relateDiv:margin-left/rifht is 10px each, border is 1 each, padding is 1 each*/
@@ -348,6 +219,141 @@ var showRDiv = function(){
 	relateDiv.effect('slide', { direction: 'left', mode: 'show' }, 'slow');
 }
 
+var setHeight = function(object, mode){
+	var temp = 0;
+	
+	if (mode === "one-line") {
+	/* shrink, NOT highlight */ /*---v4-6--new one-line height-------*/
+		temp = object.next().children().outerHeight();
+	} else if (mode === "full") {
+	/* expand, IS highlight */
+		if(object.children().first().attr('class')=="MathJax_Preview"){
+		// for set  'MathJax' in highlight
+			temp = object.height();
+		} else {
+			object.children().each(function(){
+				temp += $(this).height();
+				temp += parseInt( $(this).css("padding-top").replace("px", ""));
+				temp += parseInt( $(this).css("padding-bottom").replace("px", ""));
+			});
+		}
+	}
+
+	object.height(temp);	
+	return temp;
+}
+
+var triggerAnimate = function(unit,mode){
+	if (unit == 0){	return 0; }
+	var scroll = function(){
+		//5 change .HL /* Reset .highlight target : change from shrink to expand */
+		shrink.removeClass('highlight');
+		expand.addClass('highlight');
+
+		//6 setHeight()	/*1. Expand & Shrink : via resetting height */
+		var oneLineH = setHeight(shrink, "one-line");
+		var fullH = setHeight(expand, "full");	
+
+		//7
+		setRDivTop(relateTarget, fullH);
+
+		//8 
+		if (relateTarget.RLI != null) {
+			showRDiv();
+		}
+
+		//9	/*2. Show & Hide on the related items : based on the unit */
+		var slideUpHeight = 0;  var slideDownHeight = 0;
+		if(unit > 0){ // NEXT
+			slideUpHeight += shrinkOldHeight-oneLineH;
+
+			// -1- show the detailed of expand
+			expand.nextAll('ol,ul').slideDown('slow');//ol
+			
+			// -2- hide the detailed of shrink's previous sibling
+			var slideUP = shrink.parent().prev().children('ul[style!="display: none;"], ol[style!="display: none;"]');	
+			if(slideUP.size() !=0) 
+			{
+				slideUpHeight += slideUP.outerHeight(true);
+				slideUP.slideUp('slow');
+			}
+
+			// -5- More to support usable Prev
+			if (mode== 'key'&& unit >1){ // press Down, skip details
+				slideUP = shrink.nextAll('ol,ul');
+				if(slideUP.size() !=0) 
+				{
+					slideUpHeight += slideUP.outerHeight(true);
+					slideUP.slideUp('slow');
+				}
+			}
+
+		} else if (unit < 0){ // PREV
+			// -3- hide the detailed of shirnk
+			shrink.nextAll('ol,ul').slideUp('slow');//ol
+			
+			if(unit == -1){
+			// -4- show the detailed of expand's previous sibling
+				var slideDown = expand.parent().prev().children('ul[style="display: none;"], ol[style="display: none;"]');
+				if(slideDown.size() !=0) 
+				{
+					slideDownHeight = slideDown.outerHeight(true);
+					slideDown.slideDown('slow');
+				}
+
+			} else{// UP
+			// -1- show the detailed of expand
+				expand.nextAll('ol,ul').slideDown('slow');//ol
+			}
+		}
+
+		//10 
+		updateHLB(expand, fullH);
+
+		//11/* 4. Background : on related items */
+		$('.HLChildLevel').removeClass('HLChildLevel');
+		expand.nextAll('ol,ul').addClass('HLChildLevel');//ol
+
+		$('.HLSameLevel').removeClass('HLSameLevel');
+		expand.parent().parent().addClass('HLSameLevel');//ol
+		
+		//12/*0. Scrollable*/
+		var reviseTop = expandTop - shrinkTop + slideDownHeight - slideUpHeight;
+		// if (mode=='click') {
+			targetTop = root.scrollTop();
+		// };
+		targetTop += reviseTop;
+		root.animate({scrollTop:targetTop},'slow');
+
+	}
+
+	//1
+	var shrink = divs.eq(index);
+	var expand = divs.eq(index+unit);
+
+	/* Get original position.top for computing $revise and other use later */
+	/* !! Must Before reset .highlight */
+	var shrinkOldHeight = shrink.height();
+	var shrinkTop = $('.hlBackground').position().top;
+	var expandTop = expand.position().top;
+
+	//2
+	var relateTarget = hasRDiv(expand);
+	
+	//3
+	setRDivLeft(relateTarget);
+
+	//4
+	var targetLeft = initLeft - (relateTarget.width) /2;
+	(relateTarget.RLI == null) && (relateDiv.css('display') == 'none') ? scroll() 
+			: $('.contentWrap').animate({left:targetLeft},'slow', function(){
+				scroll();
+			});
+
+	/*---v4-8--Scrollable Highlight-------*/
+	// $('.highlight').css('background', '');
+	// $('.hlBackground').css('background', '#5bc0de');
+};
 
 
 var main = function(){
