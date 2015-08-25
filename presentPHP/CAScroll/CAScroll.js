@@ -7,6 +7,7 @@ var targetTop = 0;
 var HLBack = null;
 var relateDiv = null;
 var initLeft = 0;
+var initWidth = 0;
 
 var init = function (){
 	root = $('div.contentDiv');
@@ -40,7 +41,7 @@ var init = function (){
 	initHLB(firstHL, setHeight(firstHL,"full")); // setHeight(firstHL,"full");
 
 	/*6. User Defined Relationship : init .relateDiv position */
-	initRDiv()
+	initRDiv();
 
 };
 
@@ -59,13 +60,25 @@ var specificOrganizeBODY = function(){
 	/*6. User Defined Relationship */
 	var fillRelateDiv = function( RDiv ){
 		// S1: Get Footnote, remove from DOM & insert into relateDiv
-		$('.footnote-ref').text('');
+		// $('.footnote-ref').text('');
 		var FN = $('div.footnotes');//console.log(FN.size());
 		FN.remove();
 		FN.find('ol>li').each(function(){
-			$(this).find('.footnote-backref').parent().remove();
-			var temp = $('<div/>',{id: $(this).attr('id')}).append($(this).html());
+			/* Remove the back link tag */
+			// $(this).find('.footnote-backref').parent().remove();
+			$(this).find('.footnote-backref').remove();
+			lastP = $(this).children('p:last');
+			if (!lastP.html().trim()){ lastP.remove(); }
+			var temp = $('<div/>',{id: $(this).attr('id'), 'class': 'passive'}).append($(this).html());
 			RDiv.children(':first').append(temp);
+		});
+		
+		/* Append mark to items with passive/more contents*/
+		$('.footnote-ref').each(function(index, el) {
+			var tempLink = $('<a/>',{href: $(this).attr('href'), 'class': 'footnote-passive'});
+			tempLink.html('&#8649');
+			tempLink = $('<sub/>').append(tempLink);
+			$(this).parent().replaceWith(tempLink);
 		});
 
 		// S2: Get Img, replace it with des-list in DOM & insert img into relateDiv
@@ -77,21 +90,38 @@ var specificOrganizeBODY = function(){
 			var level = imgParentDiv.parent().parent().attr('class');
 			level = 'L_'.concat(parseInt(level.substr(-1))+1);
 			
-			var linkSUP = '<sup id=""><a href="#IMG:NO" class="footnote-ref"></a></sup>'.replace("NO", index);
+			var linkSUB = '<sub id=""><a href="#IMG:NO" class="footnote-active"></a></sub>'.replace("NO", index);
 			var desUL = imgParentDiv.parent().next().find('div>ul');
 			if (desUL.size()>0) {
 				desUL = desUL.eq(0);
 				desUL.addClass(level);
-				desUL.children().append(linkSUP);
+				desUL.children().append(linkSUB);
 				desUL.children().wrapInner('<p></p>');
 				desUL.children().wrapInner('<div></div>');
 				desUL.parent().parent().remove();// li
 				desUL.insertAfter(imgParentDiv);
 			};
 
-			$(this).parent().html($(this).attr('alt')+ " <b>[img]</b>"	+  linkSUP );
+			$(this).parent().html($(this).attr('alt')+ " <b>[img]</b>"	+  linkSUB );
 			$(this).remove();
-			var temp = $('<div/>',{id: 'IMG:NO'.replace("NO", index) }).append($(this));
+			var temp = $('<div/>',{id: 'IMG:NO'.replace("NO", index), 'class': 'active'}).append($(this));
+			RDiv.children(':first').append(temp);		
+		});
+
+		/* Images marked with # in mdSrc, parsered to li>div>img without <p>
+			Keep original title, no description, and move img to relateDiv */
+		var IMGTitle = $('.contentDiv li>div>img')
+		IMGTitle.each(function(index, value) {
+			var imgParentDiv = $(this).parent();
+			
+			var linkSUB = '<sub id=""><a href="#IMG:NO" class="footnote-active"></a></sub>'.replace("NO", index+IMG.size());
+			imgParentDiv.append(linkSUB);
+			var childPs = imgParentDiv.next().find('li >div');
+			if (childPs.size()>0) {
+				childPs.append(linkSUB);
+			};
+			// $(this).remove();
+			var temp = $('<div/>',{id: 'IMG:NO'.replace("NO", index+IMG.size()), 'class': 'active'}).append($(this));
 			RDiv.children(':first').append(temp);		
 		});
 	}
@@ -124,6 +154,15 @@ var specificOrganizeBODY = function(){
 		level = 'L_'.concat(parseInt(level.substr(-1))+1);
 		$(this).addClass(level);
 	});
+
+	/* List items marked with - in mdSrc, parsered to li>div>ul 
+		Moved as children of previous li>div*/
+	ulItem = root.find('li>div>ul'); //console.log(ulItem.size());
+	ulItem.each(function(index, el) {
+		liPareTemp = $(this).parentsUntil('li').parent();
+		liPareTemp.prev().children().append($(this));
+		liPareTemp.remove();		
+	});
 	
 	/* wrap title = ul>li>div:first-child with <p> */
 	var firstTitle = root.find('ul>li>div:first-child').first();
@@ -134,6 +173,18 @@ var specificOrganizeBODY = function(){
 			$(this).wrapInner('<p/>'); //console.log($(this).html());
 		}		
 	});
+
+	/* Items marked with # in mdSrc which has no details, parsered to li>div directly without <p> 
+		wrap item with <p>*/
+	root.find('li>div:first-child').each(function(){
+		if($(this).has('p').size()==0){
+			$(this).wrapInner('<p/>');
+		}
+	});
+
+	/* Find and set ID for title, having special style setting via css */
+	$('.L_1 >li:first').attr('id','title');
+
 }
 
 var initHLB = function(base, temp){ 
@@ -147,18 +198,31 @@ var updateHLB = function(base, temp){
 	/*	Depend on base - $('.highlight')
 		HLB.height has transition, which need to be varied to final value,
 		so get its height from temp,  instead of using .outHeight() directly*/
-	HLBack.css("left",base.position().left); // HLBack.css(base.position());
+	// HLBack.css("left",base.position().left); // HLBack.css(base.position());
 
 	// HLBack.height(base.outerHeight());
 	var borderTemp = base.outerHeight()-base.height();
 	HLBack.height(temp+borderTemp);
-	HLBack.width(base.outerWidth());
+	// HLBack.width(base.outerWidth());
 }
 
 var initWrap = function(){
 	/* The whole .contentWrap should be in the center of the screen*/
 	initLeft = ($('body').outerWidth()-$('.contentWrap').outerWidth())/2;
 	$('.contentWrap').css('left', initLeft );
+	initWidth = $('.contentWrap').width();
+}
+
+var checkWrap = function(target){
+	var left = initLeft - (target.width)/2;
+	var width = initWidth;
+	/* left >=0 means  initLeft*2 >= (relateTarget.width)
+		that includes relateTarget.RLI == null || relateTarget.width <= initleft*2 */
+	if (left < 0  ){ // relateTarget.width > initleft*2
+		left = 0;
+		width = $('body').outerWidth() - target.width;
+	}
+	return {left:left, width:width};
 }
 
 var initRDiv = function () {
@@ -168,9 +232,10 @@ var initRDiv = function () {
 	relateDiv.css('left', initLeft);
 	
 	/*.relateDiv:margin-left/rifht is 10px each, border is 1 each, padding is 1 each*/
-	// relateDiv.css('max-width', $('body').outerWidth()- root.outerWidth(true) -20 -2 -2);
 	var relateDivBox = relateDiv.outerWidth(true)-relateDiv.width();
-	relateDiv.css('max-width', $('body').outerWidth()- root.outerWidth(true) - relateDivBox);
+	// relateDiv.css('max-width', $('body').outerWidth()- root.outerWidth(true) - relateDivBox);
+	var conentDivmin = parseInt($('.contentWrap').css('min-width'), 10);
+	relateDiv.css('max-width', $('body').outerWidth()- conentDivmin - relateDivBox);
 
 	relateDiv.children().children().each(function(index, el) {
 		console.log($(this).attr('id'), $(this).outerWidth(), $(this).width());
@@ -182,29 +247,35 @@ var initRDiv = function () {
 }
 
 var hasRDiv = function(expand){
-	var RDivWidth = 0, RDivHeight = 0, target = null;
+	var RDivWidth = 0, RDivHeight = 0, target = null, type = null;
 	
-	var relateLI = expand.find('sup>a.footnote-ref');
-	if (relateLI.size() ==0) { /*NO need to show*/
-		hideRDiv();
-	} else {  /*Need to show*/ 
-		relateLI.each(function() {
-			target = $($(this).attr('href').replace(':', '\\:'));
+	var relateLI = expand.find('sub>a.footnote-active');
+	relateLI.each(function() {
+		target = $($(this).attr('href').replace(':', '\\:'));
+		if(target.attr('class').indexOf('active') > -1){
+			type = 'active';
 			if ($('.hlSupport').attr('id') != target.attr('id') ){
 				$('.hlSupport').hide()
 				$('.hlSupport').removeClass('hlSupport');
 			}
 			target.addClass('hlSupport');
-			target.show();
-		});
+			target.show();				
+		}
+	});
+
+	if ( type != 'active') { /*NO need to show relateLI.size() ==0*/
+		hideRDiv();
+		target = null;
+	} else {  /* Need to show*/ 
 		RDivWidth = relateDiv.outerWidth(true);
 		RDivHeight = relateDiv.outerHeight(true);
 	}
-	return { RLI:target,  width: RDivWidth, height: RDivHeight };
+	return { RLI:target,  width: RDivWidth, height: RDivHeight, type:type };
 }
 
-var setRDivLeft = function(target){
-	relateDiv.animate({left:$('body').offset().left +initLeft + $('.contentWrap').outerWidth(true) - target.width/2},'slow');
+var setRDivLeft = function(cDiv){
+	// relateDiv.animate({left:$('body').offset().left +initLeft + $('.contentWrap').outerWidth(true) - target.width/2},'slow');
+	relateDiv.animate({left:$('body').offset().left +cDiv.left + cDiv.width},'slow');
 }
 var setRDivTop = function(target, temp){
 	relateDiv.animate({top:HLBack.offset().top + temp/2 - target.height/2},'slow');
@@ -219,6 +290,38 @@ var showRDiv = function(){
 	relateDiv.effect('slide', { direction: 'left', mode: 'show' }, 'slow');
 }
 
+var hasMore = function(highlight){
+	var RDivWidth = 0, RDivHeight = 0, target = null, type = null;
+	
+	var relateLI = highlight.find('sub>a.footnote-passive');
+	relateLI.each(function() {
+		target = $($(this).attr('href').replace(':', '\\:'));
+		if(target.attr('class').indexOf('passive') > -1){
+			type = 'passive';
+			if ($('.hlSupport').attr('id') != target.attr('id') ){
+				$('.hlSupport').hide()
+				$('.hlSupport').removeClass('hlSupport');
+			}
+			target.addClass('hlSupport');
+			
+			if (relateDiv.css('display')!='none' && target.css('display')!='none') {
+				type = null;
+			} else {
+				target.show();				
+			}
+		}
+	});
+
+	if ( type != 'passive' ) { /*NO need to show relateLI.size() ==0*/
+		hideRDiv();
+		target = null;
+	} else {  /* Need to show*/ 
+		RDivWidth = relateDiv.outerWidth(true);
+		RDivHeight = relateDiv.outerHeight(true);
+	}
+	return { RLI:target,  width: RDivWidth, height: RDivHeight, type:type };
+}
+
 var setHeight = function(object, mode){
 	var temp = 0;
 	
@@ -228,7 +331,7 @@ var setHeight = function(object, mode){
 	} else if (mode === "full") {
 	/* expand, IS highlight */
 		if(object.children().first().attr('class')=="MathJax_Preview"){
-		// for set  'MathJax' in highlight
+		/* for set  'MathJax' in highlight */
 			temp = object.height();
 		} else {
 			object.children().each(function(){
@@ -244,6 +347,24 @@ var setHeight = function(object, mode){
 }
 
 var triggerAnimate = function(unit,mode){
+	if (mode == 'more') {
+		/* if mode == more, then unit==0, so expand = #item(index+0) = current highlight*/
+		var current = divs.eq(index+unit);
+		var moreTarget = hasMore(current);
+		var updatedCDiv = checkWrap(moreTarget, mode);
+		setRDivLeft(updatedCDiv);
+		$('.contentWrap').animate({left:updatedCDiv.left, width:updatedCDiv.width },'slow', function(){
+			var fullH = setHeight(current, "full");
+			
+			setRDivTop(moreTarget, fullH);
+			updateHLB(current, fullH);
+
+			if (moreTarget.type == 'passive'){
+				showRDiv();// console.log('show More');
+			}
+		});		
+		return 0
+	};
 	if (unit == 0){	return 0; }
 	var scroll = function(){
 		//5 change .HL /* Reset .highlight target : change from shrink to expand */
@@ -339,14 +460,15 @@ var triggerAnimate = function(unit,mode){
 
 	//2
 	var relateTarget = hasRDiv(expand);
+	var updatedCDiv = checkWrap(relateTarget);
 	
 	//3
-	setRDivLeft(relateTarget);
+	setRDivLeft(updatedCDiv);
 
 	//4
-	var targetLeft = initLeft - (relateTarget.width) /2;
+	// var targetLeft = initLeft - (relateTarget.width) /2;
 	(relateTarget.RLI == null) && (relateDiv.css('display') == 'none') ? scroll() 
-			: $('.contentWrap').animate({left:targetLeft},'slow', function(){
+			: $('.contentWrap').animate({left:updatedCDiv.left, width:updatedCDiv.width },'slow', function(){
 				scroll();
 			});
 
@@ -368,7 +490,7 @@ var main = function(){
 
 	/* Action :  Relate the action to key */
 	$(document).keydown(function(key) {	
-		var unit = 0;	
+		var unit = 0, mode = 'key';	
 		switch(parseInt(key.which,10)) {
 			case 37:// Left : -1 | <-1
 				event.preventDefault();
@@ -395,6 +517,9 @@ var main = function(){
 				event.preventDefault();
 				if (index+1<num){
 					unit = 1;
+				} else{/* When reach last item, then next will be 1st title*/
+					unit = -index;
+					$('.L_1').children().last().children('ul').slideUp();
 				}				
 				break;
 			case 40:// Down : >0 	
@@ -402,12 +527,20 @@ var main = function(){
 				var childrenSize = divs.eq(index).siblings('ul,ol').find('li>div:first-child').size();
 				unit = 1 + childrenSize;
 				if (index+unit > num-1) {
-					unit = 0;
+					//unit = 0;
+					/* When reach last item, then next will be 1st title*/
+					unit = -index;
+					$('.L_1').children().last().children('ul').slideUp();
 				};			
+				break;
+			case 32:
+				event.preventDefault();
+				unit = 0;
+				mode = 'more';
 				break;
 		}; // END -- switch
 		
-		triggerAnimate(unit,'key');
+		triggerAnimate(unit,mode);
 		index += unit;
 
 		// return false; // disable scroll via arrow key
