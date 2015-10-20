@@ -1,14 +1,14 @@
 <?php 
 session_start();
-$title = $contentMD = $style = "";
-require 'API/parser.inc';
+$title = $contentSRC = $style = "";
+require 'API/newParser.inc';
 $PARSER = new Parser();
 $PARSER->success = false;
 $mode = 'default';
 $uploadResult = 'success'; $exportResult = 'success';
 if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 	$title = $_POST['ps-title'];
-	$contentMD = $_POST['Demo']['notes'];//$contentMD = $_POST['contentMD'];
+	$contentSRC = $_POST['Demo']['notes'];//$contentSRC = $_POST['contentMD'];
 	$style = $_POST['ps-style'];
 	$mode = $_POST['ps-mode'];
 	// ------
@@ -17,7 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 	$PARSER = new Parser("", array_slice($deli_array, 0, $most_detailed));// ? $most_detailed
 	// -------
 
-	$PARSER->main($title, $contentMD, $style);
+	$PARSER->main($title, $contentSRC, $style);
 	
 	if($PARSER->success){	
 		$_SESSION['html-parsed']= $PARSER->presentableHTML;
@@ -37,9 +37,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 		$mode = 'failed';
 	}
 } else{
-	$title = "Markdown Syntax";
-	$contentMD = file_get_contents("API/mdSrc/"."content.md");
-	// $style ="S5";
+	$title ="A Maximum Likelihood Routing Algorithm for Smart Grid Wireless Network";
+	$contentSRC = file_get_contents("API/mdSrc/Smart Grid.src");
+	$style ="CAScroll";
 }
 ?>
 <!DOCTYPE html>
@@ -70,11 +70,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 	<!-- <link href="http://netdna.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet"> -->
 	<link href="css/fileinput.min.css" media="all" rel="stylesheet" type="text/css" />
 
+	<!-- Code Mirror -->
+	<script src="codemirror/codemirror.js"></script>
+	<link  href="codemirror/codemirror.css" rel="stylesheet">
+	<link  href="codemirror/neat.css" rel="stylesheet">
+	<script src="codemirror/mode/markdown.js"></script>
+	<style type="text/css">
+		/*.CodeMirror {border-top: 1px solid black; border-bottom: 1px solid black;}*/
+		.CodeMirror pre > * { text-indent: 0px; }
+	</style>
+
 	<!-- yii2-md-editor -->
 	<link href="yii2-md-editor/css/kv-markdown.css" rel="stylesheet">
 
 	<!-- Custom Setting -->
-	<link href="css/ps_editor.css" rel="stylesheet" />
+	<link href="css/index_editor.css" rel="stylesheet" />
 	<script>
 	<?php  
 		echo "supported_style =[\"".implode( "\",\"" , $PARSER->supportedStyle)."\"];" ,"\n\t";
@@ -99,9 +109,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 				<ul class="nav navbar-nav">
 					<li><a href="index.php">Home</a></li>
 					<li class="active"><a href="Editor.php">Editor</a></li>
-					<li><a href="#review">Review</a></li>
-					<li><a href="#about">About</a></li>
-					<li><a href="#contact">Contact</a></li>
+					<li><a href="demo.php">Demo</a></li>
+					<!-- <li><a href="#review">Review</a></li> -->
+					<!-- <li><a href="#about">About</a></li> -->
+					<!-- <li><a href="#contact">Contact</a></li> -->
 				</ul>
 			</div><!--/.nav-collapse -->
 		</div>
@@ -119,29 +130,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 					<div id="demo-notes-container" class="kv-md-container"><div id="demo-notes-editor" class="kv-md-editor">
 						<div id="demo-notes-header" class="kv-md-header btn-toolbar">
 							<div class="btn-group">
-								<button type="button" id="demo-notes-btn-1" class="btn  btn-default" title="Bold" onclick="markUp(1, &quot;#demo-notes&quot;)"><i class='glyphicon glyphicon-bold'></i></button>
-								<button type="button" id="demo-notes-btn-2" class="btn  btn-default" title="Italic" onclick="markUp(2, &quot;#demo-notes&quot;)"><i class='glyphicon glyphicon-italic'></i></button>
+								<button type="button" id="demo-notes-btn-1" class="btn  btn-default" title="Bold" onclick="editorTool(1)"><i class='glyphicon glyphicon-bold'></i></button>
+								<button type="button" id="demo-notes-btn-2" class="btn  btn-default" title="Italic" onclick="editorTool(2)"><i class='glyphicon glyphicon-italic'></i></button>
 							</div>
 
 							<div class="btn-group">
-								<button type="button" id="demo-notes-btn-101" class="btn  btn-default " title="Heading 1" onclick="markUp(101, &quot;#demo-notes&quot;)"><b>H1</b></button>
-								<button type="button" id="demo-notes-btn-102" class="btn  btn-default " title="Heading 2" onclick="markUp(102, &quot;#demo-notes&quot;)"><b>H2</b></button>
-								<button type="button" id="demo-notes-btn-103" class="btn  btn-default " title="Heading 3" onclick="markUp(103, &quot;#demo-notes&quot;)"><b>H3</b></button>
+								<button type="button" id="demo-notes-btn-14" class="btn  btn-default " title="Inline Code" onclick="editorTool(14)"><div style="margin-top: -4px; margin-bottomInline Code: -1px;">
+									<span style="font-size: 1.2em;">&lsaquo;</span>/<span style="font-size: 1.2em;">&rsaquo;</span>
+								</div></button>
+								<button type="button" id="demo-notes-btn-15" class="btn  btn-default " title="Code Block" onclick="editorTool(15)"><i class='glyphicon glyphicon-sound-stereo'></i></button>
 							</div>
+
 							<div class="btn-group">
-								<button type="button" id="demo-notes-btn-5" class="btn  btn-default" title="URL/Link" onclick="markUp(5, &quot;#demo-notes&quot;)"><i class='glyphicon glyphicon-link'></i></button>
-								<button type="button" id="demo-notes-btn-6" class="btn  btn-default" title="Image"><i class='glyphicon glyphicon-picture'></i></button><!-- markUp(6, &quot;#demo-notes&quot;) -->
+								<button type="button" id="demo-notes-btn-6" class="btn  btn-default" title="Image"><i class='glyphicon glyphicon-picture'></i></button><!-- editorTool(6, &quot;#demo-notes&quot;) -->
+								<button type="button" id="demo-notes-btn-20" class="btn  btn-default" title="More" onclick="editorTool(20)"><i class='glyphicon glyphicon-plus-sign'></i></button>
+								<button type="button" id="demo-notes-btn-21" class="btn  btn-default" title="Tip" onclick="editorTool(21)"><i class='glyphicon glyphicon-info-sign'></i></button>
 							</div>
 							<div id="ps-imageList"  style='display:none;'>
 								<input type='file' id='ps-image-0' name='ps-image-0' onchange='image(this)' accept='image/*' />
-							</div>
-
-							<div class="btn-group">
-								<button type="button" id="demo-notes-btn-9" class="btn  btn-default "  title="Bulleted List" onclick="markUp(9, &quot;#demo-notes&quot;)"><i class='glyphicon glyphicon-list'></i></button>
-								<button type="button" id="demo-notes-btn-14" class="btn  btn-default " title="Inline Code" onclick="markUp(14, &quot;#demo-notes&quot;)"><div style="margin-top: -4px; margin-bottomInline Code: -1px;">
-									<span style="font-size: 1.2em;">&lsaquo;</span>/<span style="font-size: 1.2em;">&rsaquo;</span>
-								</div></button>
-								<button type="button" id="demo-notes-btn-15" class="btn  btn-default " title="Code Block" onclick="markUp(15, &quot;#demo-notes&quot;)"><i class='glyphicon glyphicon-sound-stereo'></i></button>
 							</div>
 
 							<div class="btn-group" >
@@ -149,17 +155,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 									<select id="ps-style" class="selectpicker show-tick span1" data-width="120px" name="ps-style"> <!-- multiple data-max-options="1" title="Choose one style ..." -->
 										<optgroup label="Paradigm">
 											<option  <?php if ($style == "HTML" ) {echo "selected";} ?> data-subtext="Without Style" >HTML</option>
-											<option  <?php if ($style == "Slide" ) {echo "selected";} ?> >Slide</option>
+											<option  <?php if ($style == "Slide" ) {echo "selected";} ?> disabled="disabled" >Slide</option>
 											<option  <?php if ($style == "List" ) {echo "selected";} ?> data-subtext="Flow" >List</option>
 										</optgroup>
 										<optgroup label="Slide">
-											<option  <?php if ($style == "S5" ) {echo "selected";} ?> >S5</option>
-											<option  <?php if ($style == "Slidy" ) {echo "selected";} ?> >Slidy</option>
+											<option  <?php if ($style == "S5" ) {echo "selected";} ?> disabled="disabled" >S5</option>
+											<option  <?php if ($style == "Slidy" ) {echo "selected";} ?> disabled="disabled" >Slidy</option>
 											<option  <?php if ($style == "js" ) {echo "selected";} ?>  disabled="disabled" >Reveal.js</option>
 										</optgroup>
 										<optgroup label="Flow">
-											<option  <?php if ($style == "Flow" ) {echo "selected";} ?>  disabled="disabled" data-subtext="Movie End Credit">Flow</option>
-											<option  <?php if ($style == "Scroll" ) {echo "selected";} ?>  >Scroll</option>
+											<option  <?php if ($style == "Scroll" ) {echo "selected";} ?> >Scroll</option>
 											<option  <?php if ($style == "CAScroll" ) {echo "selected";} ?>  data-subtext="Contaxt Aware" >CAScroll</option>
 										</optgroup>
 										<optgroup label="Canvas/ZUI">
@@ -174,7 +179,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 							</div>
 						</div> <!-- demo-notes-header -->
 
-						<textarea id="demo-notes" class="kv-md-input form-control meltdown"  name="Demo[notes]" placeholder="Content in Markdown"><?php if ($contentMD!='') { echo $contentMD; } ?></textarea>	
+						<textarea id="demo-notes" class="kv-md-input form-control meltdown"  name="Demo[notes]" placeholder="Content in Markdown"><?php if ($contentSRC!='') { echo $contentSRC; } ?></textarea>	
 
 						<div id="demo-notes-preview" class="kv-md-preview hidden"></div>
 
@@ -254,8 +259,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 	<script src="js/FileSaver.min.js"></script>
 
 	<!-- Custom Setting -->
-	<script src="js/ps_editor.js"></script>  
-
+	<script src="js/editor.js"></script>
 
 	<!-- Show alert if failed to upload image or export html-->
 	<?php 

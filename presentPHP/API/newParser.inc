@@ -68,9 +68,9 @@ class Parser{
 	}
 
 	# called by User for converting content in Markdown to Presentable HTML
-	public function main($title, $contentMD, $style)
+	public function main($title, $contentSRC, $style)
 	{	
-		if( trim($title) == "" || trim($contentMD) == "" || trim($style) == "" ){
+		if( trim($title) == "" || trim($contentSRC) == "" || trim($style) == "" ){
 			$this->success = FALSE; $this->presentableHTML = "";
 			return $this->presentableHTML;// ? return FALSE??
 		} 
@@ -88,8 +88,11 @@ class Parser{
 		}
 		
 		$this->title = $title;
-		$this->contentMD = $contentMD;
+		$this->contentMD = $contentSRC;
 		$this->style = $style;
+
+		# Convert new Syntax in to Markdown
+		$this->contentMD = $this->src2md($this->contentMD);
 
 		# A Parser 1.1
 		$this->rawBODY = $this->md2html($this->contentMD);
@@ -108,6 +111,90 @@ class Parser{
 		
 		return $this->success;
 		
+	}
+
+	# Convert new Syntax in to Markdown
+	# - [^img:1]:... to [^img:1]:![]:(...)
+	# - move footnote [^...] to the end
+	# - wrap list block with h$LEV > div[markdown='1']
+	# - split list from lines in the same block into [^one:1]
+	# - combine multi lines into one with <br/>
+	# - tabs into #* for being converted to <h$LEV> later
+	public function src2md( $contentSRC){
+		if ($contentSRC == ""){ $contentSRC = $this->contentMD; }
+
+		# $cotentSRC from <textarea> has carriage return indstead of \n
+		$contentSRC = str_replace("\r", "",  $contentSRC);
+
+		# items are separated by '\n\n'
+		# - Replace the spaces in separated line with '\n'
+		# --? repalce \n\n*\n with \n\n ?? 
+		$regEL = "/^\s*$/m"; # separated line with spaces: from start to end are all white spaces
+		$contentSRC = preg_replace($regEL, "", $contentSRC) or exit("Error :  preg_replace - regEL") ; 
+		$items = explode("\n\n",$contentSRC);
+
+		// $regSEP = "/(.+\n)+/";
+		$regLEV = "/^\t*/";
+		$regFN = "/^\s*(\[\^([a-zA-Z]*):[a-zA-Z0-9]*\]:)/";#"/^\s*\[\^[a-zA-Z0-9]*\]:/"; # Footnote Tag
+		$refCON = "/({([^}]+)})$/";
+		$regITEM = "/(^\t*)((.|\n)*)({([^}]+)})?$/";
+		//$regBLockLineBreak = preg_replace("/(\n)\t*(?!-)(?=\w)/", "<br>", $input_lines);
+
+		$FNDic = array(); $oneI= 1;
+		foreach ($items as $key =>&$value) {
+			preg_match("/^\t*/", $value, $iLEV);
+			$regLBTab = $iLEV[0];
+			$iLEV = substr_count($iLEV[0], "\t")+1;
+			
+			if (preg_match($regFN, $value, $matchedFN)){ 
+				/*Footnote defination block*/
+				$FNMarker = $matchedFN[1];
+				if($matchedFN[2] == 'img'){
+					$value = preg_split($refCON, preg_split($regFN, $value)[1], -1,PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
+					$value = $matchedFN[1]." ![](".$value[0].") ".$value[1];// print_r( $value."\n");
+					// $value = $matchedFN[1]." ![](".preg_split($regFN, $value)[1].")"; //echo $value;
+				}
+
+				$value = preg_replace("/\n\t*/", "\n\t", trim($value));
+				if (array_key_exists($FNMarker, $FNDic)) {
+					$value = trim(str_replace($FNMarker, '', $value));
+					$FNDic[$FNMarker] .= "\n\n\t$value";
+				} else{
+					$FNDic[$FNMarker] = $value;
+				}
+				unset($items[$key]);
+				continue;
+				/* 0915 no need ; 0910 Support multi lines in one block*/
+			} else if (preg_match("/^\t*-/", $value, $matchedFN)) {
+				/*Only List item in one block*/
+				$value = "<h$iLEV><div  markdown='1'>\n".preg_replace("/\n\t{".($iLEV-1)."}/", "\n", trim($value))."\n</div></h$iLEV>";
+				continue;
+			} else if (preg_match("/\n\t*(?=-)/", $value, $matchedFN)) {
+				/*lines appended with List item in one block:*/
+				$FNTemp = preg_split("/\n\t*(?=-)/", $value);
+
+				$value = rtrim(array_shift($FNTemp));
+				preg_match($refCON,$value,$iCON);
+				$value = preg_split($refCON, $value)[0]."[^one:$oneI] ".$iCON[0];
+
+				$FNDic["[^one:$oneI]"] = "[^one:$oneI]:".implode("\n\t", $FNTemp);
+				$oneI ++;
+				// continue;
+			}
+
+			/*Combine multi Lines in one Block into one line*/
+			$value = preg_replace("/\n\t*(?!-)(?=[\w|\$])/", "<br/>", $value);
+
+			$PRE = str_repeat("#", $iLEV);
+			
+			$value = trim($value);
+			preg_match($refCON,$value,$iCON);
+			$value = preg_split($refCON, $value);
+			$value = trim($PRE .' '. trim($value[0]) .' '. $PRE.' ' . $iCON[0]);
+		}
+
+		$contentMD = implode("\n\n", $items)."\n\n".implode("\n\n", $FNDic);// echo $contentMD;
+		return $contentMD;
 	}
 
 	# A Parser 1.1
@@ -238,12 +325,68 @@ class Parser{
 
 		// $div =  $rawBODY; // !!!! ??? title + rawBODY
 		
+		#0. convert the parsered HTML from new Syntax to a version converted from old syntax
+		$div = $this->preSlide( $div,1);
+		/* !!!! Need to do:
+			- [OK] footnote:one
+			- [OK] Footnote:image
+			- Image Size
+			- footnote:tip
+			- H4 & H5
+			- Level-1 Structure Slides
+		*/
+		
+		$FNDoc= new DOMDocument;
+		$FNDoc->preserveWhiteSpace = FALSE;
+		$FNDoc->loadHTML($fnDel.$footnote);
+		// $root = $dom->documentElement;
+
+		// $oneTemp = $FNDoc->getElementById('fn:one:3')->C14N();// echo $oneTemp."\n\n";
+		// $oneTemp = "<div".substr($oneTemp, 3,-3)."div>";	// echo $oneTemp."\n";
+		
+		#fn:one
+		$oneFN = '|<sup id="fnref:one:(\d+)">|';
+		preg_match_all($oneFN, $div, $oneID );
+		foreach ($oneID[1] as $key => $value) {
+			$oneTemp = $FNDoc->getElementById("fn:one:$value");
+			$htmlTemp = $oneTemp->C14N();
+			$oneTemp->parentNode->removeChild($oneTemp);
+			$oneTemp = "\n<div".substr($htmlTemp, 3,-3)."div>";
+
+			$search = "<sup id=\"fnref:one:$value\"><a href=\"#fn:one:$value\" class=\"footnote-ref\">";
+			$search = "/".$search."\d+<\/a><\/sup>/";
+			$div = preg_replace($search , $oneTemp, $div);
+
+			$search = "<p><a class=\"footnote-backref\" href=\"#fnref:one:$value\">";
+			$search = "/".$search.".+<\/a><\/p>/";
+			$div = preg_replace($search , " ", $div);
+		}
+		
+		#fn:img
+		$imgFN = '|<sup id="fnref:img:(.[^"]*)">|';
+		preg_match_all($imgFN, $div, $imgID );
+		foreach ($imgID[1] as $key => $value) {
+			$imgTemp = $FNDoc->getElementById("fn:img:$value");
+			$htmlTemp = $imgTemp->getElementsByTagName('img')->item(0)->C14N();// echo "$htmlTemp\n\n";
+			$imgTemp->parentNode->removeChild($imgTemp);
+			$imgTemp = "<div class=\"imgWrap\">$htmlTemp</div>";
+
+			$search = "<sup id=\"fnref:img:$value\"><a href=\"#fn:img:$value\" class=\"footnote-ref\">";
+			$search = "/".$search."\d+<\/a><\/sup>/";
+			$div = preg_replace($search , $imgTemp, $div);
+		}
+
+		$footnote = $FNDoc->getElementsByTagName('ol')->item(0);
+		$footnote = $FNDoc->saveXML($footnote);
+		unset($FNDoc);
+
+
 		#1. Split body into slides : splitSlide($div, $deli_array,$deli_index)
 		$divs = $this->splitSlide($div, $this->deli_array, 0);
 		
 		#1.5 Append footnote as a single slide:
 		if ($footnote!=null) {
-			$divs[] ="<h1>Footnotes</h1>".$fnDel.substr($footnote,7);
+			$divs[] ="<h1>Footnotes</h1>\n". preg_replace("|\n\n+|", "\n\n", $footnote);
 		}
 
 		#2. Put every slides in a div.slide
@@ -255,8 +398,8 @@ class Parser{
 		
 		#3. Re-style the TOC slide
 		$TOCSlide = array_shift($divs);
-		$TOCSlide = str_replace("h1>","p>",$TOCSlide) ;
-		$TOCSlide = "<div class=\"slide\">\n<h1>Outline</h1>".$TOCSlide."</div>";// echo "$TOCSlide";
+		$TOCSlide = preg_replace("/(<\/?)h1(>)/", "$1li$2", $TOCSlide);
+		$TOCSlide = "<div class=\"slide\">\n<h1>Outline</h1>\n<ul>".$TOCSlide."</ul>\n</div>";// echo "$TOCSlide";
 
 		#4. Generate the 1st slide with Title 
 		$titleSlide = "<div class=\"slide\">\n<h1>".$title."</h1>\n</div>"; // echo $titleSlide;
@@ -267,6 +410,36 @@ class Parser{
 
 		return $structuredBODY;
 
+	}
+
+	private function preSlide( $div,$level){
+	// convert the parsered HTML from new Syntax to a version converted from old syntax
+		$divs = preg_split("/(<\/?h$level>)/", $div, -1, PREG_SPLIT_NO_EMPTY);
+		$next = $level+1;
+
+		$last = count($divs);
+		$hasDetails = false;
+		foreach ($divs as $key => &$value){
+			$value = trim($value);
+			if ($value == "") continue;
+			
+			if (strpos(" ".$value, "<h$next>") === FALSE){
+			# title tiem
+				if (strpos(" ".$divs[$key+1], "<h$next>") === False && !$hasDetails){
+				# No Details
+					$value = "<p>$value</p>\n";
+				} else {
+				# Has Details
+					$value = "<h$level>$value</h$level>\n";
+				}
+			} else{
+			#Detailed item 
+				$value = $this->preSlide($value, $next);
+				$hasDetails = true;
+			}
+		}
+
+		return implode("\n", array_filter($divs));
 	}
 
 	private function splitSlide( $div, $deli_array,$deli_index){
@@ -367,11 +540,16 @@ class Parser{
 		#0 Check if has footnote:
 		$fnDel = '<div class="footnotes">';
 		list($rawBODY, $footnote)= explode($fnDel, $rawBODY);
-		
+
 		$list = "<h1>".$title."</h1>".$rawBODY;
 		$level = 1;
 
 		$structuredBODY = $this->embedList($list,$level); // String
+		
+		/*Only List item in one block : delete unnecessary tags*/
+		$structuredBODY = preg_replace("/(<div>)<p><div>\n\n(<ul>)/", "$1$2", $structuredBODY);
+		$structuredBODY = preg_replace("/(<\/ul>)\n\n<\/div><\/p>(<\/div>)/", "$1$2", $structuredBODY);
+
 		#0 Append footnote as a single div, same level as ul.L1:
 		if ($footnote!=null) {
 			$structuredBODY .=$fnDel.substr($footnote,7);
@@ -380,7 +558,7 @@ class Parser{
 	}
 
 	private function embedList($list, $level){ 
-		$delimiter= "<h$level>";
+		$delimiter= "<h$level";
 		$deliEND = "</h$level>";
 		$subTAG = "div";
 
@@ -388,32 +566,43 @@ class Parser{
 		$pos = strpos($list, $delimiter);
 		if ( $pos === false) {
 		# Input List is just Array of <p>s	(+images)
-			$newList = 	$this->wrapLI($list); 
+			if (trim($list) != '') $newList = 	$this->wrapLI($list); 
 
 		} else{
-		# Input List is Array of <p>s + (<H*> + <p>s)s
+		# Input List is Array of <p>s + (<H2> + <H3>s)s
 			$uls = explode($delimiter, $list);
-			
-			#[ <p>s ]
-			if(trim($uls[0])!=""){ $uls[0] = $this->wrapLI($uls[0]); }
-			$newList .= $uls[0]."\n";
-
-			#[(<H*> + <p>s)s]
-			for($i = 1; $i<count($uls); $i++) {
-				list($ulSubject,$ulContent) = explode($deliEND, $uls[$i]);
+	
+			foreach( $uls as $value) {
+				$liType = strpos($value, '>');
+				$attrClass = '';
+				if ($liType === false){
+					// echo "false: '$value'\n";
+					continue;
+				} else if ($liType === 0){// echo "0: $value \n";
+					# '>...</h1>', NO class
+					$value = substr($value, $liType+1);
+				} else {//echo "1: $value \n";
+					# ' class="test">...</h1>', has class,
+					$attrClass = substr($value, 0, $liType);
+					$value = substr($value, $liType+1);
+				}
+				list($ulSubject,$ulContent) = explode($deliEND, $value);
 				$ulContent = $this->embedList($ulContent,$level+1);
-				$newList .= "<li>\n<$subTAG>$ulSubject</$subTAG>\n$ulContent</li>";
+				$ulSubject = trim($ulSubject);
+				$ulContent = trim($ulContent);
+				$newList .= "\n<li>\n<$subTAG$attrClass><p>$ulSubject</p></$subTAG>\n$ulContent</li>";
 			}
 		}
 
 		$uls="";
 		if(trim($newList)!=""){
-			$uls = "<ul class=\"L_$level\">\n$newList\n</ul>";
+			$uls = "\n<ul class=\"L_$level\">\n$newList\n</ul>";
 		}
 
 		return $uls;
 	}
 
+//?? NO MORE Need This Example
 	private function wrapLI($list){ // return <li><div>$list</div></li>
 		$dom = new DOMDocument();
 		$dom->preserveWhiteSpace = FALSE;
@@ -502,7 +691,7 @@ class Parser{
 		$domExport->loadXML($this->presentableHTML);
 		$imagesList = array();
 		foreach ($domExport->getElementsByTagName('img') as $img) {
-			$imagesList[]= $img->getAttribute('src');
+			$imagesList[]= str_replace("%20", ' ', $img->getAttribute('src'));
 		}	
 		unset($domExport);
 		
@@ -516,25 +705,4 @@ class Parser{
 
 }
 
-// //-- For Testing --
-// $deli_array =array('<h1>','<h2>','<h3>');
-
-// $PARSER = new Parser("", $deli_array);
-
-// $mdSrc = getcwd ()."/mdSrc/MD Syntax Extra.md";
-// $title ="Markdown Syntax";
-// $contentMD = file_get_contents($mdSrc);
-// $style = "CAScroll";
-
-// $PARSER->main($title, $contentMD, $style);
-
-// /* Output to File*/
-// if($PARSER->success){
-// 	echo $PARSER->export()[1];
-// 	//echo $PARSER->presentableHTML;	
-// 	file_put_contents('../pTest_out.html', $PARSER->presentableHTML);
-// } else{
-// 	echo 'Error: Success==FALSE';
-// }
-// -----------------
 ?>
