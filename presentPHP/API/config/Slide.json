@@ -1,7 +1,7 @@
 {
     "name": "Slide",
     "paradigm": "Slide",
-    "head": "\t<style>\n\tdiv.slide{\n\t  margin-top:10px;\n\t  border:2px solid black;\n\t  padding:5px;\n\t}\n\t<\/style>",
+    "head": "\t<script type=\"text\/x-mathjax-config\"> \n\t\tMathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\\\(','\\\\)']]}});\n\t<\/script> <!-- LaTex -->\n\t<script src=\"http:\/\/cdn.mathjax.org\/mathjax\/latest\/MathJax.js?config=TeX-AMS-MML_HTMLorMML\" type=\"text\/javascript\"><\/script>\n\t<script src=\"http:\/\/code.jquery.com\/jquery-latest.js\" type=\"text\/javascript\"><\/script>\n\n\t<style>\n\tdiv.slide{\n\t  margin-top:10px;\n\t  border:2px solid black;\n\t  padding:5px;\n\t}\n\t<\/style>",
     "body": "",
     "format": "html",
     "dependence": []
