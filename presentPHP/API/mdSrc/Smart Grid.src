@@ -1,0 +1,299 @@
+Background of Smart Gird and its Routing
+
+	Smart Grid (SG) is the next generation electric power system 	
+
+		Integration of communication networks
+		- Home Area Networks (HANs)
+		- Neighborhood Area Networks (NANs)
+		- Wide Area Networks (WANs)
+
+		Advanced communication abilities
+		- Increase the efficiency of the system 
+		- Save energy consumption
+		- Improve the reliability of services
+
+	Routing Protocols for Smart Grid
+
+		Home Area Networks (HANs) [^hide:han]
+		- The protocols are categorized based on the underlying network using wireless communication, power line communications (PLC) or a combination of these.
+		- Their design, cost and performance are affected by the underlying MAC protocols.	
+
+		Neighborhood Area Networks (NANs) [^hide:nan]
+		Criteria to classify the routing protocols for NANs
+		- The underlying communication used for routing
+		- The application requirements, including reliability, security and Qos
+
+		Advanced Metering Infrastructure (AMI) Application is the most challenge application of Smart Grid utilizing NANs [^hide:ami]
+
+			Systems that measure, collect, and analyze energy usage, and communicate with metering devices either on request or on a schedule. 
+
+			Rely on wireless communication technologies to increase portions of utilities' AMI system 
+			- Low installation costs and rapid deployment
+			- Comparable data rate and network capacities to popular wired networks
+
+			Routing mechanisms is essential in AMI and attracts wide attention from the research community
+			- Guarantee the acquisition and the dispatch in a timely and reliable way	
+			- Energy should be considered to meet the communication requirements
+
+		[^hide:1]:		
+			IETF proposed the IPv6 Routing Protocol for low Power and Lossy Networks (PRL) in 2008 and completed its standardization recently in March 2012. 
+
+		[^hide:1]:
+			The new release has been designed to meet the requirements of typical AMI application. RPL organizes the network topology into a directed acyclic graph (DAG) structure, and utilize two mechanism for DAG repairs: one is global repair, and another is local repair. 
+
+		[^hide:1]:
+			- The performance of the local repair mechanism in Smart Grid was presented.
+			- Another performance evaluations of PRL indicates that RPL nodes may suffer from severe unreliability problems. 
+
+		[^hide:1]:
+			The basic RPL was enhanced by applying the Expected Transmission Time (ETX) as the link metric to construct and maintain the DAG.
+
+Application Environment
+
+	Designed for AMI using Radio Frequency (RF) mesh
+	RF mesh is more energy efficient than a single hop network for the same distance due to the attenuation of RF Signals. [^hide:rf]
+	
+	
+	Topology of the meters[^img:topMe]  {.des} 
+
+		[^img:topMe]: images/topology-meters.png {.bottom}
+	
+		The Smart Grid wireless network is deployed in the area consist of several specific districts.
+		- Within every district, there are a number of homes $H_i$ ($i>0$) and one base station $H_0$. 
+		- Smaller $i$ means that $H_i$ is nearer to the base station. 
+
+		Each home $H_i$ has a few battery operated meters $M_{ia}$ 
+		- Be Used respectively for Gas, Water, Electricity and so on.
+		- Transmit its readings to others via RF. 
+		- Can act as a wireless transmitter/relay node.
+
+	Transmission Process [^img:topPr] {.des}
+
+		[^img:topPr]: images/topology%20process.png {.bottom}
+		
+		The selected relay meter $M_{ia}$ are responsible for 
+		- receiving both readings from $H_{i+1}$ and local readings
+		- transmitting the readings from $H_{i}$ to $H_{i-1}$
+
+		First, the reading of all the meters at $H_i$ should be *transmitted locally* to a selected relay meter $M_{ia}$ at $H_i$. 
+		
+		Then, appended with the packets of readings transmitted from $H_{i+1}$, all the local readings at $H_i$ is transmitted from $M_{ia}$ to another selected relay meter $M_{(i-1)b}$ at $H_{i-1}$.
+			
+		Finally, the readings of all the meters within the same district are accumulated at $H_1$ and then transmitted to the base station $H_0$.
+
+Overview of the Routing Algorithm
+
+	Problem : How to select the relay meters
+	Routing in a district is a process of selecting the relay meters for each home. [^img:topPr]
+
+	Goal: Balance the energy consumption for every meters 
+	- The transmission of packets consumes energy
+	- Transmit more packets to the base station means to **extend the lifetime** of SG
+		
+	Criterias: Focus on Energy Efficiency
+	- Energy State - Battery level of meters
+	- Energy Consumption - Transmission distance between two meters 
+
+Principles of the Routing Algorithm  [^hide:principles]
+
+	Selection of Relay Meter : Maximum Likelihood
+	- A meter $M_{ib}$ with highest probability $f_{ib}$ among all the meters at the same home $H_i$.
+	- For a fixed set of data and underlying statistical **model**, to select the set of values of the model **parameters** that maximizes the likelihood **function**
+
+		**Energy Consumption Model** based on transmission distance [^hide:ref1]
+		
+		[^hide:ref1]: 
+			Cui, Shuguang, Andrea J. Goldsmith, and Ahmad Bahai. **"Energy-efficiency of MIMO and cooperative MIMO techniques in sensor networks."** *Selected Areas in Communications*, IEEE Journal on 22.6 (2004): 1089-1098.
+
+			The total average energy consumption per bit along the signal path for a fixed-rate $R_{bt}$ system  [^tip:model]
+			$$E_{bt} = (P_{PA}+P_c)/R_b$$
+			$$P_{PA} = (1+\\alpha)P_{out}$$
+			$$P_{out} = \\frac{ M_t N_0 }{  \\overline{P}^{1/M_t}_{b} } R_b  \\times  \\frac{(4 \\pi d)^2}{G_t G_r  \\lambda ^2} M_l N_f $$
+
+			[^tip:model]:
+				- $P_{PA}$ : the power consumption of all the power amplifiers, depends on  $P_{out}$ 
+				- $P_{out}$ : the transmit power calculated based on a square-law path loss model 
+				- $P_c$ : the power consumption of all other circuit blocks, estimated using the another model 
+			
+			- The values of all the parameters used in the model are **same** for all the meters in a specific smart grid network, except the transmission distance $d$.
+			- The number $S$ of bits encoded in a packet is also **fixed** for every home.
+
+			The total energy consumption $E$ to transmit a packet along the signal path.	
+			$$E = S \\times E_{bt} = S \\times (P_{PA}+P_c)/R_b = \\beta d^2 + \\gamma $$
+			- $\\beta = S \\times (1+ \\alpha )  \\frac{ M_t N_0 }{  \\overline{P}^{1/M_t}_{b} }  \\times  \\frac{(4 \\pi)^2}{G_t G_r  \\lambda ^2} M_l N_f $
+			- $\\gamma = S \\times P_c/R_b \\nonumber $ 
+
+		**Parameters** related to energy
+
+			Transmission Distance between two meters $E = \\beta d^2 + \\gamma $
+
+				- The total energy consumption $E$ for any meter at a home is **linearly** to the square of the transmission distance $d^2$.
+				- Shorter transmission distance should correspond to Higher probobility
+			
+				- $D_{iab}$ : Distance from $M_{(i+1)a}$ at $H_{i+1}$ to $M_{ib}$ at $H_i$
+				- $T_{ib}$ : Average Transmission Distance from $M_{ib}$ to meters at $H_{i-1}$
+
+			Battery level of meter $M_{ib}$
+			A meter $M_{ib}$ should have a higher probability $f\\!B_{ib}$ if its battery level $B_{ib}$ is higher.	
+
+		**Likelihood Function** $f_{ib}$ to calculate the probability of a meter is the product of three sigmoid functions [^tip:sig]
+		$$f_{ib} =\ f\\!B_{ib} * f\\!D_{iab} * f\\!T_{ib}$$
+
+		[^tip:sig]:
+			- $f_{ib}$  : Probability to be selected of Meter $M_{ib}$ at $H_i$ 
+			- $f\\!B_{ia}$ : Probability to select $M_{ia}$ based on its Battery level $B_{ia}$ 
+			- $f\\!D_{iab}$ : Probability to be selected of Meter $M_{ib}$ based on the square of $D_{iab}$ 
+			- $f\\!T_{ib}$ : Probability to be selected of Meter $M_{ib}$ based on the square of $T_{ib}$ 
+			
+			Sigmoid function [^img:sig]
+			- having an "S" shape , sigmoid curve
+			- $S(t) = \frac{1}{1 + e^{-t}}$
+
+			[^img:sig]: images/sigmoid.png
+
+			The argument of the sigmoid functions to calculate The probability $f\\!B_{ib}$ is the normalized battery level $B$. 
+			$$f\\!B_{ia} = \\frac{1}{1 + exp(-B_{ij}+\\mu_i)} $$
+			- $B = Normalized\\ Battery\\ to\\ [0 , 10] $ and $\\ \\mu_i =\\ mean(\\ B_{i,:}\\ ) $
+
+
+			The argument of the sigmoid functions to calculate the probability $f\!D_{iab}$ and $f\!T_{iab}$ is the negative normalised square of the transmission distance.
+			$$f\\!D_{iab} =  \frac{1}{1 + exp(\xi * D_{iab}^2-\nu_1)} \label{eq:fD} $$
+			$$f\\!T_{ib} =  \frac{1}{1 + exp(\xi * T_{ib}^2-\nu_2)} \label{eq:fT} $$
+			- $D =  Normalized\\ Square\\ of\\ Distance\\ to\\ [0 , 10]  $, and $\\ \\nu_1 = mean(D)$
+			- $T =  Normalized\\ Square\\ of\\ Distance\\ to\\ [0 , 10]  $, and $\\ \\nu_2 = mean(T)$ 
+
+	Candidates for Relay Meter
+	A meter $M_{ib}$ can be a candidate meter if both the following conditions are meet:
+	- the energy consumed for transmission from $M_{(i+1)a}$ to $M_{ib}$ is smaller than $B_{(i+1)a}$
+	- all the other meters at $H_i$ have enough energy for local reading transmission.
+
+	Termination Condition
+	Once there is no more candidate meter at any one of the homes, the routing process will terminate and the SG wireless network will stop working.
+
+[^hide:principles]:
+	1. A meter $M_{ib}$ has a higher probability $f\\!B_{ib}$ if its battery level is higher.
+	1. A meter $M_{ib}$ has a higher probability $f\\!D_{iab}$ if the distance from relay meter at $H_{i+1}$ to $M_{ib}$ at $H_{i}$ is shorter.
+	1. A meter $M_{ib}$ has a higher probability $f\\!T_{ib}$ if the average transmission distance from relay meter $M_{ib}$ at $H_{i}$ to every meter at $H_{i-1}$ is shorter.
+	1. The probability $f_{ib}$ of a meter $M_{ib}$ to be selected is $f_{ib} =\ f\\!B_{ib} * f\\!D_{iab} * f\\!T_{ib}$.
+	1. A meter $M_{ib}$ is selected as a relay when its $f_{ib}$ is maximum among all the candidate meters at $H_i$. 
+	1. A meter $M_{ib}$ can be a candidate meter if the energy consumed for transmission from $M_{(i+1)a}$ to $M_{ib}$ is smaller than $B_{(i+1)a}$, and all the other meters at $H_i$ have enough energy for local reading transmission.
+	1. Once there is no more candidate meter at any one of the homes, the routing process will terminate and the SG wireless network will stop working.
+
+
+Simulation of the Routing Algorithm
+
+	The topology of a district for one simulation [^img:topology] {.des}
+
+		[^img:topology]: images/topology.png {.bottom}
+		
+		The interval between every two homes is set to be 25 meters and the base station is located at the original point.
+		
+		The blue points represent the meters which are circled with a red square if they belongs to the same home.
+		
+		For one simulation, there were 6 homes within the district and every home had 3 meters.
+
+	Algorithm Diagram [^img:diag] {.des}
+
+		[^img:diag]: images/algorithm.png
+
+		To simulate the proposed routing algorithm, the meters' battery levels $B_{ij}$ and their positions $P_{ia}$ are first initialized using normal distribution and discrete uniform distribution, respectively. 
+
+		And then, the transmission distance between every two meters at different homes are calculated. 
+
+		After initialization, the probability $f_{ib}$ to be selected for each meter can be generated with the normalized battery levels and transmission distances. 
+
+		The detailed routing process of the SG is clarified in the following flow diagram.
+
+	Simulation Result
+
+		The battery variation trend for every meter [^img:battery] {.des}
+
+			One simulation of the proposed routing algorithm from the last 25th lifetime cycle. 
+			Every subfigure represents a home with 3 meters plotted using lines in different styles. 
+			
+			The last lifetime index is 1019 and the battery level is plotted by red dots. 
+
+		Compared with Other Algorithms
+		- Selects the relay meter randomly
+		- Selects the meter with maximum battery level as a relay. 
+
+			All the 3 methods are simulated with 1000 groups of different battery and position initializations. 
+
+			The variation trends of the battery level for one group routing by different methods. [^img:f5]
+			- The routing process of the proposed algorithms is terminated at $H_1$, while the maximum one terminated at $H_3$. 
+			- The proposed algorithms can transmit 56 more packets than the maximum one.
+
+			Compared with the random method, the proposed algorithm has *longer* lifetime. [^img:ran]
+
+			Compared with the maximum method [^img:max]
+			- The proposed algorithm has longer lifetime than the maximum one for most groups. 
+			- Even though the maximum one's lifetimes are longer occasionally, the increment is very small.
+
+		
+		[^img:battery]: images/figure2.png
+
+		[^img:f5]: images/figure5.png
+
+		[^img:ran]: images/ml_ran.png {.bottom}
+
+		[^img:max]: images/ml_max.png {.bottom}
+
+Conclusion
+The proposed maximum likelihood algorithms can extend the lifetime of SG by balance the energy consumption of the meters
+
+
+[^hide:abbr]: List of abbreviations
+
+[^hide:abbr]:
+	- $H_0$ : Base Station 
+	- $H_i$ : The i-th Home, located uniformly from the base station $H_0$. \<br\>Smaller $i$ means $H_i$ is nearer to the base station.
+	- $M_{ia}$ : Meters at $H_i$ 
+	- $B_{ia}$ : Battery level of $M_{ia}$ 
+	- $f\\!B_{ia}$ : Probability to select $M_{ia}$ based on its Battery level $B_{ia}$ 
+	- $D_{iab}$ : Distance from $M_{(i+1)a}$ at $H_{i+1}$ to $M_{ib}$ at $H_i$ 
+	- $f\\!D_{iab}$ : Probability to be selected of Meter $M_{ib}$ based on the square of $D_{iab}$ 
+	- $T_{ib}$ : Average Transmission Distance from $M_{ib}$ to meters at $H_{i-1}$ 
+	- $f\\!T_{ib}$ : Probability to be selected of Meter $M_{ib}$ based on the square of $T_{ib}$ 
+	- $f_{ib}$  : Probability to be selected of Meter $M_{ib}$ at $H_i$ 
+
+[^hide:abbr]:
+	- $P_{PA}$ : Power consumption of all the power amplifiers
+	- $P_C$ : Power consumption of all other circuit blocks
+	- $P_{out}$ : Transmit power
+	- $E_{iab}$ : Energy Consumed related to the transmission distance $D_{iab}$
+	- $S$ : Number of bits encoded in a packet 
+	- $\overline{E}_b$  : Required energy per bit at the receiver for a given BER requirement 
+
+[^hide:abbr]:
+	- $R_b$ : Bit rate 
+	- $G_t$ : Transmitter antenna gain 
+	- $G_r$ : Receiver antenna gain 
+	- $\\lambda$ : Carrier wavelength 
+	- $M_l$ : Link margin compensating the hardware process variations and other additive background noise or interference 
+	- $N_f$ : Receiver noise figure 
+	- $N_0$ : Single-sided thermal noise PSD at room temperature 
+	- $N_r$ : PSD of the total effective noise at the receiver input 
+	- $M_t$ : Number of transmitter antennas 
+	- $\\overline{P}_b$ : Average BER 
+
+[^hide:ref]: Referencess
+
+[^hide:acc]: This work was supported in part by U.S. Office of Naval Research under Grants N00014-13-1-0043, N00014-11-1-0865, U.S. National Science Foundation under Grants CNS-1247848, CNS-1116749, CNS-0964713, and National Science Foundation of China (NSFC) under Grant 61372097.
+
+[^hide:han]:
+	A home area network (HAN) is a network that is deployed and operated within a small boundary, typically a house or small office/home office (SOHO). It enables the communication and sharing of resources (like the Internet) between computers, mobile and other devices over a network connection.
+	
+[^hide:nan]:
+	A neighborhood area network (NAN) is an offshoot of Wi-Fi hotspots and wireless local area networks (WLAN), which enable users to connect to the Internet quickly and at very little expense. A NAN is generally installed by an individual to serve a family or a number of neighbors. NANs cover only a small number of blocks close to an 802.11 access point. With the help of an omnidirectional antenna, a single access point could cover a radius of more than half a mile. Users who wish to connect to an NAN can then make use of a directional antenna to get an improved signal from the access point.
+	
+[^hide:ami]:
+	Advanced Metering Infrastructure (AMI) are systems that measure, collect, and analyze energy usage, and communicate with metering devices such as electricity meters, gas meters, heat meters, and water meters, either on request or on a schedule. These systems include hardware, software, communications, consumer energy displays and controllers, customer associated systems, Meter Data Management (MDM) software, and supplier business systems. Different from traditional automatic meter reading (AMR),  AMI enables two-way communications with the meter.
+
+[^hide:rf]:
+	RF mesh is more energy efficient than a single hop network for the same distance due to the attenuation of RF Signals. -- Zhao, Feng, and Leonidas J. Guibas. Wireless sensor networks: an information processing approach. Morgan Kaufmann, 2004.
+
+[^hide:rf1]:
+	Mesh networks can relay messages using either a flooding technique or a routing technique. With routing, the message is propagated along a path by hopping from node to node until it reaches its destination.
+
+[^hide:rf1]:
+	The results show that the system is able to handle Smart Metering communication traffic with a high reliability provided potential coverage gaps are properly filled with repeater nodes. The proposed methodology allows the identification of coverage gaps, which may cause bottlenecks in the network, prior to deployment and therefore supports efficient and reliable deployment and operation of the system. -- Lichtensteiger, Bill, et al. "RF mesh systems for smart metering: system architecture and performance." Smart Grid Communications (SmartGridComm), 2010 First IEEE International Conference on. IEEE, 2010.

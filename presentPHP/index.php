@@ -48,7 +48,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Markdown Editor &middot; MD 2 PS</title>
+	<title>Markdown Editor &middot; Present System</title>
 
 	<!-- Bootstrap -->
 	<!-- Latest compiled and minified CSS -->
@@ -109,111 +109,116 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 	</nav>
 
 	<div>
-		<div class="container"><div id="md2ps" class="row">
-			<form id="authorInput" name="authorInput" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method = "post" enctype="multipart/form-data">
-				<input type="hidden" id="ps-mode"  name="ps-mode" value="<?php echo $mode ?>" />
-				<input type="hidden" id="ps-imageNum"  name="ps-imageNum" value="0" />
-				<input type="text" id="ps-title" class="form-control" name="ps-title" placeholder="Presentation Title"	value="<?php if ($title!='') {echo $title;} ?>">
-				<br/>
+		<div class="container">
+			<div class="page-header">
+				<h2>Markdown Editor <small>Convert plaintext in markdwon into visual support object of different styles</small></h2>
+			</div>
+			<div id="md2ps" >
+				<form id="authorInput" name="authorInput" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method = "post" enctype="multipart/form-data">
+					<input type="hidden" id="ps-mode"  name="ps-mode" value="<?php echo $mode ?>" />
+					<input type="hidden" id="ps-imageNum"  name="ps-imageNum" value="0" />
+					<input type="text" id="ps-title" class="form-control input-lg" name="ps-title" placeholder="Presentation Title"	value="<?php if ($title!='') {echo $title;} ?>">
+					<br/>
 
-				<div class="form-group field-demo-notes required">
-					<div id="demo-notes-container" class="kv-md-container"><div id="demo-notes-editor" class="kv-md-editor">
-						<div id="demo-notes-header" class="kv-md-header btn-toolbar">
-							<div class="btn-group">
-								<button type="button" id="demo-notes-btn-1" class="btn  btn-default" title="Bold" onclick="markUp(1, &quot;#demo-notes&quot;)"><i class='glyphicon glyphicon-bold'></i></button>
-								<button type="button" id="demo-notes-btn-2" class="btn  btn-default" title="Italic" onclick="markUp(2, &quot;#demo-notes&quot;)"><i class='glyphicon glyphicon-italic'></i></button>
-							</div>
-
-							<div class="btn-group">
-								<button type="button" id="demo-notes-btn-101" class="btn  btn-default " title="Heading 1" onclick="markUp(101, &quot;#demo-notes&quot;)"><b>H1</b></button>
-								<button type="button" id="demo-notes-btn-102" class="btn  btn-default " title="Heading 2" onclick="markUp(102, &quot;#demo-notes&quot;)"><b>H2</b></button>
-								<button type="button" id="demo-notes-btn-103" class="btn  btn-default " title="Heading 3" onclick="markUp(103, &quot;#demo-notes&quot;)"><b>H3</b></button>
-							</div>
-							<div class="btn-group">
-								<button type="button" id="demo-notes-btn-5" class="btn  btn-default" title="URL/Link" onclick="markUp(5, &quot;#demo-notes&quot;)"><i class='glyphicon glyphicon-link'></i></button>
-								<button type="button" id="demo-notes-btn-6" class="btn  btn-default" title="Image"><i class='glyphicon glyphicon-picture'></i></button><!-- markUp(6, &quot;#demo-notes&quot;) -->
-							</div>
-							<div id="ps-imageList"  style='display:none;'>
-								<input type='file' id='ps-image-0' name='ps-image-0' onchange='image(this)' accept='image/*' />
-							</div>
-
-							<div class="btn-group">
-								<button type="button" id="demo-notes-btn-9" class="btn  btn-default "  title="Bulleted List" onclick="markUp(9, &quot;#demo-notes&quot;)"><i class='glyphicon glyphicon-list'></i></button>
-								<button type="button" id="demo-notes-btn-14" class="btn  btn-default " title="Inline Code" onclick="markUp(14, &quot;#demo-notes&quot;)"><div style="margin-top: -4px; margin-bottomInline Code: -1px;">
-									<span style="font-size: 1.2em;">&lsaquo;</span>/<span style="font-size: 1.2em;">&rsaquo;</span>
-								</div></button>
-								<button type="button" id="demo-notes-btn-15" class="btn  btn-default " title="Code Block" onclick="markUp(15, &quot;#demo-notes&quot;)"><i class='glyphicon glyphicon-sound-stereo'></i></button>
-							</div>
-
-							<div class="btn-group" >
-								<div class="row-fluid">
-									<select id="ps-style" class="selectpicker show-tick span1" data-width="120px" name="ps-style"> <!-- multiple data-max-options="1" title="Choose one style ..." -->
-										<optgroup label="Paradigm">
-											<option  <?php if ($style == "HTML" ) {echo "selected";} ?> data-subtext="Without Style" >HTML</option>
-											<option  <?php if ($style == "Slide" ) {echo "selected";} ?> >Slide</option>
-											<option  <?php if ($style == "List" ) {echo "selected";} ?> data-subtext="Flow" >List</option>
-										</optgroup>
-										<optgroup label="Slide">
-											<option  <?php if ($style == "S5" ) {echo "selected";} ?> >S5</option>
-											<option  <?php if ($style == "Slidy" ) {echo "selected";} ?> >Slidy</option>
-											<option  <?php if ($style == "js" ) {echo "selected";} ?>  disabled="disabled" >Reveal.js</option>
-										</optgroup>
-										<optgroup label="Flow">
-											<option  <?php if ($style == "Flow" ) {echo "selected";} ?>  disabled="disabled" data-subtext="Movie End Credit">Flow</option>
-											<option  <?php if ($style == "Scroll" ) {echo "selected";} ?>  >Scroll</option>
-											<option  <?php if ($style == "CAScroll" ) {echo "selected";} ?>  disabled="disabled" data-subtext="Contaxt Aware" >CAScroll</option>
-										</optgroup>
-										<optgroup label="Canvas/ZUI">
-											<option  <?php if ($style == "TBA" ) {echo "selected";} ?>  disabled="disabled" >TBA</option>
-										</optgroup>
-									</select>
-								</div>
-							</div>
-
-							<div class="pull-right btn-group">
-								<!-- <button type="button" id="demo-notes-btn-17" class="btn btn-default" title="Toggle full screen" data-enabled><i class='glyphicon glyphicon-fullscreen'></i></button> -->
-							</div>
-						</div> <!-- demo-notes-header -->
-
-						<textarea id="demo-notes" class="kv-md-input form-control meltdown"  name="Demo[notes]" placeholder="Content in Markdown"><?php if ($contentMD!='') { echo $contentMD; } ?></textarea>	
-
-						<div id="demo-notes-preview" class="kv-md-preview hidden"></div>
-
-						<div id="demo-notes-footer" class="kv-md-footer">
-							<div class = "btn-toolbar ">
-								<div class="btn-group pull-right">
-									<button type="button" id="ps-preview" class="btn btn-sm btn-default" title="Preview formatted text"><i class='glyphicon glyphicon-search'></i> Preview</button>
-								</div>
-
-								<div class="btn-group pull-right">
-									<button type="button" id="demo-notes-btn-51" class="btn btn-sm btn-primary dropdown-toggle" title="Export content" data-enabled data-toggle="dropdown"><i class='glyphicon glyphicon-floppy-disk'></i> Export <span class="caret"></span></button>
-									<ul class='dropdown-menu'>
-										<li><a id="ps-export-md" href="#" title="Save as text"><i class="glyphicon glyphicon-floppy-save"></i> Content.md</a></li>
-										<li><a id="ps-export-html" href="#" title="Save as HTML"><i class="glyphicon glyphicon-floppy-saved"></i> Present.html</a></li>
-									</ul>
+					<div class="form-group field-demo-notes required">
+						<div id="demo-notes-container" class="kv-md-container"><div id="demo-notes-editor" class="kv-md-editor">
+							<div id="demo-notes-header" class="kv-md-header btn-toolbar">
+								<div class="btn-group">
+									<button type="button" id="demo-notes-btn-1" class="btn  btn-default" title="Bold" onclick="markUp(1, &quot;#demo-notes&quot;)"><i class='glyphicon glyphicon-bold'></i></button>
+									<button type="button" id="demo-notes-btn-2" class="btn  btn-default" title="Italic" onclick="markUp(2, &quot;#demo-notes&quot;)"><i class='glyphicon glyphicon-italic'></i></button>
 								</div>
 
 								<div class="btn-group">
-									<div class="col-sm-6" style=" ">
-										<input id="ps-fileInput" name="ps-fileInput" type="file" class="file">
+									<button type="button" id="demo-notes-btn-101" class="btn  btn-default " title="Heading 1" onclick="markUp(101, &quot;#demo-notes&quot;)"><b>H1</b></button>
+									<button type="button" id="demo-notes-btn-102" class="btn  btn-default " title="Heading 2" onclick="markUp(102, &quot;#demo-notes&quot;)"><b>H2</b></button>
+									<button type="button" id="demo-notes-btn-103" class="btn  btn-default " title="Heading 3" onclick="markUp(103, &quot;#demo-notes&quot;)"><b>H3</b></button>
+								</div>
+								<div class="btn-group">
+									<button type="button" id="demo-notes-btn-5" class="btn  btn-default" title="URL/Link" onclick="markUp(5, &quot;#demo-notes&quot;)"><i class='glyphicon glyphicon-link'></i></button>
+									<button type="button" id="demo-notes-btn-6" class="btn  btn-default" title="Image"><i class='glyphicon glyphicon-picture'></i></button><!-- markUp(6, &quot;#demo-notes&quot;) -->
+								</div>
+								<div id="ps-imageList"  style='display:none;'>
+									<input type='file' id='ps-image-0' name='ps-image-0' onchange='image(this)' accept='image/*' />
+								</div>
+
+								<div class="btn-group">
+									<button type="button" id="demo-notes-btn-9" class="btn  btn-default "  title="Bulleted List" onclick="markUp(9, &quot;#demo-notes&quot;)"><i class='glyphicon glyphicon-list'></i></button>
+									<button type="button" id="demo-notes-btn-14" class="btn  btn-default " title="Inline Code" onclick="markUp(14, &quot;#demo-notes&quot;)"><div style="margin-top: -4px; margin-bottomInline Code: -1px;">
+										<span style="font-size: 1.2em;">&lsaquo;</span>/<span style="font-size: 1.2em;">&rsaquo;</span>
+									</div></button>
+									<button type="button" id="demo-notes-btn-15" class="btn  btn-default " title="Code Block" onclick="markUp(15, &quot;#demo-notes&quot;)"><i class='glyphicon glyphicon-sound-stereo'></i></button>
+								</div>
+
+								<div class="btn-group" >
+									<div class="row-fluid">
+										<select id="ps-style" class="selectpicker show-tick span1" data-width="120px" name="ps-style"> <!-- multiple data-max-options="1" title="Choose one style ..." -->
+											<optgroup label="Paradigm">
+												<option  <?php if ($style == "HTML" ) {echo "selected";} ?> data-subtext="Without Style" >HTML</option>
+												<option  <?php if ($style == "Slide" ) {echo "selected";} ?> >Slide</option>
+												<option  <?php if ($style == "List" ) {echo "selected";} ?> data-subtext="Flow" >List</option>
+											</optgroup>
+											<optgroup label="Slide">
+												<option  <?php if ($style == "S5" ) {echo "selected";} ?> >S5</option>
+												<option  <?php if ($style == "Slidy" ) {echo "selected";} ?> >Slidy</option>
+												<option  <?php if ($style == "js" ) {echo "selected";} ?>  disabled="disabled" >Reveal.js</option>
+											</optgroup>
+											<optgroup label="Flow">
+												<option  <?php if ($style == "Flow" ) {echo "selected";} ?>  disabled="disabled" data-subtext="Movie End Credit">Flow</option>
+												<option  <?php if ($style == "Scroll" ) {echo "selected";} ?>  >Scroll</option>
+												<option  <?php if ($style == "CAScroll" ) {echo "selected";} ?>  disabled="disabled" data-subtext="Contaxt Aware" >CAScroll</option>
+											</optgroup>
+											<optgroup label="Canvas/ZUI">
+												<option  <?php if ($style == "TBA" ) {echo "selected";} ?>  disabled="disabled" >TBA</option>
+											</optgroup>
+										</select>
 									</div>
 								</div>
-								<div class="btn-group">
-									<button type="button" id="ps-reset" class="btn btn-sm btn-default" value="Reset" title="Reset all Input"><span class="glyphicon glyphicon-remove"></span> Reset</button>
+
+								<div class="pull-right btn-group">
+									<!-- <button type="button" id="demo-notes-btn-17" class="btn btn-default" title="Toggle full screen" data-enabled><i class='glyphicon glyphicon-fullscreen'></i></button> -->
 								</div>
+							</div> <!-- demo-notes-header -->
 
-								<div class="btn-group" id="ps-alert" >
-									<!-- <p class=" bg-danger"><strong>Invalid File Type.</strong> Please Choose a text file !</p> -->
-									<a href="#" class="btn btn-sm disabled" role="button"><span id="ps-alert-content"><strong>Invalid File Type.</strong> Please Choose a text file !</a></span>
+							<textarea id="demo-notes" class="kv-md-input form-control meltdown"  name="Demo[notes]" placeholder="Content in Markdown"><?php if ($contentMD!='') { echo $contentMD; } ?></textarea>	
+
+							<div id="demo-notes-preview" class="kv-md-preview hidden"></div>
+
+							<div id="demo-notes-footer" class="kv-md-footer">
+								<div class = "btn-toolbar ">
+									<div class="btn-group pull-right">
+										<button type="button" id="ps-preview" class="btn btn-sm btn-default" title="Preview formatted text"><i class='glyphicon glyphicon-search'></i> Preview</button>
+									</div>
+
+									<div class="btn-group pull-right">
+										<button type="button" id="demo-notes-btn-51" class="btn btn-sm btn-primary dropdown-toggle" title="Export content" data-enabled data-toggle="dropdown"><i class='glyphicon glyphicon-floppy-disk'></i> Export <span class="caret"></span></button>
+										<ul class='dropdown-menu'>
+											<li><a id="ps-export-md" href="#" title="Save as text"><i class="glyphicon glyphicon-floppy-save"></i> Content.md</a></li>
+											<li><a id="ps-export-html" href="#" title="Save as HTML"><i class="glyphicon glyphicon-floppy-saved"></i> Present.html</a></li>
+										</ul>
+									</div>
+
+									<div class="btn-group">
+										<div class="col-sm-6" style=" ">
+											<input id="ps-fileInput" name="ps-fileInput" type="file" class="file">
+										</div>
+									</div>
+									<div class="btn-group">
+										<button type="button" id="ps-reset" class="btn btn-sm btn-default" value="Reset" title="Reset all Input"><span class="glyphicon glyphicon-remove"></span> Reset</button>
+									</div>
+
+									<div class="btn-group" id="ps-alert" >
+										<!-- <p class=" bg-danger"><strong>Invalid File Type.</strong> Please Choose a text file !</p> -->
+										<a href="#" class="btn btn-sm disabled" role="button"><span id="ps-alert-content"><strong>Invalid File Type.</strong> Please Choose a text file !</span></a>
+									</div>
 								</div>
-							</div>
-						</div> <!-- demo-notes-footer -->
+							</div> <!-- demo-notes-footer -->
 
-					</div><!-- demo-notes-editor --> </div><!-- demo-notes-container -->
+						</div><!-- demo-notes-editor --> </div><!-- demo-notes-container -->
 
-				</div> <!-- field-demo-notes -->
-			</form>
-		</div><!--.row #md2ps --> </div><!--.container -->
+					</div> <!-- field-demo-notes -->
+				</form>
+			</div><!--.row #md2ps -->
+		</div><!--.container -->
 	</div>
 
 	<!-- Element to pop up -->

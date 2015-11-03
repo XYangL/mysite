@@ -1,7 +1,18 @@
 Equation and Notation List
 ==========================
 
-In the plain text content , if a paragraph with a MathJax Equation followed by a definition list of its notation, then they will be classified as a kind of user defined relationship: Equation and Notation List
+In the plain text content , if a paragraph with a MathJax Equation followed by a definition list of its notation, then they will be classified as a kind of user defined relationship: Equation and Notation List[^1]
+
+[^1]:
+	We use MathJax to displays mathematical notation using MathML, LaTeX and ASCIIMathML markup.
+
+	Block inside aparagraph: In modern language, Newton's law of universal gravitation is Every point mass attracts every single other point mass by a force pointing along the line intersecting both points. $$ F = G \frac{m\_1 m\_2}{r^2} $$  The force is proportional to the product of the two masses and inversely proportional to the square of the distance between them.
+
+	- F is the force between the masses;
+	- \\(m_2\\) is the second mass;
+	- r is the distance between the centers of the masses.
+
+	Block inside aparagraph: In modern language, Newton's law of universal gravitation is Every point mass attracts every single other point mass by a force pointing along the line intersecting both points. $$ F = G \frac{m\_1 m\_2}{r^2} $$  The force is proportional to the product of the two masses and inversely proportional to the square of the distance between them.
 
 For Example -- Single Item:
 
@@ -12,6 +23,7 @@ For Example -- Single Item:
 	- r is the distance between the centers of the masses.
 
 For Example -- Inline inside a paragraph : In modern language, Newton's law of universal gravitation is Every point mass attracts every single other point mass by a force pointing along the line intersecting both points. \\(F = G \frac{m\_1 m\_2}{r^2} \\)  The force is proportional to the product of the two masses and inversely proportional to the square of the distance between them. [^3]
+
 [^3]:
 - \\(m_1\\) is the first mass;
 - \\(m_2\\) is the second mass;

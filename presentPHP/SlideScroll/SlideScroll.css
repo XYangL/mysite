@@ -1,0 +1,378 @@
+/*Reset User Agent Style*/
+ p, pre, ul, ol{
+	margin: 0;
+}
+
+/*Copied from Bootstrap*/
+html {
+  font-family: sans-serif;
+  -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
+}
+
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.4;/*1.42857143*/;
+  color: #333;
+  background-color: #fff;
+}
+
+/*Basic Style*/
+.L_1 { font-size:200%;	font-weight:500;}
+.L_2 { font-size:85%;	/*font-weight:400;*/}
+.L_3 { font-size:85%;	font-weight:400;}
+.L_4 { font-size:90%;	font-weight:400;}
+.L_5 { font-size:90%;	font-weight:300;}
+
+.contentDiv ul,.contentDiv ol{
+	list-style-position: inside; /* Bullet is hidden since li[overflow:hide]*/
+	padding-left: 15px;
+	/*padding-right: 15px;*/
+	width:98%;
+	border-radius:10px;
+}
+
+
+/*1. Expand & Shrink*/
+.contentDiv li >div{
+	padding-left : 5px;
+	padding-right: 5px;
+
+	margin-bottom: 5px;
+	border-radius:10px;
+
+	height: 1em;
+	transition: height 1s, opacity 1s;
+
+	overflow:hidden; /*!! */
+	white-space:nowrap;
+	text-overflow:ellipsis;
+}
+.contentDiv li >div.highlight{
+	/*opacity: 0.5;*/
+	/*background:#f0ad4e;*/
+	white-space:normal;
+}
+
+.contentDiv li >div >* {
+	padding-top: 5px;
+	padding-bottom: 5px;
+
+	white-space:inherit;
+	overflow:inherit;
+	text-overflow:inherit;
+}
+
+.contentDiv .L_4 >li >div >*{
+	padding-top: 0px;
+	padding-bottom: 0px;
+}
+
+
+/*2. Show & Hide : Default*/
+
+
+/*3. HL Posiition v3 Static Highilght Background*/
+.hlBackground {
+	background:#5bc0de;
+	border-radius:5px;
+	
+	transition: height 1s, left 1s, width 1s;
+	z-index: -1;
+
+	-webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+
+	/*blue*/
+	background:#d9edf7;
+	border: 1px solid rgba(82,168,236,.8);
+	-webkit-box-shadow: 0 0 8px rgba(82,168,236,.6);
+	box-shadow: 0 0 8px rgba(82,168,236,.6); 
+
+	/*yellow #fcf8e3 = rgba(252,248,227) #F6DC2C = rgba(246,220,44)*/
+	/*	background:#fcf8e3;
+	border: 1px solid rgba(246,220,44,.8);
+	-webkit-box-shadow: 0 0 8px rgba(246,220,44,.6);
+	box-shadow: 0 0 8px rgba(246,220,44,.6); */
+
+	/*	background:#FCF0AD;*/
+		/*background:#FFEF00;*/
+}
+
+
+/*4. background & border*/
+.contentDiv li > .HLSameLevel {
+	background: rgba(247,247,249,0.25);/*#f7f7f9;*/
+}
+
+.contentDiv li > ol.HLChildLevel, .contentDiv li > ul.HLChildLevel{
+	/*border-color: #e1e1e8;*/
+	background: rgb(247,247,249);
+}
+
+
+/*5. Opacity*/
+.contentDiv li>ul >li>div, .contentDiv li>ol >li>div{
+	opacity:0.3;
+}
+.contentDiv li>ul >li>div.highlight, .contentDiv li>ol >li>div.highlight{
+	opacity:1;
+}
+.contentDiv .highlight+ol >li>div, .contentDiv .highlight+ul >li>div{
+	opacity:1;
+}
+
+
+/*6. User Defined Relationship */
+/*Styles for div.relateDiv, similar to popover of bootstrap*/
+.relateDiv{
+	padding: 1px;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-style: normal;
+	font-weight: normal;
+	letter-spacing: normal;
+	line-break: auto;
+	line-height: 1.42857143;
+	text-align: left;
+	text-align: start;
+	text-decoration: none;
+	text-shadow: none;
+	text-transform: none;
+	white-space: normal;
+	word-break: normal;
+	word-spacing: normal;
+	word-wrap: normal;
+	font-size: 20px;/*font-size: 14px;*/
+	background-color: #ffffff;
+	-webkit-background-clip: padding-box;
+	background-clip: padding-box;
+	border: 1px solid #cccccc;
+	border: 1px solid rgba(0, 0, 0, 0.2);
+	border-radius: 6px;
+	-webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+/*Styels related to positoin & width*/
+.relateDiv >*{
+  padding: 10px;
+  background:rgba(247,247,249,0.25);/**/
+}
+
+.relateDiv >div >div >ul {
+	padding-left: 28px;
+}
+.relateDiv >div >div{
+	display: inline-block;    
+    clear: both;
+	margin: auto;
+}
+
+.relateDiv img{
+	width: 100%;
+}
+
+.relateDiv >div >div.passive >*:not(:first-child){
+	margin-top: 10px;
+}
+/*Similar to 7.3*/
+.relateDiv{
+	margin :10px;
+	/*display:none;*/
+	
+	position: absolute;
+}
+
+.contentWrap {
+	/*border: 5px solid red;*/
+	width:98wh;
+	max-width:1024px;
+	min-width:600px;
+	/*margin:auto;*//* set position in specificOrganizeBODY to make it centerered*/
+
+	position: relative;
+	/*left:0;*/
+}
+
+.contentDiv{
+	/*border: solid 2px;*/
+	
+	/*0. Scrollable*//*!!Important for makeing div scrollable */ 
+	overflow-y:hidden;
+	/*overflow:scroll;*/
+
+	/*height: 95vh;*/
+	height: 80vh;
+	width: 100%;
+}
+
+.hlBackground{
+	width: 100%;
+	position:absolute;
+}
+
+/*Style for Title*/
+#title {
+	font-size:50px;
+	list-style-type:none;
+	text-align:center;
+}
+
+/*Style for realteDiv-passive*/
+.footnote-passive{
+	text-decoration:none;
+	pointer-events: none;
+	cursor: default;
+}
+.passive{
+	overflow:scroll;
+}
+
+/*Style for icons*/
+.ui-icon-home {
+    background-position: 0 -112px;
+}
+.ui-icon-circle-plus {
+    background-position: 0 -192px;
+}
+.ui-icon-plusthick {
+    background-position: -32px -128px;
+}
+.ui-icon-image {
+    background-position: -208px -128px;
+}
+
+.ui-icon, .ui-widget-content .ui-icon {
+    background-image: url("ui-icons.png");
+}
+
+.ui-icon {
+    width: 16px;
+    height: 16px;
+    zoom:1.1;
+
+    display: inline-block;
+    /*text-indent: -99999px;*/
+    overflow: hidden;
+    background-repeat: no-repeat;
+}
+
+/*Style for popup to show image */
+#above >div >img{
+	background-color: white;
+	display:inline-block;
+}
+
+/*Style for HeadDiv*/
+.headDiv{
+	font-size: 125%;
+	font-weight: 600;
+}
+
+.headDiv ul{
+	list-style-type:none;
+	padding:0;
+	margin:0;
+
+	border:1px solid #dedede;
+	height:2.3em;
+}
+
+.headDiv li {
+	list-style-type:none;
+	padding:0;
+	margin:0;
+
+	float:left;
+	line-height:2.3em;
+	padding-left:.75em;
+	color:#777;
+	background:url("crumbs.gif") no-repeat right center;
+	height:2.3em;
+}
+
+.headDiv li div {
+	display:block;
+	padding:0 15px 0 0;
+	/*background:url("crumbs.gif") no-repeat right center;*/
+	
+	height:2.3em;
+	overflow:hidden;
+	white-space:nowrap;
+	text-overflow:ellipsis;
+}
+
+.headDiv li div:hover {
+	color:black;
+}
+
+/*Differ items in headDiv based on its level */
+.headDiv li#L2 div{
+	font-size: 90%;
+	font-weight: 500;
+}
+.headDiv li#L3 div{
+	font-size: 80%;
+	font-weight: 400;
+}
+.headDiv li#L4 div{
+	font-size: 75%;
+	font-weight: 300;
+}
+
+/*Styel for space between multi line in one block*/
+.contentDiv li>div>p>br{
+	display: block;
+    margin-top: 10px;
+    content: "";
+}
+
+/*Style for [^one:1] : List item after lines in one block*/
+.contentDiv li>div>p+ul {
+	list-style: outside;
+	padding-left: 50px;
+}
+
+.contentDiv li>div>p+ul >li {
+	padding-right: 50px;
+	font-size: 85%;
+}
+
+.contentDiv li>div>p+ul >li:first-child {
+	list-style:initial;
+}
+
+/*Style for list item shown as one block*/
+.contentDiv li>div>ul {
+	padding-left: 0px;
+}
+
+.contentDiv li>div>ul >li:not(:first-child) {
+	padding-top: 10px;
+}
+
+.contentDiv li>div>ul >li:first-child {
+	list-style:none;
+}
+
+.contentDiv  li>div> p{
+	text-indent: -1em;
+    padding-left: 1em;
+}
+
+.contentSrc{
+	display: none;
+}
+
+.contentTitle{
+	background:#d9edf7;
+	border: 1px solid rgba(82,168,236,.8);
+	border-radius:5px;
+}
+.container{
+	background-color: rgba(247,247,249,0.3);
+    border: 1px solid #e1e1e8;
+   visibility: hidden;
+   display: none;
+}

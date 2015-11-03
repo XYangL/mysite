@@ -1,0 +1,198 @@
+<html>
+<head>
+	<title>Scroll List User Guide</title>
+
+	<script type="text/x-mathjax-config"> 
+	MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+	MathJax.Hub.Queue(function () {initMathJax();});
+</script> <!-- LaTex -->
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+<script src="http://code.jquery.com/jquery-latest.js" type="text/javascript"></script>
+
+<script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js" type="text/javascript"></script>
+<link href="../SlideScroll/SlideScroll.css" rel="stylesheet" type="text/css"/>
+<script src="../SlideScroll/SlideScroll.js" type="text/javascript"></script>
+<script src="../SlideScroll/jquery.bpopup.min.js" type="text/javascript"></script>
+</head>
+<body>
+	<div class="contentDiv">
+
+		<ul class="L_1">
+			<li>
+				<div><p>Content Layout</p></div>
+				<ul class="L_2">
+
+					<li>
+						<div><p>The basic <strong>focus unit</strong> in Scroll List is a block with one type of the following contents:</p></div>
+						<ul class="L_3">
+
+							<li>
+								<div><p>One or more paragraphs.<br/>This is the second paragraph in the same block.</p></div>
+							</li>
+							<li>
+								<div><ul>
+									<li>One list with every paragraph in one item.</li>
+									<li>This is the second item in the same list block.</li>
+								</ul></div>
+							</li>
+							<li>
+								<div><p>One paragraph appended with one list<sup id="fnref:one:2"><a href="#fn:one:2" class="footnote-ref">2</a></sup></p></div>
+							</li>
+							<li>
+								<div><p>One image with or without title <sup id="fnref:img:right"><a href="#fn:img:right" class="footnote-ref">3</a></sup></p></div>
+							</li>
+						</ul>
+					</li>
+					<li>
+						<div><p>The blocks are organized into an  <strong>embedded list</strong>.<br/>Every block is one single list item.<br/>While delivering a presentation, the presenters can use SL to highlight the focused block or switch focus to another block.</p></div>
+					</li>
+					<li>
+						<div><p>To  <strong>highlighting the focused block</strong> :<br/>Scroll list will expand that block to full size, scroll its top border to a fixed position, and render it with light blue background.</p></div>
+					</li>
+					<li>
+						<div><p>The other blocks will either be <strong>shrinked into one line</strong> or be <strong>hidden</strong>, according to their relationship to the focused block in the content structure.</p></div>
+					</li>
+				</ul>
+			</li>
+			<li>
+				<div><p>Actions to Switch Focus</p></div>
+				<ul class="L_2">
+
+					<li>
+						<div><p>From the same focused block, the presenter can  <strong>switch focus</strong> to different blocks, since Scroll List provides different types of actions to navigate through the blocks.</p></div>
+						<ul class="L_3">
+
+							<li>
+								<div><p>Continuous linear actions: The embed list are treated as a linear sequence of items<sup id="fnref:one:3"><a href="#fn:one:3" class="footnote-ref">4</a></sup></p></div>
+							</li>
+							<li>
+								<div><p>Structure based actions :  The embed list are treated as a tree based on its contents structure<sup id="fnref:one:4"><a href="#fn:one:4" class="footnote-ref">5</a></sup></p></div>
+							</li>
+						</ul>
+					</li>
+					<li>
+						<div><p>Every displayed blocks or section in the heading is clickable and will lead to focus on the clicked target.</p></div>
+					</li>
+				</ul>
+			</li>
+			<li>
+				<div><p>More Fetures</p></div>
+				<ul class="L_2">
+
+					<li>
+						<div><p>If one block contains an image, a small image icon will be appended in the end of the paragraph. <sup id="fnref2:img:right"><a href="#fn:img:right" class="footnote-ref">3</a></sup></p></div>
+					</li>
+					<li>
+						<div><p>Image also can be displayed in the right or bottom of the focused blcok. <sup id="fnref:img:demo"><a href="#fn:img:demo" class="footnote-ref">6</a></sup></p></div>
+					</li>
+					<li>
+						<div><p>Image is clickable to be displayed in full screen. <sup id="fnref2:img:demo"><a href="#fn:img:demo" class="footnote-ref">6</a></sup></p></div>
+					</li>
+					<li>
+						<div><p>Scroll List also provides a third type of action <strong>'SPACE'</strong>.<br/>It controls the display of some contents related the the focused block. <sup id="fnref:hide:1"><a href="#fn:hide:1" class="footnote-ref">7</a></sup></p></div>
+					</li>
+				</ul>
+			</li>
+			<li>
+				<div><p>Authoring Syntax<br/>Block is the basic display unit to apply level-style or highlight.</p></div>
+				<ul class="L_2">
+
+					<li>
+						<div><p>The source text is a few leveled blocks indented with tabs and separated by blank lines</p></div>
+					</li>
+					<li>
+						<div><p>Specify level for every block<sup id="fnref:one:5"><a href="#fn:one:5" class="footnote-ref">8</a></sup></p></div>
+					</li>
+					<li>
+						<div><p>Special configuration<sup id="fnref:one:6"><a href="#fn:one:6" class="footnote-ref">9</a></sup></p></div>
+					</li>
+					<li>
+						<div><p><strong>Emphasised</strong> Texts in the same line is wrapped with asterisks (*)</p></div>
+					</li>
+					<li>
+						<div><p>Latex and MathML can be used to write equations in the source text</p></div>
+					</li>
+				</ul>
+			</li>
+		</ul><div class="footnotes">
+		<ol>
+
+			<li id="fn:one:1">
+				<ul>
+					<li>Contents are displayed as an embedded list</li>
+					<li>Focus are swithed via collapsible scrolling. </li>
+				</ul>
+
+				<p><a href="#fnref:one:1" class="footnote-backref">&#8617;</a></p>
+			</li>
+
+			<li id="fn:one:2">
+				<ul>
+					<li>This is the first item of the list</li>
+					<li>This is the sencond item of the list </li>
+				</ul>
+
+				<p><a href="#fnref:one:2" class="footnote-backref">&#8617;</a></p>
+			</li>
+
+			<li id="fn:img:right">
+				<p><img src="../images/PresentSystemModel.png" alt="" />&#160;<a href="#fnref:img:right" class="footnote-backref">&#8617;</a> <a href="#fnref2:img:right" class="footnote-backref">&#8617;</a></p>
+			</li>
+
+			<li id="fn:one:3">
+				<ul>
+					<li>Next : switch to the block which is next to the focused one in the linear order</li>
+					<li>Prev : switch to the block which is previous to the focused one in the linear order</li>
+				</ul>
+
+				<p><a href="#fnref:one:3" class="footnote-backref">&#8617;</a></p>
+			</li>
+
+			<li id="fn:one:4">
+				<ul>
+					<li>UP : switch to the parent block of the focused on in the tree</li>
+					<li>DOWN : Skip the children blocks, and switch to next sibling or ancestor block </li>
+				</ul>
+
+				<p><a href="#fnref:one:4" class="footnote-backref">&#8617;</a></p>
+			</li>
+
+			<li id="fn:img:demo">
+				<p><img src="../images/TaskModel.png" alt="" title="" class="bottom" />&#160;<a href="#fnref:img:demo" class="footnote-backref">&#8617;</a> <a href="#fnref2:img:demo" class="footnote-backref">&#8617;</a></p>
+			</li>
+
+			<li id="fn:hide:1">
+				<ul>
+					<li>There will be a 'plus' icon appended to the block if it has some hidden related contents.</li>
+					<li>Additional contents prepared for 'Quetion &amp; Answer' can be optionally displayed in the related panel.</li>
+					<li>Press 'SPACE' again to hide the this related pane.</li>
+				</ul>
+
+				<p><a href="#fnref:hide:1" class="footnote-backref">&#8617;</a></p>
+			</li>
+
+			<li id="fn:one:5">
+				<ul>
+					<li>Prepend tabs at the start of the block</li>
+					<li>The number of tabs +1 represents its Level</li>
+					<li>If the block has multiple lines, every line should be started with the same number of tabs</li>
+				</ul>
+
+				<p><a href="#fnref:one:5" class="footnote-backref">&#8617;</a></p>
+			</li>
+
+			<li id="fn:one:6">
+				<ul>
+					<li>Append configuration name inside curly brackets in the end of the block.</li>
+					<li>Every name should be start with a dot and separated by space. </li>
+					<li>E.g. {.des .bottom}</li>
+				</ul>
+
+				<p><a href="#fnref:one:6" class="footnote-backref">&#8617;</a></p>
+			</li>
+
+		</ol>
+	</div>
+
+</div></body>
+</html>
