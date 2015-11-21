@@ -7,7 +7,7 @@ body {
 #ps-previewPopup { 
 	display:none; 
 	width:90%;
-	height:67.5%;
+	height:80%;
 	max-width: 1024px;
 	max-height: 768px;
 	background-color: white;
@@ -80,7 +80,6 @@ textarea#demo-source +div.CodeMirror{
 	/*padding: 8px;*/
 }
 
-/*.page-header{
-	margin-top:20px;
-	margin-bottom:0px;
-}*/
+.page-header{
+	margin: 0;
+}

@@ -1,6 +1,8 @@
-Background of Smart Gird and its Routing
+Background of Smart Grid and its Routing
 
-	Smart Grid (SG) is the next generation electric power system 	
+	Smart Grid (SG) is the next generation electric power system [^img:over] {.des}	
+
+	[^img:over]: images/overview.png
 
 		Integration of communication networks
 		- Home Area Networks (HANs)
@@ -12,13 +14,13 @@ Background of Smart Gird and its Routing
 		- Save energy consumption
 		- Improve the reliability of services
 
-	Routing Protocols for Smart Grid
+	Routing Protocols for Smart Grid 
 
 		Home Area Networks (HANs) [^hide:han]
 		- The protocols are categorized based on the underlying network using wireless communication, power line communications (PLC) or a combination of these.
 		- Their design, cost and performance are affected by the underlying MAC protocols.	
 
-		Neighborhood Area Networks (NANs) [^hide:nan]
+		Neighborhood Area Networks (NANs) [^hide:nan] 
 		Criteria to classify the routing protocols for NANs
 		- The underlying communication used for routing
 		- The application requirements, including reliability, security and Qos
@@ -48,7 +50,7 @@ Background of Smart Gird and its Routing
 		[^hide:1]:
 			The basic RPL was enhanced by applying the Expected Transmission Time (ETX) as the link metric to construct and maintain the DAG.
 
-Application Environment
+Application Environment [^img:over]
 
 	Designed for AMI using Radio Frequency (RF) mesh
 	RF mesh is more energy efficient than a single hop network for the same distance due to the attenuation of RF Signals. [^hide:rf]
@@ -107,8 +109,8 @@ Principles of the Routing Algorithm  [^hide:principles]
 
 			The total average energy consumption per bit along the signal path for a fixed-rate $R_{bt}$ system  [^tip:model]
 			$$E_{bt} = (P_{PA}+P_c)/R_b$$
-			$$P_{PA} = (1+\\alpha)P_{out}$$
-			$$P_{out} = \\frac{ M_t N_0 }{  \\overline{P}^{1/M_t}_{b} } R_b  \\times  \\frac{(4 \\pi d)^2}{G_t G_r  \\lambda ^2} M_l N_f $$
+			$$P_{PA} = (1+\alpha)P_{out}$$
+			$$P_{out} = \frac{ M_t N_0 }{  \overline{P}^{1/M_t}_{b} } R_b  \times  \frac{(4 \pi d)^2}{G_t G_r  \lambda ^2} M_l N_f $$
 
 			[^tip:model]:
 				- $P_{PA}$ : the power consumption of all the power amplifiers, depends on  $P_{out}$ 
@@ -119,13 +121,13 @@ Principles of the Routing Algorithm  [^hide:principles]
 			- The number $S$ of bits encoded in a packet is also **fixed** for every home.
 
 			The total energy consumption $E$ to transmit a packet along the signal path.	
-			$$E = S \\times E_{bt} = S \\times (P_{PA}+P_c)/R_b = \\beta d^2 + \\gamma $$
-			- $\\beta = S \\times (1+ \\alpha )  \\frac{ M_t N_0 }{  \\overline{P}^{1/M_t}_{b} }  \\times  \\frac{(4 \\pi)^2}{G_t G_r  \\lambda ^2} M_l N_f $
-			- $\\gamma = S \\times P_c/R_b \\nonumber $ 
+			$$E = S \times E_{bt} = S \times (P_{PA}+P_c)/R_b = \beta d^2 + \gamma $$
+			- $\beta = S \times (1+ \alpha )  \frac{ M_t N_0 }{  \overline{P}^{1/M_t}_{b} }  \times  \frac{(4 \pi)^2}{G_t G_r  \lambda ^2} M_l N_f $
+			- $\gamma = S \times P_c/R_b \nonumber $ 
 
 		**Parameters** related to energy
 
-			Transmission Distance between two meters $E = \\beta d^2 + \\gamma $
+			Transmission Distance between two meters $E = \beta d^2 + \gamma $
 
 				- The total energy consumption $E$ for any meter at a home is **linearly** to the square of the transmission distance $d^2$.
 				- Shorter transmission distance should correspond to Higher probobility
@@ -134,16 +136,16 @@ Principles of the Routing Algorithm  [^hide:principles]
 				- $T_{ib}$ : Average Transmission Distance from $M_{ib}$ to meters at $H_{i-1}$
 
 			Battery level of meter $M_{ib}$
-			A meter $M_{ib}$ should have a higher probability $f\\!B_{ib}$ if its battery level $B_{ib}$ is higher.	
+			A meter $M_{ib}$ should have a higher probability $f\!B_{ib}$ if its battery level $B_{ib}$ is higher.	
 
 		**Likelihood Function** $f_{ib}$ to calculate the probability of a meter is the product of three sigmoid functions [^tip:sig]
-		$$f_{ib} =\ f\\!B_{ib} * f\\!D_{iab} * f\\!T_{ib}$$
+		$$f_{ib} =\ f\!B_{ib} * f\!D_{iab} * f\!T_{ib}$$
 
 		[^tip:sig]:
 			- $f_{ib}$  : Probability to be selected of Meter $M_{ib}$ at $H_i$ 
-			- $f\\!B_{ia}$ : Probability to select $M_{ia}$ based on its Battery level $B_{ia}$ 
-			- $f\\!D_{iab}$ : Probability to be selected of Meter $M_{ib}$ based on the square of $D_{iab}$ 
-			- $f\\!T_{ib}$ : Probability to be selected of Meter $M_{ib}$ based on the square of $T_{ib}$ 
+			- $f\!B_{ia}$ : Probability to select $M_{ia}$ based on its Battery level $B_{ia}$ 
+			- $f\!D_{iab}$ : Probability to be selected of Meter $M_{ib}$ based on the square of $D_{iab}$ 
+			- $f\!T_{ib}$ : Probability to be selected of Meter $M_{ib}$ based on the square of $T_{ib}$ 
 			
 			Sigmoid function [^img:sig]
 			- having an "S" shape , sigmoid curve
@@ -151,16 +153,16 @@ Principles of the Routing Algorithm  [^hide:principles]
 
 			[^img:sig]: images/sigmoid.png
 
-			The argument of the sigmoid functions to calculate The probability $f\\!B_{ib}$ is the normalized battery level $B$. 
-			$$f\\!B_{ia} = \\frac{1}{1 + exp(-B_{ij}+\\mu_i)} $$
-			- $B = Normalized\\ Battery\\ to\\ [0 , 10] $ and $\\ \\mu_i =\\ mean(\\ B_{i,:}\\ ) $
+			The argument of the sigmoid functions to calculate The probability $f\!B_{ib}$ is the normalized battery level $B$. 
+			$$f\!B_{ia} = \frac{1}{1 + exp(-B_{ij}+\mu_i)} $$
+			- $B = Normalized\ Battery\ to\ [0 , 10] $ and $\ \mu_i =\ mean(\ B_{i,:}\ ) $
 
 
 			The argument of the sigmoid functions to calculate the probability $f\!D_{iab}$ and $f\!T_{iab}$ is the negative normalised square of the transmission distance.
-			$$f\\!D_{iab} =  \frac{1}{1 + exp(\xi * D_{iab}^2-\nu_1)} \label{eq:fD} $$
-			$$f\\!T_{ib} =  \frac{1}{1 + exp(\xi * T_{ib}^2-\nu_2)} \label{eq:fT} $$
-			- $D =  Normalized\\ Square\\ of\\ Distance\\ to\\ [0 , 10]  $, and $\\ \\nu_1 = mean(D)$
-			- $T =  Normalized\\ Square\\ of\\ Distance\\ to\\ [0 , 10]  $, and $\\ \\nu_2 = mean(T)$ 
+			$$f\!D_{iab} =  \frac{1}{1 + exp(\xi * D_{iab}^2-\nu_1)} \label{eq:fD} $$
+			$$f\!T_{ib} =  \frac{1}{1 + exp(\xi * T_{ib}^2-\nu_2)} \label{eq:fT} $$
+			- $D =  Normalized\ Square\ of\ Distance\ to\ [0 , 10]  $, and $\ \nu_1 = mean(D)$
+			- $T =  Normalized\ Square\ of\ Distance\ to\ [0 , 10]  $, and $\ \nu_2 = mean(T)$ 
 
 	Candidates for Relay Meter
 	A meter $M_{ib}$ can be a candidate meter if both the following conditions are meet:
@@ -171,10 +173,10 @@ Principles of the Routing Algorithm  [^hide:principles]
 	Once there is no more candidate meter at any one of the homes, the routing process will terminate and the SG wireless network will stop working.
 
 [^hide:principles]:
-	1. A meter $M_{ib}$ has a higher probability $f\\!B_{ib}$ if its battery level is higher.
-	1. A meter $M_{ib}$ has a higher probability $f\\!D_{iab}$ if the distance from relay meter at $H_{i+1}$ to $M_{ib}$ at $H_{i}$ is shorter.
-	1. A meter $M_{ib}$ has a higher probability $f\\!T_{ib}$ if the average transmission distance from relay meter $M_{ib}$ at $H_{i}$ to every meter at $H_{i-1}$ is shorter.
-	1. The probability $f_{ib}$ of a meter $M_{ib}$ to be selected is $f_{ib} =\ f\\!B_{ib} * f\\!D_{iab} * f\\!T_{ib}$.
+	1. A meter $M_{ib}$ has a higher probability $f\!B_{ib}$ if its battery level is higher.
+	1. A meter $M_{ib}$ has a higher probability $f\!D_{iab}$ if the distance from relay meter at $H_{i+1}$ to $M_{ib}$ at $H_{i}$ is shorter.
+	1. A meter $M_{ib}$ has a higher probability $f\!T_{ib}$ if the average transmission distance from relay meter $M_{ib}$ at $H_{i}$ to every meter at $H_{i-1}$ is shorter.
+	1. The probability $f_{ib}$ of a meter $M_{ib}$ to be selected is $f_{ib} =\ f\!B_{ib} * f\!D_{iab} * f\!T_{ib}$.
 	1. A meter $M_{ib}$ is selected as a relay when its $f_{ib}$ is maximum among all the candidate meters at $H_i$. 
 	1. A meter $M_{ib}$ can be a candidate meter if the energy consumed for transmission from $M_{(i+1)a}$ to $M_{ib}$ is smaller than $B_{(i+1)a}$, and all the other meters at $H_i$ have enough energy for local reading transmission.
 	1. Once there is no more candidate meter at any one of the homes, the routing process will terminate and the SG wireless network will stop working.
@@ -249,11 +251,11 @@ The proposed maximum likelihood algorithms can extend the lifetime of SG by bala
 	- $H_i$ : The i-th Home, located uniformly from the base station $H_0$. \<br\>Smaller $i$ means $H_i$ is nearer to the base station.
 	- $M_{ia}$ : Meters at $H_i$ 
 	- $B_{ia}$ : Battery level of $M_{ia}$ 
-	- $f\\!B_{ia}$ : Probability to select $M_{ia}$ based on its Battery level $B_{ia}$ 
+	- $f\!B_{ia}$ : Probability to select $M_{ia}$ based on its Battery level $B_{ia}$ 
 	- $D_{iab}$ : Distance from $M_{(i+1)a}$ at $H_{i+1}$ to $M_{ib}$ at $H_i$ 
-	- $f\\!D_{iab}$ : Probability to be selected of Meter $M_{ib}$ based on the square of $D_{iab}$ 
+	- $f\!D_{iab}$ : Probability to be selected of Meter $M_{ib}$ based on the square of $D_{iab}$ 
 	- $T_{ib}$ : Average Transmission Distance from $M_{ib}$ to meters at $H_{i-1}$ 
-	- $f\\!T_{ib}$ : Probability to be selected of Meter $M_{ib}$ based on the square of $T_{ib}$ 
+	- $f\!T_{ib}$ : Probability to be selected of Meter $M_{ib}$ based on the square of $T_{ib}$ 
 	- $f_{ib}$  : Probability to be selected of Meter $M_{ib}$ at $H_i$ 
 
 [^hide:abbr]:
@@ -268,13 +270,13 @@ The proposed maximum likelihood algorithms can extend the lifetime of SG by bala
 	- $R_b$ : Bit rate 
 	- $G_t$ : Transmitter antenna gain 
 	- $G_r$ : Receiver antenna gain 
-	- $\\lambda$ : Carrier wavelength 
+	- $\lambda$ : Carrier wavelength 
 	- $M_l$ : Link margin compensating the hardware process variations and other additive background noise or interference 
 	- $N_f$ : Receiver noise figure 
 	- $N_0$ : Single-sided thermal noise PSD at room temperature 
 	- $N_r$ : PSD of the total effective noise at the receiver input 
 	- $M_t$ : Number of transmitter antennas 
-	- $\\overline{P}_b$ : Average BER 
+	- $\overline{P}_b$ : Average BER 
 
 [^hide:ref]: Referencess
 

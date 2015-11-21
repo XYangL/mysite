@@ -105,7 +105,10 @@ function isConvertable(){
 	/*Check if style is supported*/
 	// var supported_style =["Slidy","Scroll","S5","CAScroll","HTML","Slide","List"]; // Init in Editor.php
 	var radios = document.getElementById('ps-style');
-	var style = radios.options[radios.selectedIndex].text; //console.log(style);
+	var style = radios.options[radios.selectedIndex].text;
+	style = (style=='Scroll List') ? 'CAScroll' :style;// console.log(style);
+	style = (style=='Scroll Slide') ? 'ScrollSlide' :style;
+	radios.options[radios.selectedIndex].text = style;
 	if ($.inArray(style, supported_style) > -1) {//isSupport()
 		var title = $('#ps-title').val();
 		var contentMD = editorCM.getValue().trim();//$('#demo-notes').val();
@@ -168,6 +171,8 @@ $(document).ready(function() {
 		});
 	editorCM.refresh();
 
+	// imageUrl = "Editor.png";
+	// $('html').append($('<div/>',{'id': 'logo'}).html('<image src="'+imageUrl+'"/>'));
 
 });
 

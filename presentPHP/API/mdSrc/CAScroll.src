@@ -1,0 +1,142 @@
+Introduction
+
+	Scroll List is a new web-based present system used for providing visual presentation support
+
+	Compared with other Present System
+
+		CAScroll is designed based on the **embed list**, which organises the contents into a tree-like structure,  and navigate via **scrolling** and a new animation like **accordion**
+
+		PPT is designed based on **slides** with limited editing space, and navigates via animation to display the content incrementally (using different **animation**) and **transition** between slides
+
+		Prezi is designed based on a **canvas** with unlimited editing space, and navigates via **zoom**, **pan** and **rotate**
+
+	Provide better usability in the delivery Phase -- Goal
+
+		Make full use of the display space
+
+		Display the related contents
+		- Help presenter to deliver the presentation : just mentioned & what is next
+		- Help audiences to follow the presentation and understand its structure
+
+		Support Dynamic Navigation
+
+Applied Information
+
+	Instant delivery situation from Context Layer [^tip:1]
+	
+	[^tip:1]:
+		- Display screen size
+		- Delivery time
+		- Delivery purpose
+
+
+	Content Type from Content Layer [^tip:2]
+	
+	[^tip:2]:
+		- Image : shrink to show 'title+alt text', expand to show img in another pane
+		- Equation : rendered using MathJax, expand with variable list in another pane
+		- List : render only top level, all detailed ul as li, will be treated as one content item
+		- Other Type: Code, Table
+
+
+	Structural information from Structure Layer [^tip:3]
+	
+	[^tip:3]:
+		- Level State --- 1 item 
+		- Hierarchy relation ---  2 items
+
+
+	Time Information during Delivering Phase 
+	Most time information are generated based on the structural information from structure layer and actions taking during delivering phase [^tip:4]
+	
+	[^tip:4]:
+		- Discussed State: --- 1 item
+		- Haved be mentioned or will be discussed; --- 1 item
+		- Short or Long time interval --- 2 items
+
+
+Basic Features
+
+
+	**Authoring** in plain text with tabs to describe level and empty lines to separate items
+
+	**Styles** and **Animations** are setting via css and javascript
+	Most Styles and Animation are applied in a abstract way based on various information from the models
+
+		General/Initial Style 
+		- Applied based on Structure : Level State --- 1 item
+		- Basic css for every level are defined separately
+
+		Highlight Style 
+		- Applied based on Time : Discussed State --- 1 item
+		- The .highlight style are applied to the item being discussed
+
+
+		Style: Hide | Show
+		- Applied based on Time : Time Interval: --- 2 item
+		- Show just discussed & its same level & its parents
+		- Hide all the other, e.g. children of just discussed
+		- Different delivery path will make hide/show differently
+
+
+Advanced Features
+
+	New Animation: Scroll
+
+		- Applied based on Time : Discussed State --- 1 item
+		- Scroll the next highlighted item to a fixed position
+		- To make full use of the display space
+		- Next item is the one selected to be expanded / discussed, and is decided by action;
+		- Next item may NOT simply the one after HL being discussed, e.g. skip details to next same level
+
+	New Style: Shrink | Expand 		
+
+		- Applied based on Time : Discussed State --- 1 item
+		- Shrink to one line if it is NOT being discussed
+		- Expand to full space if it is being discussed
+		- To make full use of the display space
+
+	New Animation: Accordion 
+
+		- Consistent of Shrink|Expand and Hide|Show 
+		- Applied based on Time information
+		- To make full use of the display space
+		- To display the related contents
+
+	New Animation: Shown in a **right** or **bottom** pane 
+
+		Applied based on Content Type --- 1 item
+
+		Show list of notations in right pane, if the content item has math equations
+
+		Show image in right pane, and structure info are also used together
+
+		To make full use of the dispaly space
+
+	New Action for Dynamic Navigation
+
+		Dynamic Navigation means to support various alternative delivery paths
+
+		Provide different level of freedom
+
+		- UP key : back to Parent
+		- DOWN key : skip details 
+		- Clickable item work as collapsable TOC
+
+	New Action for Optional Navigation
+
+		Space: show contents prepared for Q&A
+
+Future Work
+
+	Improve the implementation
+	- The top position of the highlight item
+	- The max and min width of the cotent pane
+	- The top position of the right pane
+	- New animation: Hide
+
+	Evaluation via User Study
+	- Focuse on the advanced features
+	- Use same contents and compare with slideware and Prezi
+	- From both the persenter and audince aspect
+	- Only evaluate the delivery pahse

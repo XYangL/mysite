@@ -3,19 +3,42 @@
 	margin: 0;
 }
 
-/*Copied from Bootstrap*/
-html {
-  font-family: sans-serif;
-  -webkit-text-size-adjust: 100%;
-      -ms-text-size-adjust: 100%;
+/*Style for whole background*/
+html { 
+	background: white no-repeat center center fixed; 
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
 }
 
+#footDiv{
+	position: fixed;
+	bottom:1em;
+	margin-top: 10px;
+	width: 100%;
+	z-index:-1;
+}
+#footDiv >#logo{
+	position:absolute;
+	left:2em;
+	
+	height:100%;
+}
+#footDiv >p{
+	font-size: 125%;
+	font-weight: 600;
+
+	width:100%;
+	text-align: center;
+}
+
+/*Global Style*/
 body {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
   font-size: 15px;
-  line-height: 1.4;/*1.42857143*/;
+  line-height: 1.4;/*1.42857143;*/
   color: #333;
-  background-color: #fff;
 }
 
 /*Basic Style*/
@@ -27,12 +50,11 @@ body {
 
 .contentDiv ul,.contentDiv ol{
 	list-style-position: inside; /* Bullet is hidden since li[overflow:hide]*/
-	padding-left: 15px;
+	padding-left: 25px;
 	/*padding-right: 15px;*/
 	width:98%;
 	border-radius:10px;
 }
-
 
 /*1. Expand & Shrink*/
 .contentDiv li >div{
@@ -43,14 +65,13 @@ body {
 	border-radius:10px;
 
 	height: 1em;
-	transition: height 1s, opacity 1s;
+	/*transition: height 1s, opacity 1s;*/
 
 	overflow:hidden; /*!! */
 	white-space:nowrap;
 	text-overflow:ellipsis;
 }
 .contentDiv li >div.highlight{
-	/*opacity: 0.5;*/
 	/*background:#f0ad4e;*/
 	white-space:normal;
 }
@@ -75,14 +96,10 @@ body {
 
 /*3. HL Posiition v3 Static Highilght Background*/
 .hlBackground {
-	background:#5bc0de;
 	border-radius:5px;
 	
 	transition: height 1s, left 1s, width 1s;
 	z-index: -1;
-
-	-webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
 
 	/*blue*/
 	background:#d9edf7;
@@ -90,19 +107,13 @@ body {
 	-webkit-box-shadow: 0 0 8px rgba(82,168,236,.6);
 	box-shadow: 0 0 8px rgba(82,168,236,.6); 
 
-	/*yellow #fcf8e3 = rgba(252,248,227) #F6DC2C = rgba(246,220,44)*/
-	/*	background:#fcf8e3;
-	border: 1px solid rgba(246,220,44,.8);
-	-webkit-box-shadow: 0 0 8px rgba(246,220,44,.6);
-	box-shadow: 0 0 8px rgba(246,220,44,.6); */
-
-	/*	background:#FCF0AD;*/
-		/*background:#FFEF00;*/
+	width: 100%;
+	position:absolute;
 }
 
 
 /*4. background & border*/
-.contentDiv li > .HLSameLevel {
+.contentDiv >li .HLSameLevel {
 	background: rgba(247,247,249,0.25);/*#f7f7f9;*/
 }
 
@@ -128,7 +139,6 @@ body {
 /*Styles for div.relateDiv, similar to popover of bootstrap*/
 .relateDiv{
 	padding: 1px;
-	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 	font-style: normal;
 	font-weight: normal;
 	letter-spacing: normal;
@@ -152,6 +162,9 @@ body {
 	border-radius: 6px;
 	-webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
 	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+
+	margin :10px;
+	position: absolute;
 }
 
 /*Styels related to positoin & width*/
@@ -176,48 +189,26 @@ body {
 .relateDiv >div >div.passive >*:not(:first-child){
 	margin-top: 10px;
 }
-/*Similar to 7.3*/
-.relateDiv{
-	margin :10px;
-	/*display:none;*/
-	
-	position: absolute;
-}
 
+/*Styels contentDiv*/
 .contentWrap {
-	/*border: 5px solid red;*/
 	width:98wh;
 	max-width:1024px;
 	min-width:600px;
 	/*margin:auto;*//* set position in specificOrganizeBODY to make it centerered*/
 
 	position: relative;
-	/*left:0;*/
 }
 
-.contentDiv{
-	/*border: solid 2px;*/
-	
+.contentDiv{	
 	/*0. Scrollable*//*!!Important for makeing div scrollable */ 
 	overflow-y:hidden;
 	/*overflow:scroll;*/
 
-	/*height: 95vh;*/
-	height: 80vh;
+	height: 95vh;
 	width: 100%;
 }
 
-.hlBackground{
-	width: 100%;
-	position:absolute;
-}
-
-/*Style for Title*/
-#title {
-	font-size:50px;
-	list-style-type:none;
-	text-align:center;
-}
 
 /*Style for realteDiv-passive*/
 .footnote-passive{
@@ -264,63 +255,6 @@ body {
 	display:inline-block;
 }
 
-/*Style for HeadDiv*/
-.headDiv{
-	font-size: 125%;
-	font-weight: 600;
-}
-
-.headDiv ul{
-	list-style-type:none;
-	padding:0;
-	margin:0;
-
-	border:1px solid #dedede;
-	height:2.3em;
-}
-
-.headDiv li {
-	list-style-type:none;
-	padding:0;
-	margin:0;
-
-	float:left;
-	line-height:2.3em;
-	padding-left:.75em;
-	color:#777;
-	background:url("crumbs.gif") no-repeat right center;
-	height:2.3em;
-}
-
-.headDiv li div {
-	display:block;
-	padding:0 15px 0 0;
-	/*background:url("crumbs.gif") no-repeat right center;*/
-	
-	height:2.3em;
-	overflow:hidden;
-	white-space:nowrap;
-	text-overflow:ellipsis;
-}
-
-.headDiv li div:hover {
-	color:black;
-}
-
-/*Differ items in headDiv based on its level */
-.headDiv li#L2 div{
-	font-size: 90%;
-	font-weight: 500;
-}
-.headDiv li#L3 div{
-	font-size: 80%;
-	font-weight: 400;
-}
-.headDiv li#L4 div{
-	font-size: 75%;
-	font-weight: 300;
-}
-
 /*Styel for space between multi line in one block*/
 .contentDiv li>div>p>br{
 	display: block;
@@ -361,18 +295,113 @@ body {
     padding-left: 1em;
 }
 
-.contentSrc{
-	display: none;
+
+/*Style for Section Head*/
+.L_1{
+	list-style-position: inside;
+	padding-left: 0px;
 }
 
-.contentTitle{
+.sectionHead{
+	overflow:hidden; /*!! */
+	white-space:nowrap;
+	text-overflow:ellipsis;
+	opacity:1;
+}
+
+.sectionHead >*{
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+
+.sectionHead.highlight +.contentWrap ul.HLSameLevel>li>div{
+	opacity:1;
+}
+
+.sectionHead+.contentWrap ul.HLSameLevel li>div{
+	opacity:0.7;
+}
+
+.sectionHead+.contentWrap ul.HLSameLevel li>div.highlight{
+	opacity:1;
+}
+
+.sectionHead.highlight, #title.highlight {
 	background:#d9edf7;
-	border: 1px solid rgba(82,168,236,.8);
 	border-radius:5px;
 }
-.container{
-	background-color: rgba(247,247,249,0.3);
-    border: 1px solid #e1e1e8;
-   visibility: hidden;
-   display: none;
+
+/*Style for Title*/
+#title, #title +div:not(.headDiv){
+	font-size:45px;/*//300%*/
+	font-weight:600;
+	text-align:center;
+
+	transition: height 1s, opacity 1s;
+
+	overflow:hidden; /*!! */
+	white-space:nowrap;
+	text-overflow:ellipsis;
+}
+
+#title.highlight, .contentDiv li >div.full{
+	white-space:normal;
+}
+
+#title >*, #title +div:not(.headDiv) >p{
+	padding-top: 5px;
+	padding-bottom: 5px;
+
+	white-space:inherit;
+	overflow:inherit;
+	text-overflow:inherit;
+}
+
+
+#title:not(.highlight) >p{
+	position: absolute;
+	left:0;
+	text-align: center;
+	width:50%;
+	left:25%;
+}
+
+#preS, #nexS{
+	font-size: 16px;
+	width:20%;
+	display: inline-block;
+
+	padding: 0 .75em;
+	margin:0;
+	margin-top: 1em;
+
+	/*line-height:2.5em;*/
+
+	color:#777;
+	height:2.3em;
+
+	position: absolute;
+
+	overflow:hidden;
+	white-space:nowrap;
+	text-overflow:ellipsis;
+}
+
+#preS>p, #nexS>p{
+	padding-top: .5em;
+	overflow:hidden;
+	white-space:nowrap;
+	text-overflow:ellipsis;
+}
+
+#preS {
+	text-align: left;
+	left: 5px;
+	background:url("left.gif") no-repeat left center;
+}
+
+#nexS {
+	text-align: right;
+	right: 5px;
+	background:url("right.gif") no-repeat right center;
 }

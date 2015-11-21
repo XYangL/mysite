@@ -15,16 +15,23 @@ var rDivHeightWrap =0;
 var headDiv = null;
 
 var sectionBased = false;
+var cDivSecHeight = 0;
 
-var imageUrl = 'CAScroll/circlebg.png';
-var logoUrl = 'CAScroll/hkulogo.png';
-var fnContent = '<p>Scroll List</p>';
+var preS = null;
+var nexS = null;
+var minIndex = 0;
+var maxIndex = 0;
+
+var secBGColor = 'rgba(186, 219, 177, 0.3)';
+var imageUrl = 'ScrollSlide/circlebg.png';
+var logoUrl = 'ScrollSlide/hkulogo.png';
+var fnContent = '<p>Scroll Slide with Nav Head</p>';
 
 var init = function(){
-	/*configure screen/viewpoint Style*/
 	$('html').append($('<div/>',{'id': 'footDiv'}));
-	if (logoUrl.length) $('#footDiv').append($('<img/>',{'id': 'logo', 'src':logoUrl}));
-	if (fnContent.length) $('#footDiv').append($(fnContent));
+	$('#footDiv').append($('<img/>',{'id': 'logo', 'src':logoUrl}));
+	$('#footDiv').append($(fnContent));
+
 
 	/*Insert Presentation Title*/
 	$('ul.L_1>li:first-child').remove();// may not need after update the parser:listABLE()
@@ -50,18 +57,22 @@ var init = function(){
 	relateDiv.insertAfter(root.parent());
 	
 	/*A-7 headDiv to show elements in deep path from root/title to .highlight*/
-	headDiv = $('<div/>',{'class': 'breadcrumb flat'});
-	headDiv.append($('<a href="#" target="#title"><div><span class="ui-icon ui-icon-home"></span> HOME </div></a>'))
-	headDiv.append($('<a href="#" id="L2"></a>'));
-	headDiv.append($('<a href="#" id="L3"></a>'));
-	headDiv.append($('<a href="#" id="L4"></a>'));
-	headDiv.insertBefore(root.parent());
+	// headDiv = $('<div/>',{'class': 'headDiv'});
+	// headDiv.append($('<ul><li target="#title"><div><span class="ui-icon ui-icon-home"></span> HOME</div></li>'+
+	// 	' <li id="L2"></li>'+' <li id="L3"></li>'+ ' <li id="L4"></li></ul>'));
+	// headDiv.insertBefore(root.parent());
+	
+	preS = $('<div/>',{'id': 'preS'});
+	nexS = $('<div/>',{'id': 'nexS'});
 
-	root.parent().add(relateDiv).add(headDiv).wrapAll("<div class='container' />");
+
+	// root.parent().add(relateDiv).add(headDiv).wrapAll("<div class='container' />");
+	root.parent().add(relateDiv).wrapAll("<div class='container' />");
 
 	/*A-8. Other special requirement of CAScroll on DOM structure */
 	/* div#above to show image in a popup layer */
-	$('body').append($('<div id="above"><div id="aboveConD"></div><div id="aboveImgD"></div></div>'));
+	$('body').append($('<div/>',{id: 'above', 'style':'display:none;'}));
+	$('#above').append($('<div/>'));
 	
 	/*A-3. Static Highilght Background : Add div.hlBackground to highlight in Blue */
 	HLBack = $("<div/>", {class: "hlBackground"});
@@ -84,28 +95,139 @@ var init = function(){
 
 	sectionBased = !sectionBased ? 0 : parseInt($('#item0').attr('oneLineH')) + parseInt($('#item0').css('margin-bottom'));
 
-	initCDivWrap(root, $('#footDiv').position().top - parseInt($('body').css('margin-top')) - headDiv.outerHeight(true));
+	// initCDivWrap(root, root.height() - headDiv.outerHeight(true));
+	cDivSecHeight = $('#footDiv').position().top - parseInt($('body').css('margin-top'))
+					- $('#title').attr('oneLineH') - $('.L_1>li>div').attr('oneLineH');
+	initCDivWrap(root, root.height());
 
 	/*B-6. User Defined Relationship : init .relateDiv position */
 	initRDiv();
 
 	/*B-7. initHDiv() : hide items in headDiv except the 1st home/title one*/
-	headDiv.find('a:not(:first)').hide();
+	// headDiv.find('li:not(:first)').hide();
 
-	/*C. init 1st HL target, start from showToc */
-	HLBack.insertAfter(root);
-	HLBack.css("top",root.find('.preDiv').height());// initHLB()
+	
+	/*C: Special For Slide Scroll - Local Construct from .contentDiv*/	
+	/*C-1. remove global wrap*/
+	$('.container').removeClass('container');
+	$('.contentWrap').replaceWith($('<div/>').append($('#title')).append($('.L_1')));//.removeClass('contentWrap');
 
-	index = -1;
-	var firstHL = $('#title');
-	firstHL.addClass('highlight');
-	updateHLB(firstHL, setHeight(firstHL,"full"));
+	/*C-2. locally wrapCDiv()*/
+	// cDivSecHeight = ( $('body').height() -parseInt($('#title').attr('oneLineH')) -$('.L_1').height());
+	$('.L_1>li>div').each(function(index, el) {
+		$(this).addClass('sectionHead');
+		$(this).parent().attr('id', 'S'+(index+1));
+		$(this).next('ul').wrap('<div class="contentDiv"></div>');
+		root = $(this).next();
+		wrapCDiv(root);// root.parent().wrap("<div class='container' />");
+		
+		initCDivWrap(root, cDivSecHeight);
+		
+		/*!! init ul.L_2 as shown*/
+		root.children().show(); // root.find('>ul').show();
+		root.attr('overviewH', root.find('>ul').height());
+
+		root.parent().height(cDivSecHeight);
+		root.parent().hide();
+	});
+
+	/*D. start 1st  highlight*/
+	root = null;
+	targetSection = 0;
+	switchSection();
 
 
 	/*E. More Global Style Setting*/	
-	if (imageUrl.length) $('html').css('background-image', 'url(' + imageUrl + ')');
+	$('html').css('background-image', 'url(' + imageUrl + ')');
+
+	$('.sectionHead +.contentWrap').css('background-color', secBGColor);
+
+	$('.contentDiv li >div').css('transition', 'height 1s, opacity 1s');	
 };
 
+var switchSection = function(){
+	// global var targetSection /* ?? may need to check if target is available : [0, last-section], 0==TOC*/
+	
+	/*1. Resume rendering on last section*/
+	if (root){
+		relateDiv.hide();
+		cDiv = root;
+		lastSection = root.parent('.contentWrap');
+		
+		/*Hide last section, if NOT same as the new section*/
+		if(lastSection.prev().parent().attr('id') != 'S'+targetSection)
+			lastSection.slideUp('slow');
+		
+		lastSection.animate({left:initLeft, width:initWidth },'slow');
+		
+		cDiv.animate({scrollTop:0},'slow');
+		cDiv.find('.L_2 >li >div').each(function(index, el) {
+			setHeight($(this), 'one-line');
+		});
+		cDiv.find('li>ol,li>ul').hide();
+		
+		// root = null;
+	}
+
+	setHeight($('.highlight'),'one-line');
+	$('.highlight').removeClass('highlight');
+
+	/*2. Switch to TOC: table of content*/	
+	if (targetSection == 0){
+		console.info("Switch to Table of Contents");
+		preS.remove();nexS.remove();
+		$('.sectionHead').parent().show();
+		firstHL = $('#title');
+		firstHL.addClass('highlight');
+		setHeight(firstHL,"full")
+
+		index = -1;
+		minIndex = -1;
+		maxIndex = num-1;
+		root = firstHL.parent();//$('.L_1').parents('.contentDiv');
+		return;
+	}
+	
+	/*2. Switch to a new section : redering highlight, and insert HLBack & relateDiv*/	
+	console.info("Switch to Section ", targetSection);
+	preS.html('');preS.attr('onclick','');preS.insertBefore($('#title >p'));
+	nexS.html('');nexS.attr('onclick','');nexS.insertAfter($('#title >p'));
+	$('.sectionHead').each(function(sec, el) {
+		sec +=1; 
+		var id = parseInt($(this).parent().attr('id').replace("S", ""));
+		if (sec == targetSection-1){//(sec>= targetSection-1) && (sec<= targetSection+1)
+			preS.html($(this).html().match(/<p>[^<]*/)[0]+"</div>");
+			preS.attr('onclick',  "document.getElementById('"+$(this).first().attr('id')+"').click()" );
+		}else if (sec== targetSection+1){
+			nexS.html($(this).html().match(/<p>[^<]*/)[0]+"</div>");
+			nexS.attr('onclick',  "document.getElementById('"+$(this).first().attr('id')+"').click()" );
+		}
+		if(sec== targetSection)
+			$(this).parent().slideDown('slow');
+		else
+			$(this).parent().slideUp('slow');
+	});
+
+	firstHL = $("#S"+targetSection+" >.sectionHead");
+	firstHL.addClass('highlight');
+	setHeight(firstHL,"full");
+
+	index = parseInt(firstHL.attr('id').replace("item", ""));
+	minIndex = index;
+	maxIndex = index;
+	root = $("#S"+targetSection+" .contentDiv");
+	if (root.size() == 0) { return};
+
+	maxIndex = index+root.find("li>div").size();
+	
+	HLBack.insertAfter(root);
+	relateDiv.insertAfter(root.parent());
+
+	HLBack.css("top",root.find('>.preDiv').height());
+	updateHLB(root.find('>ul'), parseInt(root.attr('overviewH')));
+	
+	root.parent().slideDown('slow');
+};
 
 var wrapCDiv = function( CDiv ){
 	CDiv.wrap("<div class='contentWrap' />");
@@ -120,16 +242,16 @@ var initCDivWrap = function( cDiv, cHeight ) {
 
 	/*Height of preDiv decide the position.top of .highlight*/
 	targetTop = 0.3;/*init as percentage, later set to cDiv.scrollTop()*/
-	cDiv.find('.preDiv').height(cDiv.height() * targetTop);
-	cDiv.find('.postDiv').height(cDiv.height() * (1-targetTop));
+	cDiv.find('.preDiv').height(cHeight * targetTop);
+	cDiv.find('.postDiv').height(cHeight * (1-targetTop));
 
 	/*2. Show & Hide : init every item */
 	cDiv.find('li>ol,li>ul').hide();
 
 	/* The whole .contentWrap=cDiv.parent() should be in the center of the screen*/
-	initLeft = ($('body').outerWidth()-cDiv.parent().outerWidth())/2;
+	initLeft = initLeft || (cDiv.parent().parent().outerWidth()-cDiv.parent().outerWidth())/2;//$('body').outerWidth()
 	cDiv.parent().css('left', initLeft );
-	initWidth = cDiv.parent().width();
+	initWidth = initWidth || cDiv.parent().width();
 }
 
 var configWrap = function(target){
@@ -139,7 +261,7 @@ var configWrap = function(target){
 	/* Only .relateDiv>target with location=right may change margin-left and width of .cotentDiv */
 	if (target != null && target.attr('location') == 'right') {
 		var rDivWnew = target.width()+rDivWidthWrap;
-		if (/^fn:img/.test(target.attr('id'))){
+		if (target.attr('id').match(/^fn:img:/)){
 			rDivWnew = target.children().width()+rDivWidthWrap;
 		}
 		var left = initLeft - rDivWnew/2;
@@ -147,7 +269,7 @@ var configWrap = function(target){
 		// ?? left must >=0 ??
 		if (left < 0  ){ // relateDiv.width > initleft*2
 			left = 0;
-			width = $('.container').offset().left +$('.container').outerWidth() - rDivWnew;
+			width = root.parent().parent().outerWidth() - rDivWnew;//root.parent().parent().offset().left +
 		}
 	}
 	return {left:left, width:width};
@@ -174,12 +296,7 @@ var reOrganizeRDiv = function( RDiv ){
 				var temp = $('<div/>',{id: $(this).attr('id'), 'class': 'passive'}).append($(this).html());
 				break;
 			case 'img':
-				var temp = $(this).find('img').clone();
-				var temp = $('<div/>',{id: $(this).attr('id'), 'class': temp.attr('class')}).append(temp);
-				// if (temp.hasClass('passiveFull'))
-				// 	temp.addClass('passive');
-				// else
-					temp.addClass('active');
+				var temp = $('<div/>',{id: $(this).attr('id'), 'class': 'active'}).append($(this).find('img').clone());
 				break;
 			default: // 'tip' & 'one'
 				var temp = $('<div/>',{id: $(this).attr('id'), 'class': 'active'}).append($(this).html());
@@ -199,8 +316,6 @@ var reOrganizeRDiv = function( RDiv ){
 				relateFN.attr('location','right');
 				break;
 			case 'img':
-				// var tempLink = relateFN.hasClass('passiveFull') ? 
-				// 				$('<a/>',{href: $(this).attr('href'), 'class': 'footnote-passive'}):
 				var tempLink = $('<a/>',{href: $(this).attr('href'), 'class': 'footnote-active'});
 				tempLink.html('<span class="ui-icon ui-icon-image"></span>');
 				if ($(this).parents('li>div').hasClass('des')) {
@@ -276,9 +391,10 @@ var initRDiv = function () {
 
 	/* Calculate Valide Space : Need updated HLBack, so require initHLB(firstHL) must before initRDiv() */
 	var cDivWidthMin = parseInt($('.contentWrap').css('min-width'), 10);
-	var rDivRightValidWidth = $('.container').outerWidth()- cDivWidthMin - rDivWidthWrap;
-	var rDivRightValidHeight = $('.container').outerHeight()-headDiv.outerHeight(true) - rDivHeightWrap;
+	var rDivRightValidWidth = $('body').width() - cDivWidthMin - rDivWidthWrap;//$('.container').outerWidth()
+	var rDivRightValidHeight = cDivSecHeight- rDivHeightWrap;//$('.container').outerHeight() //-headDiv.outerHeight(true)
 	var rDivBottomValidHeight = rDivRightValidHeight - ($('.preDiv').offset().top + $('.preDiv').height() + parseInt(divs.eq(0).attr('oneLineH'))); 
+	var rDivBottomValidWidth =  $('.L_1>li').width()-20; //??!!
 
 	/*Must set size for EVERY div.passive/active, and hide()
 	  - ALL .passive shown in right, but max-width is different
@@ -286,12 +402,12 @@ var initRDiv = function () {
 	relateDiv.find('.passive').css('max-height', rDivRightValidHeight);
 	relateDiv.find('div >div').each(function(index, el) {
 		if ($(this).hasClass('passive')){ //passive & all are location=right // $(this).attr('id').match(/^fn:hide:/)
-			$(this).css('width', Math.min($('.container').width()*0.4, rDivRightValidWidth, $(this).width())); // ?
+			$(this).css('width', Math.min(rDivBottomValidWidth*0.4, rDivRightValidWidth, $(this).width())); // ?
 			$(this).css('height', $(this).height()); // ?
 
 		} else { //hasClass('active')
 			/* SET $(this).height/width for every image-active in relateDiv via img.onload() */
-			if (/^fn:img/.test($(this).attr('id'))) {
+			if ( $(this).attr('id').match(/^fn:img:/)) {
 				
 				$(this).children().load(function() { 					
 					var IMG = $(this); //img
@@ -299,15 +415,6 @@ var initRDiv = function () {
 					var origHeight = IMG.get(0).naturalHeight;
 
 					var imgLoc = $(this).parent().attr('location');
-					if ($(this).hasClass('activeFull') || $(this).hasClass('passiveFull')){
-						var minFullImg = 50;
-						if(origWidth>minFullImg || origHeight > minFullImg) {
-							scale(IMG, minFullImg, minFullImg, 1);
-						} else {
-							IMG.css("width",origWidth);
-							IMG.css("height",origHeight);
-						}
-					} else
 					if (imgLoc == 'right'){
 						if(origWidth>rDivRightValidWidth || origHeight > rDivRightValidHeight) {
 							scale(IMG, rDivRightValidWidth, rDivRightValidHeight, 1);
@@ -316,8 +423,8 @@ var initRDiv = function () {
 							IMG.css("height",origHeight);
 						}
 					} else if(imgLoc == 'bottom'){
-						if(origHeight>rDivBottomValidHeight || origWidth > $('.container').width()) {
-							scale(IMG, $('.container').width(),rDivBottomValidHeight, 1);
+						if(origHeight>rDivBottomValidHeight || origWidth > rDivBottomValidWidth) {
+							scale(IMG, rDivBottomValidWidth,rDivBottomValidHeight, 1);
 							/* May need to check height with $(.container).height()	*/
 						} else {
 							IMG.css("width",origWidth);
@@ -330,14 +437,14 @@ var initRDiv = function () {
 
 			} else if ($(this).attr('id').match(/^fn:tip:/)){
 				$(this).css('max-height', rDivRightValidHeight);
-				$(this).css('width', Math.min($('.container').width()*0.4, rDivRightValidWidth, $(this).width()));
+				$(this).css('width', Math.min(rDivBottomValidWidth*0.4, rDivRightValidWidth, $(this).width()));
 				$(this).css('height', $(this).height());
 
 			// } else if ($(this).attr('id').match(/^fn:one:/)){
 			// 	$(this).css('width', $('.L_1').width());//$(this).attr('level')
 			// 	$(this).css('height', $(this).height()); // ?
 			} else{ 
-				console.log("GOT Active but NO matched type!");
+				console.log("GOT Active but NO matched type!", $(this).attr('id'));
 			}
 		}
 
@@ -369,10 +476,10 @@ var setRDivLeft = function(target){
 	var newLeft = 0;
 	if (target.attr('location') == 'bottom'){//target.attr('location') == 'bottom'
 		var rDivWnew = target.width()+rDivWidthWrap;
-		if (/^fn:img/.test(target.attr('id'))){
+		if (target.attr('id').match(/^fn:img:/)){
 			rDivWnew = target.children().width()+rDivWidthWrap;
 		}
-		newLeft = $('.container').offset().left + ($('.container').outerWidth()-rDivWnew)/2;
+		newLeft = root.parent().parent().offset().left + (root.parent().parent().outerWidth()-rDivWnew)/2;
 		// console.log($('.contentWrap').position().left+$('.contentWrap').outerWidth(true)/2);
 	} else {// location == right
 		/*setRdivLeft is called after finish update Div.size */
@@ -392,7 +499,7 @@ var setRDivTop = function(target, HLHeight){
 		newTop = HLBack.offset().top + HLHeight - 5;//parseInt(relateDiv.css('margin-top'), 10)
 	} else {// location == right
 		var rDivHnew = (target.height()+rDivHeightWrap);
-		if (/^fn:img/.test(target.attr('id'))){
+		if (target.attr('id').match(/^fn:img:/)){
 			rDivHnew = (target.children().height()+rDivHeightWrap);
 		}
 		newTop = HLBack.offset().top + HLHeight/2 - rDivHnew/2;
@@ -429,35 +536,6 @@ var showRDiv = function(target, HLHeight){ // relateDiv.show('slow');
 	}
 }
 
-var showAbove = function(conHTML, imgURL){
-	$('#above').bPopup({position: ['auto', 'auto'],amsl:0});
-	$('#above').css('visibility','hidden');
-
-	$('#aboveConD').html(conHTML)
-	$('#aboveImgD').html($('<img/>',{src: imgURL}));
-
-	// var imgMaxH = $('#above').height() - $('#aboveConD').outerHeight(true);//'100%';
-	// $('#aboveImgD').css('max-height', imgMaxH);
-
-	var IMG = $('#aboveImgD>img');
-	var maxW = $('#above').width();
-	var maxH = $('body').height()*0.95 - $('#aboveConD').outerHeight(true);//'100%';
-	if (conHTML.length) {
-		$('#aboveConD').show();
-	} else{
-		$('#aboveConD').hide();
-		maxH = $('body').height()*0.95;
-	};
-	
-	scale(IMG, maxW, maxH, 1);//console.log($('#aboveConD').outerHeight(true));
-	IMG.css('left',   ($('html').width()*0.95 - IMG.width())/2   )
-
-	$('#above').height($('#aboveConD').outerHeight(true)+IMG.height())
-	var topTemp = ($('html').height() - $('#above').height())/2;
-	$('#above').css('top', topTemp);
-	$('#above').css('visibility','visible');
-
-}
 var updateHLB = function(base, temp){
 	/*	Depend on base - $('.highlight')
 		HLB.height has transition, which need to be varied to final value,
@@ -501,16 +579,14 @@ var updateHeadDiv = function(){
 	var headItem = $('.highlight').parents('ul').prev();
 	headItem = $(headItem.get().slice(0,-1).reverse());
 
-	var availWidth = headDiv.width() - headDiv.children().eq(0).outerWidth();// Limit the length
+	var maxWidth = $('.headDiv >ul').width() - $('.headDiv >ul >li:first').width();// Limit the length
 	for (var i = 2; i <5; i++) {
-		var temp = headDiv.find('a:nth-child('+i+')');
+		var temp = headDiv.find('li:nth-child('+i+')');
 		if (headItem.eq(i-2).html() != null) {
 			temp.attr('target', '#'+headItem.eq(i-2).attr('id'));
-			temp.html('<div>'+headItem.eq(i-2).html().match(/<p>([^<]*)/)[1]+'</div>');//headItem.eq(i-2).text()
-			i == 4 ? temp.children().css('max-width',  availWidth- parseInt(temp.children().css('padding-left'),10)):
-					 temp.children().css('max-width',  availWidth*0.5); // Limit the length
-			availWidth = availWidth - temp.outerWidth()- parseInt(temp.children().css('padding-left'),10);
-
+			temp.html('<div>'+headItem.eq(i-2).text()+'</div>');
+			temp.children().css('max-width',  maxWidth*0.5); // Limit the length
+			maxWidth = maxWidth - temp.width();
 			temp.effect('slide', { direction: 'left', mode: 'show' }, 'slow');
 		} else {
 			temp.effect('slide', { direction: 'left', mode: 'hide' }, 'slow');
@@ -525,9 +601,19 @@ var triggerAnimate = function(unit,mode){
 	var expand = divs.eq(index+unit);
 
 	if (mode=='showTOC') { // index = -1; // unit = -1-index; index +=unit
-		expand = $('#title');
-		root.find('li>ol,li>ul').hide();
+		console.info('Show Table of Content')
+		targetSection = 0;
+		switchSection();
+		return	
 	};
+
+	/* If focus on title, expand only can be >.L_1>li>div*/
+	if(shrink == $('#title') || expand.hasClass('sectionHead')){ 
+		if(expand == $('#title')) return; // ?	
+		targetSection = parseInt(expand.parents('.L_1>li').attr('id').replace('S',''));
+		switchSection();
+		return
+	}
 
 	/* Get original position.top for computing $revise and other use later */
 	/* !! Must Before reset .highlight */
@@ -545,9 +631,15 @@ var triggerAnimate = function(unit,mode){
 		expand.addClass('highlight');
 
 		//6 setHeight()	/*1. Expand & Shrink : via resetting height */
-		var oneLineH = 0;
-		var time = 0;
-		if (shrink.hasClass('slowShrink') && shrink.closest('ul').prev().attr('id')==expand.closest('ul').prev().attr('id')) {			
+		var oneLineH = 0, time = 0;
+		if (shrink.hasClass('sectionHead')){
+			oneLineH = shrinkOldHeight;
+			$('.full').each(function(index, el) {
+				setHeight($(this), "one-line");
+				$(this).removeClass('full');
+			});
+		} else if (shrink.hasClass('slowShrink') && shrink.closest('ul').prev().attr('id')==expand.closest('ul').prev().attr('id')) {
+			// console.log('has to keeped full');
 			oneLineH = shrinkOldHeight;
 			shrink.addClass('full');
 		} else{
@@ -562,20 +654,11 @@ var triggerAnimate = function(unit,mode){
 		var fullH = setHeight(expand, "full");	
 
 		//7-8 Update position of relateDiv and show
-		var closeAbove = $('#above').css('display')==='block';
 		if (activeTarget) {
 			setRDivLeft(activeTarget);
 			setRDivTop(activeTarget, fullH);
 			showRDiv(activeTarget, fullH );
-
-			if (activeTarget.hasClass('activeFull') && /^fn:img/.test(activeTarget.attr('id'))) {
-				mainItem = $("<div/>").html(expand.html());
-				mainItem.find('sub').remove();
-				showAbove(mainItem.html(), activeTarget.find('img').attr('src'))
-				closeAbove = false;
-			}
 		};
-		if(closeAbove) $('#above').bPopup().close();
 
 		//9	/*2. Show & Hide on the related items : based on the unit */
 		var slideUpHeight = 0;  var slideDownHeight = 0;
@@ -629,7 +712,7 @@ var triggerAnimate = function(unit,mode){
 		//10 
 		updateHLB(expand, fullH);
 
-		updateHeadDiv();
+		// updateHeadDiv();
 
 		//11/* 4. Background : on related items */
 		$('.HLChildLevel').removeClass('HLChildLevel');
@@ -637,10 +720,6 @@ var triggerAnimate = function(unit,mode){
 
 		$('.HLSameLevel').removeClass('HLSameLevel');
 		expand.parent().parent().addClass('HLSameLevel');//ol
-
-		// Different opacity for has discussed and not discussed;
-		shrink.css('opacity', '0.7');
-		expand.css('opacity', '1');
 		
 		//12/*0. Scrollable*/
 		var reviseTop = expandTop - shrinkTop + slideDownHeight - slideUpHeight;
@@ -655,22 +734,22 @@ var triggerAnimate = function(unit,mode){
 		}			
 
 		setTimeout(function () { 
-		   root.animate({scrollTop:targetTop},'slow');
+		   if (targetTop!= root.scrollTop())
+		  		root.animate({scrollTop:targetTop},'slow');
 		}, time);
 		
 	}
 
 	var updatedCDiv = configWrap(activeTarget);
 	(activeTarget == null) && (relateDiv.css('display') == 'none') ? scroll() 
-			: $('.contentWrap').animate({left:updatedCDiv.left, width:updatedCDiv.width },'slow', function(){
+			: root.parent('.contentWrap').animate({left:updatedCDiv.left, width:updatedCDiv.width },'slow', function(){
 				scroll();
 			});
 
 	/*---v4-8--Scrollable Highlight-------*/
 	// $('.highlight').css('background', '');
 	// $('.hlBackground').css('background', '#5bc0de');
-
-	index += unit;
+	index +=unit;
 };
 
 var toggleHide = function(){
@@ -689,7 +768,7 @@ var toggleHide = function(){
 		};
 
 		var updatedCDiv = configWrap(passiveTarget);
-		$('.contentWrap').animate({left:updatedCDiv.left, width:updatedCDiv.width },'slow', function(){
+		root.parent('.contentWrap').animate({left:updatedCDiv.left, width:updatedCDiv.width },'slow', function(){
 			var fullH = setHeight(current, "full");
 			
 			/* Update postion of relateDiv and show */
@@ -701,7 +780,7 @@ var toggleHide = function(){
 			updateHLB(current, fullH);
 		});	
 	};	
-	return passiveTarget;
+	return 0
 }
 
 var main = function(){
@@ -724,7 +803,7 @@ $(document).ready(main);
 /* Action-click */
 var setClickHandler = function(){
 	/* Action-click : change .highlight if clicking item in .contentDiv */
-	root.find("li>div:first-child").click(function(event) {
+	$('.L_1').find("li>div:first-child").click(function(event) {
 		/* Disable scroll until last is finished*/
 		if (root && (root.is(':animated')|| root.parent().is(':animated')|| relateDiv.is(':animated')) ) {
 			console.warn('Animation has NOT finished!', root.is(':animated'), root.parent().is(':animated'), relateDiv.is(':animated'));
@@ -746,19 +825,27 @@ var setClickHandler = function(){
 			return
 		};
 
-		if (/^fn:img/.test($(this).attr('id'))) {
-			showAbove('', $(this).find('img').attr('src'));
+		if ($(this).attr('id').match(/^fn:img:/)) {
+			var url = $(this).find('img').attr('src');
+			$('#above >div').first().replaceWith($('<div/>').append($('<img/>',{src: url})));
+
+			var IMG = $('#above >div >img');
+			var maxW = $(window).width();
+			var maxH = $(window).height();
+			var factor = 0.95;
+			scale(IMG, maxW, maxH, factor);
+			
+			$('#above').bPopup({position: ['auto', 'auto'],amsl:0});
 		};
 	});
 
 	/* Action-click : change .highlight if clicking item in .headDiv */
-	headDiv.find('>a').click(function(event) {
-		 event.preventDefault();
-		 $($(this).attr('target')).click();
-	});
+	// headDiv.find('ul>li').click(function(event) {
+	// 	$($(this).attr('target')).click();
+	// });
 
 	/* Action-click : switch to mode='showToc' if click #title */
-	$('#title').click(function(event) {
+	$('#title>p').click(function(event) {
 		if (index!=-1) {
 			mode='showTOC';
 			unit = -1-index;
@@ -772,8 +859,8 @@ var setClickHandler = function(){
 $(document).keydown(function(key) {	
 	/* Disable scroll until last is finished*/
 	if (root && (root.is(':animated')|| root.parent().is(':animated')|| relateDiv.is(':animated')) ) {
-			console.warn('Animation has NOT finished!', root.is(':animated'), root.parent().is(':animated'), relateDiv.is(':animated'));
-			return
+		console.warn('Animation has NOT finished!', root.is(':animated'), root.parent().is(':animated'), relateDiv.is(':animated'));
+		return
 	};
 
 	var unit = 0, mode = 'key';	
@@ -783,16 +870,21 @@ $(document).keydown(function(key) {
 			event.preventDefault();
 			if (index>0){
 				var expand = divs.eq(index-1);
-				if(expand.parent().parent().css('display') != 'none'){
+				if(!divs.eq(index).hasClass('sectionHead') && expand.parent().parent().css('display') != 'none'){
 					unit = -1;
+				} else if(divs.eq(index).hasClass('sectionHead')){
+					unit = - divs.eq(index).parent().prev().find("li>div").size()-1;
 				} else{
 					var expandChildren = expand.parents('ul[style="display: none;"], ol[style="display: none;"]').last();
 					var expandID = parseInt(expandChildren.prev().attr('id').replace("item", ""));
 					unit = expandID-index;
 				}
 			} else if(index == 0){
+				/*Switch to Title, like click , may not need mode show Toc ??*/
 				mode='showTOC';
 				unit = -1-index;
+			} else if(index == -1){
+				/*Focus on Title, NO more LEFT*/
 			}
 			break;
 		case 38:// Up : <0
@@ -808,44 +900,38 @@ $(document).keydown(function(key) {
 			break;
 		case 39: // Right : +1
 			event.preventDefault();
-			if (index+1<num){
-				unit = 1;
-			} else{/* When reach last item, then next will be 1st item #item0*/
-				unit = -index;
-				$('.L_1').children().last().children('ul').slideUp();
-			}				
+			unit = 1;
+			if(index+unit> maxIndex){
+				console.log('right MAX')
+				unit = minIndex - index;
+			}	
 			break;
 		case 40:// Down : >0 	
 			event.preventDefault();
-			var childrenSize = divs.eq(index).siblings('ul,ol').find('li>div:first-child').size();
-			unit = 1 + childrenSize;
-			if (index+unit > num-1) {
-				/* When reach last item, then next will be 1st title*/
-				// unit = -index; // !! ??navigate to first item #item0
-				// $('.L_1').children().last().children('ul').slideUp();
-				mode='showTOC';
-				unit = -1-index;
-			};
+
+			if(index == -1){// ?? from title to section head may not be nav via DOWN, since this is go details
+				unit = 1;
+			} else if(divs.eq(index).hasClass('sectionHead')){
+				unit = 1 + root.find("li>div").size();
+				if(index+unit == num){
+					mode='showTOC';
+					unit = -1-index;
+				}
+			} else {
+				var childrenSize =divs.eq(index).siblings('ul,ol').find('li>div:first-child').size();
+				unit = 1 + childrenSize;
+				if(index+unit> maxIndex){
+					console.log('Down MAX')
+					unit = minIndex - index;
+				}
+			}
+
 			break;
 	
 	/* Space key - show or hide .passive */
 		case 32:// unit == 0; 
 			event.preventDefault();
-			if( toggleHide()) break;
-
-			if($('#above').css('display')==='block'){
-				$('#above').bPopup().close();
-				break;
-			}
-					
-			if( relatedTarget = hasRDiv($('.highlight'),'active')){
-				if (/^fn:img/.test(relatedTarget.attr('id'))) {
-					// mainItem = $("<div/>").html($('.highlight').html());
-					// mainItem.find('sub').remove();
-					showAbove('', relatedTarget.find('img').attr('src'))
-				}				
-			}
-
+			toggleHide();
 			break;
 	}; // END -- switch
 	

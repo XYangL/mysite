@@ -1,0 +1,545 @@
+<html>
+<head>
+	<title>User Guide for Scroll List</title>
+
+	<script type="text/x-mathjax-config"> 
+	MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+	MathJax.Hub.Queue(function () {initMathJax();});
+</script> <!-- LaTex -->
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+<script src="../CAScroll/jquery-latest.js" type="text/javascript"></script>
+
+<script src="../CAScroll/jquery-ui.js" type="text/javascript"></script>
+<link href="../ScrollSlide/ScrollSlide.css" rel="stylesheet" type="text/css"/>
+<script src="../ScrollSlide/ScrollSlide.js" type="text/javascript"></script>
+<script src="../CAScroll/jquery.bpopup.min.js" type="text/javascript"></script>
+
+</head>
+<body>
+<div class="contentDiv">
+
+<ul class="L_1">
+
+<li>
+<div><p>A Maximum Likelihood Routing Algorithm for Smart Grid Wireless Network</p></div>
+</li>
+<li>
+<div><p>Background of Smart Grid and its Routing</p></div>
+<ul class="L_2">
+
+<li>
+<div class="des"><p>Smart Grid (SG) is the next generation electric power system <sup id="fnref:img:over"><a href="#fn:img:over" class="footnote-ref">1</a></sup></p></div>
+<ul class="L_3">
+
+<li>
+<div><p>Integration of communication networks<sup id="fnref:one:1"><a href="#fn:one:1" class="footnote-ref">2</a></sup></p></div>
+</li>
+<li>
+<div><p>Advanced communication abilities<sup id="fnref:one:2"><a href="#fn:one:2" class="footnote-ref">3</a></sup></p></div>
+</li>
+</ul></li>
+<li>
+<div><p>Routing Protocols for Smart Grid</p></div>
+<ul class="L_3">
+
+<li>
+<div><p>Home Area Networks (HANs) <sup id="fnref:hide:han"><a href="#fn:hide:han" class="footnote-ref">4</a></sup><sup id="fnref:one:3"><a href="#fn:one:3" class="footnote-ref">5</a></sup></p></div>
+</li>
+<li>
+<div><p>Neighborhood Area Networks (NANs) <sup id="fnref:hide:nan"><a href="#fn:hide:nan" class="footnote-ref">6</a></sup> <br/>Criteria to classify the routing protocols for NANs<sup id="fnref:one:4"><a href="#fn:one:4" class="footnote-ref">7</a></sup></p></div>
+</li>
+<li>
+<div><p>Advanced Metering Infrastructure (AMI) Application is the most challenge application of Smart Grid utilizing NANs <sup id="fnref:hide:ami"><a href="#fn:hide:ami" class="footnote-ref">8</a></sup></p></div>
+<ul class="L_4">
+
+<li>
+<div><p>Systems that measure, collect, and analyze energy usage, and communicate with metering devices either on request or on a schedule.</p></div>
+</li>
+<li>
+<div><p>Rely on wireless communication technologies to increase portions of utilities' AMI system<sup id="fnref:one:5"><a href="#fn:one:5" class="footnote-ref">9</a></sup></p></div>
+</li>
+<li>
+<div><p>Routing mechanisms is essential in AMI and attracts wide attention from the research community<sup id="fnref:one:6"><a href="#fn:one:6" class="footnote-ref">10</a></sup></p></div>
+</li>
+</ul></li>
+</ul></li>
+</ul></li>
+<li>
+<div><p>Application Environment <sup id="fnref2:img:over"><a href="#fn:img:over" class="footnote-ref">1</a></sup></p></div>
+<ul class="L_2">
+
+<li>
+<div><p>Designed for AMI using Radio Frequency (RF) mesh<br/>RF mesh is more energy efficient than a single hop network for the same distance due to the attenuation of RF Signals. <sup id="fnref:hide:rf"><a href="#fn:hide:rf" class="footnote-ref">11</a></sup></p></div>
+</li>
+<li>
+<div class="des"><p>Topology of the meters<sup id="fnref:img:topMe"><a href="#fn:img:topMe" class="footnote-ref">12</a></sup></p></div>
+<ul class="L_3">
+
+<li>
+<div><p>The Smart Grid wireless network is deployed in the area consist of several specific districts.<sup id="fnref:one:7"><a href="#fn:one:7" class="footnote-ref">13</a></sup></p></div>
+</li>
+<li>
+<div><p>Each home $H_i$ has a few battery operated meters $M_{ia}$<sup id="fnref:one:8"><a href="#fn:one:8" class="footnote-ref">14</a></sup></p></div>
+</li>
+</ul></li>
+<li>
+<div class="des"><p>Transmission Process <sup id="fnref:img:topPr"><a href="#fn:img:topPr" class="footnote-ref">15</a></sup></p></div>
+<ul class="L_3">
+
+<li>
+<div><p>The selected relay meter $M_{ia}$ are responsible for<sup id="fnref:one:9"><a href="#fn:one:9" class="footnote-ref">16</a></sup></p></div>
+</li>
+<li>
+<div><p>First, the reading of all the meters at $H_i$ should be <em>transmitted locally</em> to a selected relay meter $M_{ia}$ at $H_i$.</p></div>
+</li>
+<li>
+<div><p>Then, appended with the packets of readings transmitted from $H_{i+1}$, all the local readings at $H_i$ is transmitted from $M_{ia}$ to another selected relay meter $M_{(i-1)b}$ at $H_{i-1}$.</p></div>
+</li>
+<li>
+<div><p>Finally, the readings of all the meters within the same district are accumulated at $H_1$ and then transmitted to the base station $H_0$.</p></div>
+</li>
+</ul></li>
+</ul></li>
+<li>
+<div><p>Overview of the Routing Algorithm</p></div>
+<ul class="L_2">
+
+<li>
+<div><p>Problem : How to select the relay meters<br/>Routing in a district is a process of selecting the relay meters for each home. <sup id="fnref2:img:topPr"><a href="#fn:img:topPr" class="footnote-ref">15</a></sup></p></div>
+</li>
+<li>
+<div><p>Goal: Balance the energy consumption for every meters<sup id="fnref:one:10"><a href="#fn:one:10" class="footnote-ref">17</a></sup></p></div>
+</li>
+<li>
+<div><p>Criterias: Focus on Energy Efficiency<sup id="fnref:one:11"><a href="#fn:one:11" class="footnote-ref">18</a></sup></p></div>
+</li>
+</ul></li>
+<li>
+<div><p>Principles of the Routing Algorithm  <sup id="fnref:hide:principles"><a href="#fn:hide:principles" class="footnote-ref">19</a></sup></p></div>
+<ul class="L_2">
+
+<li>
+<div><p>Selection of Relay Meter : Maximum Likelihood<sup id="fnref:one:12"><a href="#fn:one:12" class="footnote-ref">20</a></sup></p></div>
+<ul class="L_3">
+
+<li>
+<div><p><strong>Energy Consumption Model</strong> based on transmission distance <sup id="fnref:hide:ref1"><a href="#fn:hide:ref1" class="footnote-ref">21</a></sup></p></div>
+<ul class="L_4">
+
+<li>
+<div><p>The total average energy consumption per bit along the signal path for a fixed-rate $R_{bt}$ system  <sup id="fnref:tip:model"><a href="#fn:tip:model" class="footnote-ref">22</a></sup><br/>$$E_{bt} = (P_{PA}+P_c)/R_b$$<br/>$$P_{PA} = (1+\alpha)P_{out}$$<br/>$$P_{out} = \frac{ M_t N_0 }{  \overline{P}^{1/M_t}_{b} } R_b  \times  \frac{(4 \pi d)^2}{G_t G_r  \lambda ^2} M_l N_f $$</p></div>
+</li>
+<li>
+<div><ul>
+<li>The values of all the parameters used in the model are <strong>same</strong> for all the meters in a specific smart grid network, except the transmission distance $d$.</li>
+<li>The number $S$ of bits encoded in a packet is also <strong>fixed</strong> for every home.</li>
+</ul></div>
+</li>
+<li>
+<div><p>The total energy consumption $E$ to transmit a packet along the signal path.   <br/>$$E = S \times E_{bt} = S \times (P_{PA}+P_c)/R_b = \beta d^2 + \gamma $$<sup id="fnref:one:13"><a href="#fn:one:13" class="footnote-ref">23</a></sup></p></div>
+</li>
+</ul></li>
+<li>
+<div><p><strong>Parameters</strong> related to energy</p></div>
+<ul class="L_4">
+
+<li>
+<div><p>Transmission Distance between two meters $E = \beta d^2 + \gamma $</p></div>
+<ul class="L_5">
+
+<li>
+<div><ul>
+<li>The total energy consumption $E$ for any meter at a home is <strong>linearly</strong> to the square of the transmission distance $d^2$.</li>
+<li>Shorter transmission distance should correspond to Higher probobility</li>
+</ul></div>
+</li>
+<li>
+<div><ul>
+<li>$D_{iab}$ : Distance from $M_{(i+1)a}$ at $H_{i+1}$ to $M_{ib}$ at $H_i$</li>
+<li>$T_{ib}$ : Average Transmission Distance from $M_{ib}$ to meters at $H_{i-1}$</li>
+</ul></div>
+</li>
+</ul></li>
+<li>
+<div><p>Battery level of meter $M_{ib}$<br/>A meter $M_{ib}$ should have a higher probability $f\!B_{ib}$ if its battery level $B_{ib}$ is higher.</p></div>
+</li>
+</ul></li>
+<li>
+<div><p><strong>Likelihood Function</strong> $f_{ib}$ to calculate the probability of a meter is the product of three sigmoid functions <sup id="fnref:tip:sig"><a href="#fn:tip:sig" class="footnote-ref">24</a></sup><br/>$$f_{ib} =\ f\!B_{ib} * f\!D_{iab} * f\!T_{ib}$$</p></div>
+<ul class="L_4">
+
+<li>
+<div><p>Sigmoid function <sup id="fnref:img:sig"><a href="#fn:img:sig" class="footnote-ref">25</a></sup><sup id="fnref:one:14"><a href="#fn:one:14" class="footnote-ref">26</a></sup></p></div>
+</li>
+<li>
+<div><p>The argument of the sigmoid functions to calculate The probability $f\!B_{ib}$ is the normalized battery level $B$. <br/>$$f\!B_{ia} = \frac{1}{1 + exp(-B_{ij}+\mu_i)} $$<sup id="fnref:one:15"><a href="#fn:one:15" class="footnote-ref">27</a></sup></p></div>
+</li>
+<li>
+<div><p>The argument of the sigmoid functions to calculate the probability $f\!D_{iab}$ and $f\!T_{iab}$ is the negative normalised square of the transmission distance.<br/>$$f\!D_{iab} =  \frac{1}{1 + exp(\xi * D_{iab}^2-\nu_1)} \label{eq:fD} $$<br/>$$f\!T_{ib} =  \frac{1}{1 + exp(\xi * T_{ib}^2-\nu_2)} \label{eq:fT} $$<sup id="fnref:one:16"><a href="#fn:one:16" class="footnote-ref">28</a></sup></p></div>
+</li>
+</ul></li>
+</ul></li>
+<li>
+<div><p>Candidates for Relay Meter<br/>A meter $M_{ib}$ can be a candidate meter if both the following conditions are meet:<sup id="fnref:one:17"><a href="#fn:one:17" class="footnote-ref">29</a></sup></p></div>
+</li>
+<li>
+<div><p>Termination Condition<br/>Once there is no more candidate meter at any one of the homes, the routing process will terminate and the SG wireless network will stop working.</p></div>
+</li>
+</ul></li>
+<li>
+<div><p>Simulation of the Routing Algorithm</p></div>
+<ul class="L_2">
+
+<li>
+<div class="des"><p>The topology of a district for one simulation <sup id="fnref:img:topology"><a href="#fn:img:topology" class="footnote-ref">30</a></sup></p></div>
+<ul class="L_3">
+
+<li>
+<div><p>The interval between every two homes is set to be 25 meters and the base station is located at the original point.</p></div>
+</li>
+<li>
+<div><p>The blue points represent the meters which are circled with a red square if they belongs to the same home.</p></div>
+</li>
+<li>
+<div><p>For one simulation, there were 6 homes within the district and every home had 3 meters.</p></div>
+</li>
+</ul></li>
+<li>
+<div class="des"><p>Algorithm Diagram <sup id="fnref:img:diag"><a href="#fn:img:diag" class="footnote-ref">31</a></sup></p></div>
+<ul class="L_3">
+
+<li>
+<div><p>To simulate the proposed routing algorithm, the meters' battery levels $B_{ij}$ and their positions $P_{ia}$ are first initialized using normal distribution and discrete uniform distribution, respectively.</p></div>
+</li>
+<li>
+<div><p>And then, the transmission distance between every two meters at different homes are calculated.</p></div>
+</li>
+<li>
+<div><p>After initialization, the probability $f_{ib}$ to be selected for each meter can be generated with the normalized battery levels and transmission distances.</p></div>
+</li>
+<li>
+<div><p>The detailed routing process of the SG is clarified in the following flow diagram.</p></div>
+</li>
+</ul></li>
+<li>
+<div><p>Simulation Result</p></div>
+<ul class="L_3">
+
+<li>
+<div class="des"><p>The battery variation trend for every meter <sup id="fnref:img:battery"><a href="#fn:img:battery" class="footnote-ref">32</a></sup></p></div>
+<ul class="L_4">
+
+<li>
+<div><p>One simulation of the proposed routing algorithm from the last 25th lifetime cycle. <br/>Every subfigure represents a home with 3 meters plotted using lines in different styles.</p></div>
+</li>
+<li>
+<div><p>The last lifetime index is 1019 and the battery level is plotted by red dots.</p></div>
+</li>
+</ul></li>
+<li>
+<div><p>Compared with Other Algorithms<sup id="fnref:one:18"><a href="#fn:one:18" class="footnote-ref">33</a></sup></p></div>
+<ul class="L_4">
+
+<li>
+<div><p>All the 3 methods are simulated with 1000 groups of different battery and position initializations.</p></div>
+</li>
+<li>
+<div><p>The variation trends of the battery level for one group routing by different methods. <sup id="fnref:img:f5"><a href="#fn:img:f5" class="footnote-ref">34</a></sup><sup id="fnref:one:19"><a href="#fn:one:19" class="footnote-ref">35</a></sup></p></div>
+</li>
+<li>
+<div><p>Compared with the random method, the proposed algorithm has <em>longer</em> lifetime. <sup id="fnref:img:ran"><a href="#fn:img:ran" class="footnote-ref">36</a></sup></p></div>
+</li>
+<li>
+<div><p>Compared with the maximum method <sup id="fnref:img:max"><a href="#fn:img:max" class="footnote-ref">37</a></sup><sup id="fnref:one:20"><a href="#fn:one:20" class="footnote-ref">38</a></sup></p></div>
+</li>
+</ul></li>
+</ul></li>
+</ul></li>
+<li>
+<div><p>Conclusion<br/>The proposed maximum likelihood algorithms can extend the lifetime of SG by balance the energy consumption of the meters</p></div>
+</li>
+</ul><div class="footnotes">
+<ol>
+
+<li id="fn:img:over">
+<p><img src="../images/overview.png" alt="" />&#160;<a href="#fnref:img:over" class="footnote-backref">&#8617;</a> <a href="#fnref2:img:over" class="footnote-backref">&#8617;</a></p>
+</li>
+
+<li id="fn:one:1">
+<ul>
+<li>Home Area Networks (HANs)</li>
+<li>Neighborhood Area Networks (NANs)</li>
+<li>Wide Area Networks (WANs)</li>
+</ul>
+
+<p><a href="#fnref:one:1" class="footnote-backref">&#8617;</a></p>
+</li>
+
+<li id="fn:one:2">
+<ul>
+<li>Increase the efficiency of the system </li>
+<li>Save energy consumption</li>
+<li>Improve the reliability of services</li>
+</ul>
+
+<p><a href="#fnref:one:2" class="footnote-backref">&#8617;</a></p>
+</li>
+
+<li id="fn:hide:han">
+<p>A home area network (HAN) is a network that is deployed and operated within a small boundary, typically a house or small office/home office (SOHO). It enables the communication and sharing of resources (like the Internet) between computers, mobile and other devices over a network connection.&#160;<a href="#fnref:hide:han" class="footnote-backref">&#8617;</a></p>
+</li>
+
+<li id="fn:one:3">
+<ul>
+<li>The protocols are categorized based on the underlying network using wireless communication, power line communications (PLC) or a combination of these.</li>
+<li>Their design, cost and performance are affected by the underlying MAC protocols.  </li>
+</ul>
+
+<p><a href="#fnref:one:3" class="footnote-backref">&#8617;</a></p>
+</li>
+
+<li id="fn:hide:nan">
+<p>A neighborhood area network (NAN) is an offshoot of Wi-Fi hotspots and wireless local area networks (WLAN), which enable users to connect to the Internet quickly and at very little expense. A NAN is generally installed by an individual to serve a family or a number of neighbors. NANs cover only a small number of blocks close to an 802.11 access point. With the help of an omnidirectional antenna, a single access point could cover a radius of more than half a mile. Users who wish to connect to an NAN can then make use of a directional antenna to get an improved signal from the access point.&#160;<a href="#fnref:hide:nan" class="footnote-backref">&#8617;</a></p>
+</li>
+
+<li id="fn:one:4">
+<ul>
+<li>The underlying communication used for routing</li>
+<li>The application requirements, including reliability, security and Qos</li>
+</ul>
+
+<p><a href="#fnref:one:4" class="footnote-backref">&#8617;</a></p>
+</li>
+
+<li id="fn:hide:ami">
+<p>Advanced Metering Infrastructure (AMI) are systems that measure, collect, and analyze energy usage, and communicate with metering devices such as electricity meters, gas meters, heat meters, and water meters, either on request or on a schedule. These systems include hardware, software, communications, consumer energy displays and controllers, customer associated systems, Meter Data Management (MDM) software, and supplier business systems. Different from traditional automatic meter reading (AMR),  AMI enables two-way communications with the meter.&#160;<a href="#fnref:hide:ami" class="footnote-backref">&#8617;</a></p>
+</li>
+
+<li id="fn:one:5">
+<ul>
+<li>Low installation costs and rapid deployment</li>
+<li>Comparable data rate and network capacities to popular wired networks</li>
+</ul>
+
+<p><a href="#fnref:one:5" class="footnote-backref">&#8617;</a></p>
+</li>
+
+<li id="fn:one:6">
+<ul>
+<li>Guarantee the acquisition and the dispatch in a timely and reliable way  </li>
+<li>Energy should be considered to meet the communication requirements</li>
+</ul>
+
+<p><a href="#fnref:one:6" class="footnote-backref">&#8617;</a></p>
+</li>
+
+<li id="fn:hide:rf">
+<p>RF mesh is more energy efficient than a single hop network for the same distance due to the attenuation of RF Signals. -- Zhao, Feng, and Leonidas J. Guibas. Wireless sensor networks: an information processing approach. Morgan Kaufmann, 2004.&#160;<a href="#fnref:hide:rf" class="footnote-backref">&#8617;</a></p>
+</li>
+
+<li id="fn:img:topMe">
+<p><img src="../images/topology-meters.png" alt="" title="" class="bottom" />&#160;<a href="#fnref:img:topMe" class="footnote-backref">&#8617;</a></p>
+</li>
+
+<li id="fn:one:7">
+<ul>
+<li>Within every district, there are a number of homes $H_i$ ($i>0$) and one base station $H_0$. </li>
+<li>Smaller $i$ means that $H_i$ is nearer to the base station. </li>
+</ul>
+
+<p><a href="#fnref:one:7" class="footnote-backref">&#8617;</a></p>
+</li>
+
+<li id="fn:one:8">
+<ul>
+<li>Be Used respectively for Gas, Water, Electricity and so on.</li>
+<li>Transmit its readings to others via RF. </li>
+<li>Can act as a wireless transmitter/relay node.</li>
+</ul>
+
+<p><a href="#fnref:one:8" class="footnote-backref">&#8617;</a></p>
+</li>
+
+<li id="fn:img:topPr">
+<p><img src="../images/topology%20process.png" alt="" title="" class="bottom" />&#160;<a href="#fnref:img:topPr" class="footnote-backref">&#8617;</a> <a href="#fnref2:img:topPr" class="footnote-backref">&#8617;</a></p>
+</li>
+
+<li id="fn:one:9">
+<ul>
+<li>receiving both readings from $H_{i+1}$ and local readings</li>
+<li>transmitting the readings from $H_{i}$ to $H_{i-1}$</li>
+</ul>
+
+<p><a href="#fnref:one:9" class="footnote-backref">&#8617;</a></p>
+</li>
+
+<li id="fn:one:10">
+<ul>
+<li>The transmission of packets consumes energy</li>
+<li>Transmit more packets to the base station means to <strong>extend the lifetime</strong> of SG</li>
+</ul>
+
+<p><a href="#fnref:one:10" class="footnote-backref">&#8617;</a></p>
+</li>
+
+<li id="fn:one:11">
+<ul>
+<li>Energy State - Battery level of meters</li>
+<li>Energy Consumption - Transmission distance between two meters </li>
+</ul>
+
+<p><a href="#fnref:one:11" class="footnote-backref">&#8617;</a></p>
+</li>
+
+<li id="fn:hide:principles">
+<ol>
+<li>A meter $M_{ib}$ has a higher probability $f\!B_{ib}$ if its battery level is higher.</li>
+<li>A meter $M_{ib}$ has a higher probability $f\!D_{iab}$ if the distance from relay meter at $H_{i+1}$ to $M_{ib}$ at $H_{i}$ is shorter.</li>
+<li>A meter $M_{ib}$ has a higher probability $f\!T_{ib}$ if the average transmission distance from relay meter $M_{ib}$ at $H_{i}$ to every meter at $H_{i-1}$ is shorter.</li>
+<li>The probability $f_{ib}$ of a meter $M_{ib}$ to be selected is $f_{ib} =\ f\!B_{ib} * f\!D_{iab} * f\!T_{ib}$.</li>
+<li>A meter $M_{ib}$ is selected as a relay when its $f_{ib}$ is maximum among all the candidate meters at $H_i$. </li>
+<li>A meter $M_{ib}$ can be a candidate meter if the energy consumed for transmission from $M_{(i+1)a}$ to $M_{ib}$ is smaller than $B_{(i+1)a}$, and all the other meters at $H_i$ have enough energy for local reading transmission.</li>
+<li>Once there is no more candidate meter at any one of the homes, the routing process will terminate and the SG wireless network will stop working.</li>
+</ol>
+
+<p><a href="#fnref:hide:principles" class="footnote-backref">&#8617;</a></p>
+</li>
+
+<li id="fn:one:12">
+<ul>
+<li>A meter $M_{ib}$ with highest probability $f_{ib}$ among all the meters at the same home $H_i$.</li>
+<li>For a fixed set of data and underlying statistical <strong>model</strong>, to select the set of values of the model <strong>parameters</strong> that maximizes the likelihood <strong>function</strong></li>
+</ul>
+
+<p><a href="#fnref:one:12" class="footnote-backref">&#8617;</a></p>
+</li>
+
+<li id="fn:hide:ref1">
+<p>Cui, Shuguang, Andrea J. Goldsmith, and Ahmad Bahai. <strong>"Energy-efficiency of MIMO and cooperative MIMO techniques in sensor networks."</strong> <em>Selected Areas in Communications</em>, IEEE Journal on 22.6 (2004): 1089-1098.&#160;<a href="#fnref:hide:ref1" class="footnote-backref">&#8617;</a></p>
+</li>
+
+<li id="fn:tip:model">
+<ul>
+<li>$P_{PA}$ : the power consumption of all the power amplifiers, depends on  $P_{out}$ </li>
+<li>$P_{out}$ : the transmit power calculated based on a square-law path loss model </li>
+<li>$P_c$ : the power consumption of all other circuit blocks, estimated using the another model</li>
+</ul>
+
+<p><a href="#fnref:tip:model" class="footnote-backref">&#8617;</a></p>
+</li>
+
+<li id="fn:one:13">
+<ul>
+<li>$\beta = S \times (1+ \alpha )  \frac{ M_t N_0 }{  \overline{P}^{1/M_t}_{b} }  \times  \frac{(4 \pi)^2}{G_t G_r  \lambda ^2} M_l N_f $</li>
+<li>$\gamma = S \times P_c/R_b \nonumber $ </li>
+</ul>
+
+<p><a href="#fnref:one:13" class="footnote-backref">&#8617;</a></p>
+</li>
+
+<li id="fn:tip:sig">
+<ul>
+<li>$f_{ib}$  : Probability to be selected of Meter $M_{ib}$ at $H_i$ </li>
+<li>$f\!B_{ia}$ : Probability to select $M_{ia}$ based on its Battery level $B_{ia}$ </li>
+<li>$f\!D_{iab}$ : Probability to be selected of Meter $M_{ib}$ based on the square of $D_{iab}$ </li>
+<li>$f\!T_{ib}$ : Probability to be selected of Meter $M_{ib}$ based on the square of $T_{ib}$</li>
+</ul>
+
+<p><a href="#fnref:tip:sig" class="footnote-backref">&#8617;</a></p>
+</li>
+
+<li id="fn:img:sig">
+<p><img src="../images/sigmoid.png" alt="" />&#160;<a href="#fnref:img:sig" class="footnote-backref">&#8617;</a></p>
+</li>
+
+<li id="fn:one:14">
+<ul>
+<li>having an "S" shape , sigmoid curve</li>
+<li>$S(t) = \frac{1}{1 + e^{-t}}$</li>
+</ul>
+
+<p><a href="#fnref:one:14" class="footnote-backref">&#8617;</a></p>
+</li>
+
+<li id="fn:one:15">
+<ul>
+<li>$B = Normalized\ Battery\ to\ [0 , 10] $ and $\ \mu_i =\ mean(\ B_{i,:}\ ) $</li>
+</ul>
+
+<p><a href="#fnref:one:15" class="footnote-backref">&#8617;</a></p>
+</li>
+
+<li id="fn:one:16">
+<ul>
+<li>$D =  Normalized\ Square\ of\ Distance\ to\ [0 , 10]  $, and $\ \nu_1 = mean(D)$</li>
+<li>$T =  Normalized\ Square\ of\ Distance\ to\ [0 , 10]  $, and $\ \nu_2 = mean(T)$ </li>
+</ul>
+
+<p><a href="#fnref:one:16" class="footnote-backref">&#8617;</a></p>
+</li>
+
+<li id="fn:one:17">
+<ul>
+<li>the energy consumed for transmission from $M_{(i+1)a}$ to $M_{ib}$ is smaller than $B_{(i+1)a}$</li>
+<li>all the other meters at $H_i$ have enough energy for local reading transmission.</li>
+</ul>
+
+<p><a href="#fnref:one:17" class="footnote-backref">&#8617;</a></p>
+</li>
+
+<li id="fn:img:topology">
+<p><img src="../images/topology.png" alt="" title="" class="bottom" />&#160;<a href="#fnref:img:topology" class="footnote-backref">&#8617;</a></p>
+</li>
+
+<li id="fn:img:diag">
+<p><img src="../images/algorithm.png" alt="" />&#160;<a href="#fnref:img:diag" class="footnote-backref">&#8617;</a></p>
+</li>
+
+<li id="fn:img:battery">
+<p><img src="../images/figure2.png" alt="" />&#160;<a href="#fnref:img:battery" class="footnote-backref">&#8617;</a></p>
+</li>
+
+<li id="fn:one:18">
+<ul>
+<li>Selects the relay meter randomly</li>
+<li>Selects the meter with maximum battery level as a relay. </li>
+</ul>
+
+<p><a href="#fnref:one:18" class="footnote-backref">&#8617;</a></p>
+</li>
+
+<li id="fn:img:f5">
+<p><img src="../images/figure5.png" alt="" />&#160;<a href="#fnref:img:f5" class="footnote-backref">&#8617;</a></p>
+</li>
+
+<li id="fn:one:19">
+<ul>
+<li>The routing process of the proposed algorithms is terminated at $H_1$, while the maximum one terminated at $H_3$. </li>
+<li>The proposed algorithms can transmit 56 more packets than the maximum one.</li>
+</ul>
+
+<p><a href="#fnref:one:19" class="footnote-backref">&#8617;</a></p>
+</li>
+
+<li id="fn:img:ran">
+<p><img src="../images/ml_ran.png" alt="" title="" class="bottom" />&#160;<a href="#fnref:img:ran" class="footnote-backref">&#8617;</a></p>
+</li>
+
+<li id="fn:img:max">
+<p><img src="../images/ml_max.png" alt="" title="" class="bottom" />&#160;<a href="#fnref:img:max" class="footnote-backref">&#8617;</a></p>
+</li>
+
+<li id="fn:one:20">
+<ul>
+<li>The proposed algorithm has longer lifetime than the maximum one for most groups. </li>
+<li>Even though the maximum one's lifetimes are longer occasionally, the increment is very small.</li>
+</ul>
+
+<p><a href="#fnref:one:20" class="footnote-backref">&#8617;</a></p>
+</li>
+
+</ol>
+</div>
+
+</div></body>
+</html>

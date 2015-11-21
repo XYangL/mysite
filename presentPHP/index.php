@@ -92,6 +92,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
 				</button>
 				<a class="navbar-brand" href="#">Present System</a>
 			</div>
@@ -100,6 +101,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 					<li class="active"><a href="index.php">Home</a></li>
 					<li><a href="Editor.php">Editor</a></li>
 					<li><a href="demo.php">Demo</a></li>
+					<li><a href="ScrollSlide.php">Scroll Slide</a></li>
 					<!-- <li><a href="#review">Review</a></li> -->
 					<!-- <li><a href="#about">About</a></li> -->
 					<!-- <li><a href="#contact">Contact</a></li> -->

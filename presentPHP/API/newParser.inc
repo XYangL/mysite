@@ -139,8 +139,10 @@ class Parser{
 		$refCON = "/({([^}]+)})$/";
 		$regITEM = "/(^\t*)((.|\n)*)({([^}]+)})?$/";
 		//$regBLockLineBreak = preg_replace("/(\n)\t*(?!-)(?=\w)/", "<br>", $input_lines);
+		//  // "/(?<!\\)(?: ((?<!\$)\${1,2}(?!\$)))(.*(?R)?.*)(?<!\\)(?: ((?<!\$)\1(?!\$)))/gmx";
 
 		$FNDic = array(); $oneI= 1;
+		$MATHDic = array();
 		foreach ($items as $key =>&$value) {
 			preg_match("/^\t*/", $value, $iLEV);
 			$regLBTab = $iLEV[0];
@@ -149,6 +151,21 @@ class Parser{
 			if (preg_match($regFN, $value, $matchedFN)){ 
 				/*Footnote defination block*/
 				$FNMarker = $matchedFN[1];
+				
+				if($matchedFN[2] == 'math'){
+					$value = trim(str_replace($FNMarker, '', $value));
+					$value = "<br/>\$".trim($value, "\$")."\$";
+					
+					$FNMarker = rtrim($FNMarker,':');
+					if (array_key_exists($FNMarker, $MATHDic)) {
+						$MATHDic[$FNMarker] .= "\t$value";
+					} else{
+						$MATHDic[$FNMarker] = $value;
+					}
+					unset($items[$key]);
+					continue;
+				}
+
 				if($matchedFN[2] == 'img'){
 					$value = preg_split($refCON, preg_split($regFN, $value)[1], -1,PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
 					$value = $matchedFN[1]." ![](".$value[0].") ".$value[1];// print_r( $value."\n");
@@ -194,6 +211,11 @@ class Parser{
 		}
 
 		$contentMD = implode("\n\n", $items)."\n\n".implode("\n\n", $FNDic);// echo $contentMD;
+		// var_dump($MATHDic);
+		$find = array_keys($MATHDic);
+		$replace = array_values($MATHDic);
+		$contentMD = str_ireplace($find, $replace, $contentMD);
+		
 		return $contentMD;
 	}
 
@@ -210,6 +232,7 @@ class Parser{
 
 		#Math
 		// ??workable now, but need check Latex in multilines & past input example
+		$rawBODY = str_replace("&#33;","\!",$rawBODY);
 
 		return $rawBODY;
 	}

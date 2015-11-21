@@ -49,6 +49,7 @@ $style ="CAScroll";
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
 				</button>
 				<a class="navbar-brand" href="#">Present System</a>
 			</div>
@@ -57,6 +58,7 @@ $style ="CAScroll";
 					<li><a href="index.php">Home</a></li>
 					<li><a href="Editor.php">Editor</a></li>
 					<li class="active"><a href="demo.php">Demo</a></li>
+					<li><a href="ScrollSlide.php">Scroll Slide</a></li>
 					<!-- <li><a href="#review">Review</a></li> -->
 					<!-- <li><a href="#about">About</a></li> -->
 					<!-- <li><a href="#contact">Contact</a></li> -->
@@ -72,16 +74,16 @@ $style ="CAScroll";
 			</div> -->
 			<div id="demos-wrapper" >
 				<ul class="nav nav-pills nav-justified">
-					<li class="input-lg active"><a data-toggle="tab" href="#SS">Slide Scroll</a></li>
-					<li class="input-lg"><a data-toggle="tab" href="#SL">Scroll List</a></li>
+					<li class="input-lg  active"><a data-toggle="tab" href="#SL">Scroll List</a></li>
+					<li class="input-lg"><a data-toggle="tab" href="#SS">Scroll Slide</a></li>
 					<li class="input-lg"><a data-toggle="tab" href="#S5">Slides in S5</a></li>
 					<li class="input-lg"><a data-toggle="tab" href="#SRC">Plain Text Source</a></li>
 				</ul>
 				<div class="tab-content">
-					<div id="SS" class="tab-pane fade in active" data-src="demo/SS Demo.html">
+					<div id="SL" class="tab-pane fade in active" data-src="demo/SL Routing.html">
 						<iframe src=""></iframe>
 					</div>
-					<div id="SL" class="tab-pane fade " data-src="demo/List Routing.html">
+					<div id="SS" class="tab-pane fade " data-src="demo/SS Routing.html">
 						<iframe src=""></iframe>
 					</div>
 					<div id="S5" class="tab-pane fade " data-src="demo/S5 Routing.html">
@@ -139,7 +141,7 @@ $style ="CAScroll";
 
 			setSrc("#demos-wrapper >ul>li.active>a");
 
-			var tabHeight = $(window).height()- $('.tab-content').offset().top - 15; console.log(tabHeight);
+			var tabHeight = $(window).height()- $('.tab-content').offset().top - 15;
 			$('.tab-content >div').height(tabHeight);
 
 		});

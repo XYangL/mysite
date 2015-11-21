@@ -106,6 +106,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
 				</button>
 				<a class="navbar-brand" href="#">Present System</a>
 			</div>
@@ -114,6 +115,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 					<li><a href="index.php">Home</a></li>
 					<li class="active"><a href="Editor.php">Editor</a></li>
 					<li><a href="demo.php">Demo</a></li>
+					<li><a href="ScrollSlide.php">Scroll Slide</a></li>
 					<!-- <li><a href="#review">Review</a></li> -->
 					<!-- <li><a href="#about">About</a></li> -->
 					<!-- <li><a href="#contact">Contact</a></li> -->
@@ -173,7 +175,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 											</optgroup>
 											<optgroup label="Flow">
 												<option  <?php if ($style == "Scroll" ) {echo "selected";} ?> >Scroll</option>
-												<option  <?php if ($style == "CAScroll" ) {echo "selected";} ?>  data-subtext="Contaxt Aware" >CAScroll</option>
+												<option  <?php if ($style == "CAScroll" ) {echo "selected";} ?>  data-subtext="" >Scroll List</option>
+												<option  <?php if ($style == "ScrollSlide" ) {echo "selected";} ?>  data-subtext="" >Scroll Slide</option>
 											</optgroup>
 											<optgroup label="Canvas/ZUI">
 												<option  <?php if ($style == "TBA" ) {echo "selected";} ?>  disabled="disabled" >TBA</option>
