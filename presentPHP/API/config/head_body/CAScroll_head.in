@@ -2,10 +2,10 @@
 		MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
 		MathJax.Hub.Queue(function () {initMathJax();});
 	</script> <!-- LaTex -->
-	<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
-	<script src="http://code.jquery.com/jquery-latest.js" type="text/javascript"></script>
+	<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+	<script src="CAScroll/jquery-latest.js" type="text/javascript"></script>
 
-	<script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js" type="text/javascript"></script>
+	<script src="CAScroll/jquery-ui.js" type="text/javascript"></script>
 	<link href="CAScroll/CAScroll.css" rel="stylesheet" type="text/css"/>
 	<script src="CAScroll/CAScroll.js" type="text/javascript"></script>
 	<script src="CAScroll/jquery.bpopup.min.js" type="text/javascript"></script>

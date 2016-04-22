@@ -1,50 +1,79 @@
-Scroll List is a web-based present system
+title: User Guide for ListPoint
+animateDur: fast
+fnContent:  User Guide for ListPoint
+hlPosition: 0.3
+=======
+
+ListPoint is a web-based present system
 - Contents are organized as an embedded list, like a tree with title as its root
-- Focus are swithed via folding and scrolling. 
+- Focus are switched via folding and scrolling. 
 
-Authoring Syntax
-Block is the basic display unit to apply level-style or highlight.
-
-	The source text is a few leveled blocks indented with tabs and separated by blank lines
+Authoring Syntax : **MarkPoint**
+Block is the basic display unit to apply level-style or to be highlighted.
 	
-	Specify level for every block
-	- Prepend tabs at the start of the block
-	- The number of tabs +1 represents its Level
-	- If the block has multiple lines, every line should be started with the same number of tabs
+	Basic Structure
+	The source text is a few leveled blocks indented with tabs and separated by blank lines
+		
+		Specify level for every block
+		- Prepend tabs at the start of the block
+		- The number of tabs +1 represents its Level
+		- If the block has multiple lines, every line should be started with the same number of tabs
+		- E.g., this block prepending with 1 tab is level 2
+		- Its parent's block, 'Authoring Syntax', is one toppest section heading in level 1
+		
+		The title of the presentation is given separately and not included in the source text
+		It can be treated in level 0 as the parent of all the toppest section headings
 
-	Special configuration 
+	Special content item
+
+		**Emphasised Texts** are wrapped with asterisks (*) and must be in the same line.
+
+		Lists use hyphens (-) as mark before every item
+		Every item should in one line and prepend with same number of tabs
+
+		Latex and MathML can be used to write equations in the source text
+		e.g. $a + b = c$
+
+	Special Block [^type:id] as tag
+	- Every tag is wrapped in square brackets
+	- A tag contains two parts: type and id
+	- The detailed contents by the tag should be defined in a single block start with the tag
+	- The tab can represent the related special block when it is reused
+
+		Every image is specified via a tag starting with 'img' [^img:id]
+		The tag with the source path of the image should be in a single block in one line.
+
+		[^img:id]: images/PresentSystemModel.png
+
+		An equation can be reused via a tag start with 'math' [^math:id]
+
+		[^math:id]: $E_{bt} = (P_{PA}+P_c)/R_b$
+
+		Some hidden content prepared for Q&A can be specified via [^hide:id].
+
+		[^hide:id]:
+			- Here are the detailed hidden contents
+			- The contents can be a list or multi paragraph
+
+	Special configuration {.des .bottom} as class 
 	- Append configuration name inside curly brackets in the end of the block.
 	- Every name should be start with a dot and separated by space. 
-	- E.g. {.des .bottom}
 
-	**Emphasised** Texts in the same line is wrapped with asterisks (*)
+		img.bottom : the image will be shown below the focused item
 
-	Latex and MathML can be used to write equations in the source text
+		img.activeFull : the image will be dispalyed in full screen with the related block when that block is highlighted 		
 
-More Fetures
+		block.des : all its direct children block will appended with the same image
 
-	If one block contains an image, a small image icon will be appended in the end of the paragraph. [^img:right]
+		block.slowShrink : the block will be kept as expanded in full when switching focus among its siblings {.slowShrink}
 
-	[^img:right]: images/PresentSystemModel.png
+		block.detailed : all its direct children block will have .slowShrink
 
-	Image also can be displayed in the right or bottom of the focused blcok. [^img:demo]
-
-	Image is clickable to be displayed in full screen. [^img:demo]
-
-	[^img:demo]: images/TaskModel.png  {.bottom}
-
-	Scroll List also provides a third type of action **'SPACE'**.
-	It controls the display of some contents related the the focused block. [^hide:1]
-
-	[^hide:1]:
-		- There will be a 'plus' icon appended to the block if it has some hidden related contents.
-		- Additional contents prepared for 'Quetion & Answer' can be optionally displayed in the related panel.
-		- Press 'SPACE' again to hide the this related pane.
-
+		body.section : top of the the highlight position will be fixed as .L_1 related section top
 
 Content Layout
 
-	The basic **focus unit** in Scroll List is a block with one type of the following contents:
+	The basic **focus unit** in ListPoint is a block with one type of the following contents:
 	
 		One or more paragraphs.
 		This is the second paragraph in the same block.
@@ -54,7 +83,7 @@ Content Layout
 
 		One paragraph appended with one list
 		- This is the first item of the list
-		- This is the sencond item of the list 
+		- This is the second item of the list 
 	
 		One image with or without title [^img:right]
 	
@@ -63,14 +92,15 @@ Content Layout
 	While delivering a presentation, the presenters can use SL to highlight the focused block or switch focus to another block. 
 
 	To  **highlighting the focused block** :
-	Scroll list will expand that block to full size, scroll its top border to a fixed position, and render it with light blue background. 
+	ListPoint will expand that block to full size, scroll its top border to a fixed position, and render it with light blue background. 
 	
 	The other blocks will either be **shrinked into one line** or be **hidden**, according to their relationship to the focused block in the content structure.
 
+	The heading navigation bar shows the path in the content structure tree from the title to the highlighted block.
 
 Actions to Switch Focus
 
-	From the same focused block, the presenter can  **switch focus** to different blocks, since Scroll List provides different types of actions to navigate through the blocks.
+	From the same focused block, the presenter can  **switch focus** to different blocks, since ListPoint provides different types of actions to navigate through the blocks.
 
 		Continuous linear actions: The embed list are treated as a linear sequence of items
 		- Next : switch to the block which is next to the focused one in the linear order
@@ -81,3 +111,22 @@ Actions to Switch Focus
 		- DOWN : Skip the children blocks, and switch to next sibling or ancestor block 
 
 	Every displayed blocks or section in the heading is clickable and will lead to focus on the clicked target.
+
+More Features
+
+	Images [^img:id]
+	If one block contains an image, a small image icon will be appended in the end of the paragraph. 
+
+		Image also can be displayed in the right or bottom of the focused block. [^img:demo]
+
+		Image is clickable to be displayed in full screen. [^img:demo]
+
+		[^img:demo]: images/TaskModel.png  {.bottom}
+
+	ListPoint also provides a third type of action **'SPACE'**.
+	It controls the display of some contents related the the focused block. [^hide:1]
+
+	[^hide:1]:
+		- There will be a 'plus' icon appended to the block if it has some hidden related contents.
+		- Additional contents prepared for ''Question & Answer' can be optionally displayed in the related panel.
+		- Press 'SPACE' again to hide the this related pane.

@@ -1,5 +1,17 @@
 <?php 
 session_start();
+$commentSrcDiv = "srcComment/";
+
+// Recored the Visit Traffic
+if (!$_SESSION['recorded']) {
+	$ip=$_SERVER['REMOTE_ADDR'];
+	date_default_timezone_set('Asia/Hong_Kong');
+	$time = date('Y-m-d H:i:s',time());	
+	$str = $ip . '|' .$time."\r\n";//ip|2015-11-6 10:24:15
+	file_put_contents($commentSrcDiv.'countVisit.txt',$str,FILE_APPEND);
+	$_SESSION['recorded'] = true;
+}
+
 $title = $contentSRC = $style = "";
 require 'API/newParser.inc';
 $PARSER = new Parser();
@@ -20,6 +32,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 	$PARSER->main($title, $contentSRC, $style);
 	
 	if($PARSER->success){	
+		// Record the Parsered times //
+		$ip=$_SERVER['REMOTE_ADDR'];
+		date_default_timezone_set('Asia/Hong_Kong');
+		$time = date('Y-m-d H:i:s',time());
+		$str = $ip.'|'.$time.'|'.$mode."\r\n";//ip|2015-11-6 10:24:15
+		file_put_contents($commentSrcDiv.'countConvert.txt',$str,FILE_APPEND);
+	
 		$_SESSION['html-parsed']= $PARSER->presentableHTML;
 		
 		/*Upload Image List*/
@@ -40,7 +59,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 	// $title ="A Maximum Likelihood Routing Algorithm for Smart Grid Wireless Network";
 	// $contentSRC = file_get_contents("API/mdSrc/Smart Grid.src");
 
-	$title ="User Guide for Scroll List";
+	$title ="User Guide for List Point";
 	$contentSRC = file_get_contents("API/mdSrc/SL-UserGuide.src");
 	
 	$style ="CAScroll";
@@ -75,17 +94,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 	<link href="css/fileinput.min.css" media="all" rel="stylesheet" type="text/css" />
 
 	<!-- Code Mirror -->
-	<script src="codemirror/codemirror.js"></script>
-	<link  href="codemirror/codemirror.css" rel="stylesheet">
-	<link  href="codemirror/neat.css" rel="stylesheet">
-	<script src="codemirror/mode/markdown.js"></script>
+	<script src="lib/codemirror/codemirror.js"></script>
+	<link  href="lib/codemirror/codemirror.css" rel="stylesheet">
+	<link  href="lib/codemirror/neat.css" rel="stylesheet">
+	<script src="lib/codemirror/mode/markdown.js"></script>
 	<style type="text/css">
 		/*.CodeMirror {border-top: 1px solid black; border-bottom: 1px solid black;}*/
 		.CodeMirror pre > * { text-indent: 0px; }
 	</style>
 
 	<!-- yii2-md-editor -->
-	<link href="yii2-md-editor/css/kv-markdown.css" rel="stylesheet">
+	<link href="lib/yii2-md-editor/css/kv-markdown.css" rel="stylesheet">
 
 	<!-- Custom Setting -->
 	<link href="css/index_editor.css" rel="stylesheet" />
@@ -113,9 +132,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 			<div id="navbar" class="collapse navbar-collapse">
 				<ul class="nav navbar-nav">
 					<li><a href="index.php">Home</a></li>
-					<li class="active"><a href="Editor.php">Editor</a></li>
+					<li class="active"><a href="editor.php">Editor</a></li>
 					<li><a href="demo.php">Demo</a></li>
-					<li><a href="ScrollSlide.php">Scroll Slide</a></li>
+					<li><a href="comment.php">Comments</a></li>
+					<!-- <li><a href="ScrollSlide.php">Scroll Slide</a></li> -->
 					<!-- <li><a href="#review">Review</a></li> -->
 					<!-- <li><a href="#about">About</a></li> -->
 					<!-- <li><a href="#contact">Contact</a></li> -->
@@ -127,13 +147,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 	<div>
 		<div class="container">
 			<div class="page-header">
-				<h2>Editor <small>Convert plaintext in new syntax into visual support object of Scroll List</small></h2>
+				<h2>Editor <small>Convert plaintext in MarkPoint into a web-based visual support object of ListPoint</small></h2>
 			</div>
 			<div id="md2ps" >
 				<form id="authorInput" name="authorInput" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method = "post" enctype="multipart/form-data">
 					<input type="hidden" id="ps-mode"  name="ps-mode" value="<?php echo $mode ?>" />
 					<input type="hidden" id="ps-imageNum"  name="ps-imageNum" value="0" />
-					<input type="text" id="ps-title" class="form-control input-lg" name="ps-title" placeholder="Presentation Title"	value="<?php if ($title!='') {echo $title;} ?>">
+					<!-- <input type="text" id="ps-title" class="form-control input-lg" name="ps-title" placeholder="Presentation Title"	value="<?php if ($title!='') {echo $title;} ?>"> -->
 					<br/>
 
 					<div class="form-group field-demo-notes required">
@@ -145,16 +165,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 								</div>
 
 								<div class="btn-group">
-									<button type="button" id="demo-notes-btn-14" class="btn  btn-default " title="Inline Code" onclick="editorTool(14)"><div style="margin-top: -4px; margin-bottomInline Code: -1px;">
+									<button type="button" id="demo-notes-btn-14" class="btn  btn-default " title="Inline Equation" onclick="editorTool(14)"><div style="margin-top: -4px; margin-bottomInline Code: -1px;">
 										<span style="font-size: 1.2em;">&lsaquo;</span>/<span style="font-size: 1.2em;">&rsaquo;</span>
 									</div></button>
-									<button type="button" id="demo-notes-btn-15" class="btn  btn-default " title="Code Block" onclick="editorTool(15)"><i class='glyphicon glyphicon-sound-stereo'></i></button>
+									<button type="button" id="demo-notes-btn-15" class="btn  btn-default " title="Block Equation" onclick="editorTool(15)"><i class='glyphicon glyphicon-sound-stereo'></i></button>
 								</div>
 
 								<div class="btn-group">
 									<button type="button" id="demo-notes-btn-6" class="btn  btn-default" title="Image"><i class='glyphicon glyphicon-picture'></i></button><!-- editorTool(6, &quot;#demo-notes&quot;) -->
-									<button type="button" id="demo-notes-btn-20" class="btn  btn-default" title="More" onclick="editorTool(20)"><i class='glyphicon glyphicon-plus-sign'></i></button>
-									<button type="button" id="demo-notes-btn-21" class="btn  btn-default" title="Tip" onclick="editorTool(21)"><i class='glyphicon glyphicon-info-sign'></i></button>
+									<button type="button" id="demo-notes-btn-20" class="btn  btn-default" title="Hide block" onclick="editorTool(20)"><i class='glyphicon glyphicon-plus-sign'></i></button>
+									<button type="button" id="demo-notes-btn-21" class="btn  btn-default" title="Tip Block" onclick="editorTool(21)"><i class='glyphicon glyphicon-info-sign'></i></button>
 								</div>
 								<div id="ps-imageList"  style='display:none;'>
 									<input type='file' id='ps-image-0' name='ps-image-0' onchange='image(this)' accept='image/*' />
@@ -163,7 +183,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 								<div class="btn-group" >
 									<div class="row-fluid">
 										<select id="ps-style" class="selectpicker show-tick span1" data-width="120px" name="ps-style"> <!-- multiple data-max-options="1" title="Choose one style ..." -->
-											<optgroup label="Paradigm">
+											<optgroup label="Basic Paradigm">
 												<option  <?php if ($style == "HTML" ) {echo "selected";} ?> data-subtext="Without Style" >HTML</option>
 												<option  <?php if ($style == "Slide" ) {echo "selected";} ?> disabled="disabled" >Slide</option>
 												<option  <?php if ($style == "List" ) {echo "selected";} ?> data-subtext="Flow" >List</option>
@@ -173,13 +193,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 												<option  <?php if ($style == "Slidy" ) {echo "selected";} ?> disabled="disabled" >Slidy</option>
 												<option  <?php if ($style == "js" ) {echo "selected";} ?>  disabled="disabled" >Reveal.js</option>
 											</optgroup>
-											<optgroup label="Flow">
+											<optgroup label="List">
 												<option  <?php if ($style == "Scroll" ) {echo "selected";} ?> >Scroll</option>
-												<option  <?php if ($style == "CAScroll" ) {echo "selected";} ?>  data-subtext="" >Scroll List</option>
-												<option  <?php if ($style == "ScrollSlide" ) {echo "selected";} ?>  data-subtext="" >Scroll Slide</option>
+												<option  <?php if ($style == "CAScroll" ) {echo "selected";} ?>  data-subtext="" >ListPoint</option>
+												<option  <?php if ($style == "ScrollSlide" ) {echo "selected";} ?>  data-subtext="" >SlideList</option>
 											</optgroup>
-											<optgroup label="Canvas/ZUI">
-												<option  <?php if ($style == "TBA" ) {echo "selected";} ?>  disabled="disabled" >TBA</option>
+											<optgroup label="Map">
+												<option  <?php if ($style == "TBA" ) {echo "selected";} ?>  disabled="disabled" >Canvas/ZUI</option>
 											</optgroup>
 										</select>
 									</div>
@@ -197,11 +217,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 							<div id="demo-notes-footer" class="kv-md-footer">
 								<div class = "btn-toolbar ">
 									<div class="btn-group pull-right">
-										<button type="button" id="ps-preview" class="btn btn-sm btn-default" title="Preview formatted text"><i class='glyphicon glyphicon-search'></i> Preview</button>
+										<button type="button" id="ps-preview" class="btn btn-md btn-default" title="Preview formatted text"><i class='glyphicon glyphicon-search'></i> Preview</button>
 									</div>
 
 									<div class="btn-group pull-right">
-										<button type="button" id="demo-notes-btn-51" class="btn btn-sm btn-primary dropdown-toggle" title="Export content" data-enabled data-toggle="dropdown"><i class='glyphicon glyphicon-floppy-disk'></i> Export <span class="caret"></span></button>
+										<button type="button" id="demo-notes-btn-51" class="btn btn-md btn-primary dropdown-toggle" title="Export content" data-enabled data-toggle="dropdown"><i class='glyphicon glyphicon-floppy-disk'></i> Export <span class="caret"></span></button>
 										<ul class='dropdown-menu'>
 											<li><a id="ps-export-md" href="#" title="Save as text"><i class="glyphicon glyphicon-floppy-save"></i> Content.md</a></li>
 											<li><a id="ps-export-html" href="#" title="Save as HTML"><i class="glyphicon glyphicon-floppy-saved"></i> Present.html</a></li>
@@ -263,8 +283,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 	<script src="js/jquery.bpopup.min.js"></script>
 
 	<!-- yii2-md-editor -->
-	<script src="yii2-md-editor/js/rangyinputs-jquery-1.1.2.min.js"></script>
-	<script src="yii2-md-editor/js/kv-markdown.js"></script> <!-- not min.js -->
+	<script src="lib/yii2-md-editor/js/rangyinputs-jquery-1.1.2.min.js"></script>
+	<script src="lib/yii2-md-editor/js/kv-markdown.js"></script> <!-- not min.js -->
 
 	<!-- File Saver -->
 	<script src="js/Blob.js"></script>

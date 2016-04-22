@@ -1,4 +1,10 @@
 {
+	"ScrollList": { 
+		"paradigm": "Basic", 
+		"format": "html",
+		"dependFolders":["ScrollList"]
+	},
+
 	"HTML": { 
 		"paradigm": "Basic", 
 		"format": "html",
@@ -36,6 +42,13 @@
 		"dependFolders":["Scroll"],
 		"dependDetails":["bootstrap.min.css", "basic.css", "bootstrap.min.js", "function.js", "initialize.js", "keyboard.js"]
 		},
+	
+	"ScrollSlide": { 
+		"paradigm": "List", 
+		"format": "html",
+		"dependFolders":["ScrollSlide"],
+		"dependDetails":["ScrollSlide.js", "ScrollSlide.css"]
+	},
 
 	"CAScroll": { 
 		"paradigm": "List", 

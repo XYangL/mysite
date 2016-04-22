@@ -1,5 +1,17 @@
 <?php 
 session_start();
+$commentSrcDiv = "srcComment/";
+
+// Recored the Visit Traffic
+if (!$_SESSION['recorded']) {
+	$ip=$_SERVER['REMOTE_ADDR'];
+	date_default_timezone_set('Asia/Hong_Kong');
+	$time = date('Y-m-d H:i:s',time());
+	$str = $ip . '|' .$time."\r\n";//ip|2015-11-6 10:24:15
+	file_put_contents($commentSrcDiv."countVisit.txt",$str,FILE_APPEND);
+	$_SESSION['recorded'] = true;
+}
+
 $title = $contentMD = $style = "";
 $title ="A Maximum Likelihood Routing Algorithm for Smart Grid Wireless Network";
 $contentSRC = file_get_contents("API/mdSrc/Smart Grid.src");
@@ -27,10 +39,10 @@ $style ="CAScroll";
 	<![endif]-->
 
 	<!-- Code Mirror -->
-	<script src="codemirror/codemirror.js"></script>
-	<link  href="codemirror/codemirror.css" rel="stylesheet">
-	<link  href="codemirror/neat.css" rel="stylesheet">
-	<script src="codemirror/mode/markdown.js"></script>
+	<script src="lib/codemirror/codemirror.js"></script>
+	<link  href="lib/codemirror/codemirror.css" rel="stylesheet">
+	<link  href="lib/codemirror/neat.css" rel="stylesheet">
+	<script src="lib/codemirror/mode/markdown.js"></script>
 	<style type="text/css">
 		/*.CodeMirror {border-top: 1px solid black; border-bottom: 1px solid black;}*/
 		.CodeMirror pre > * { text-indent: 0px; }
@@ -58,7 +70,8 @@ $style ="CAScroll";
 					<li><a href="index.php">Home</a></li>
 					<li><a href="Editor.php">Editor</a></li>
 					<li class="active"><a href="demo.php">Demo</a></li>
-					<li><a href="ScrollSlide.php">Scroll Slide</a></li>
+					<li><a href="comment.php">Comments</a></li>
+					<!-- <li><a href="ScrollSlide.php">Scroll Slide</a></li> -->
 					<!-- <li><a href="#review">Review</a></li> -->
 					<!-- <li><a href="#about">About</a></li> -->
 					<!-- <li><a href="#contact">Contact</a></li> -->
@@ -74,26 +87,26 @@ $style ="CAScroll";
 			</div> -->
 			<div id="demos-wrapper" >
 				<ul class="nav nav-pills nav-justified">
-					<li class="input-lg  active"><a data-toggle="tab" href="#SL">Scroll List</a></li>
-					<li class="input-lg"><a data-toggle="tab" href="#SS">Scroll Slide</a></li>
+					<li class="input-lg  active"><a data-toggle="tab" href="#SL">List Point</a></li>
+					<li class="input-lg"><a data-toggle="tab" href="#SS">Slide List</a></li>
 					<li class="input-lg"><a data-toggle="tab" href="#S5">Slides in S5</a></li>
 					<li class="input-lg"><a data-toggle="tab" href="#SRC">Plain Text Source</a></li>
 				</ul>
 				<div class="tab-content">
-					<div id="SL" class="tab-pane fade in active" data-src="demo/SL Routing.html">
+					<div id="SL" class="tab-pane fade in active" data-src="srcDemo/SL Routing.html">
 						<iframe src=""></iframe>
 					</div>
-					<div id="SS" class="tab-pane fade " data-src="demo/SS Routing.html">
+					<div id="SS" class="tab-pane fade " data-src="srcDemo/SS Routing.html">
 						<iframe src=""></iframe>
 					</div>
-					<div id="S5" class="tab-pane fade " data-src="demo/S5 Routing.html">
+					<div id="S5" class="tab-pane fade " data-src="srcDemo/S5 Routing.html">
 						<iframe src=""></iframe>
 					</div>
 					<div id="SRC" class="tab-pane fade ">
 						<textarea id="demo-source" placeholder="Content in Markdown"><?php if ($contentSRC!='') { echo $contentSRC; } ?></textarea>
 					</div>
 				</div>
-
+ 
 
 			</div><!--.row #md2ps --> 
 		</div><!--.container -->

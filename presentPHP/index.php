@@ -1,5 +1,17 @@
 <?php 
 session_start();
+$commentSrcDiv = "srcComment/";
+
+// Recored the Visit Traffic
+if (!$_SESSION['recorded']) {
+	$ip=$_SERVER['REMOTE_ADDR'];
+	date_default_timezone_set('Asia/Hong_Kong');
+	$time = date('Y-m-d H:i:s',time());	
+	$str = $ip . '|' .$time."\r\n";//ip|2015-11-6 10:24:15
+	file_put_contents($commentSrcDiv."countVisit.txt",$str,FILE_APPEND);
+	$_SESSION['recorded'] = true;
+}
+
 $title = $contentMD = $style = "";
 require 'API/oldParser.inc';
 $PARSER = new Parser();
@@ -71,7 +83,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 	<link href="css/fileinput.min.css" media="all" rel="stylesheet" type="text/css" />
 
 	<!-- yii2-md-editor -->
-	<link href="yii2-md-editor/css/kv-markdown.css" rel="stylesheet">
+	<link href="lib/yii2-md-editor/css/kv-markdown.css" rel="stylesheet">
 
 	<!-- Custom Setting -->
 	<link href="css/index_editor.css" rel="stylesheet" />
@@ -99,9 +111,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 			<div id="navbar" class="collapse navbar-collapse">
 				<ul class="nav navbar-nav">
 					<li class="active"><a href="index.php">Home</a></li>
-					<li><a href="Editor.php">Editor</a></li>
+					<li><a href="editor.php">Editor</a></li>
 					<li><a href="demo.php">Demo</a></li>
-					<li><a href="ScrollSlide.php">Scroll Slide</a></li>
+					<li><a href="comment.php">Comments</a></li>
+					<!-- <li><a href="ScrollSlide.php">Scroll Slide</a></li> -->
 					<!-- <li><a href="#review">Review</a></li> -->
 					<!-- <li><a href="#about">About</a></li> -->
 					<!-- <li><a href="#contact">Contact</a></li> -->
@@ -254,8 +267,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $_POST['ps-mode']!='default'){
 	<script src="js/jquery.bpopup.min.js"></script>
 
 	<!-- yii2-md-editor -->
-	<script src="yii2-md-editor/js/rangyinputs-jquery-1.1.2.min.js"></script>
-	<script src="yii2-md-editor/js/kv-markdown.js"></script> <!-- not min.js -->
+	<script src="lib/yii2-md-editor/js/rangyinputs-jquery-1.1.2.min.js"></script>
+	<script src="lib/yii2-md-editor/js/kv-markdown.js"></script> <!-- not min.js -->
 
 	<!-- File Saver -->
 	<script src="js/Blob.js"></script>

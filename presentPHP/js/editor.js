@@ -33,10 +33,10 @@ window.onload = function () {
 				editorCM.setValue(reader.result);//fileDisplayArea.value = reader.result;
 			};
 			reader.readAsText(file);
-			$('#ps-title').val(file.name.substr(0,file.name.lastIndexOf('.')));
+			// $('#ps-title').val(file.name.substr(0,file.name.lastIndexOf('.')));
 		} else {
 			editorCM.setValue('');//fileDisplayArea.value = '';
-			$('#ps-title').val('');
+			// $('#ps-title').val('');
 			
 			showAlert('btn-danger','<strong>Invalid File Type.</strong> Please Choose a text file !</a>');
 		}
@@ -50,9 +50,9 @@ window.onload = function () {
 	$('#ps-reset').click(function () {
 		$('#ps-alert').hide();
 		
-		$('#ps-title').val('');
+		// $('#ps-title').val('');
 		editorCM.setValue('');// $('#demo-notes').val('');
-		$('#ps-style').selectpicker('val', 'CAScroll');// $('#ps-style').reset()
+		$('#ps-style').selectpicker('val', 'ListPoint');// $('#ps-style').reset()
 	});
 
 	$('#ps-preview').click(function () {
@@ -69,7 +69,7 @@ window.onload = function () {
 		var temp = editorCM.getValue().trim();//'#demo-notes').val()
 		if( temp!=''){
 			var blob = new Blob([temp], {type: "text/plain;charset=utf-8"});
-			saveAs(blob, ($('#ps-title').val()|| 'content') + ".md");
+			saveAs(blob, "content.md");// saveAs(blob, ($('#ps-title').val()|| 'content') + ".md");
 		} else{
 			showAlert('btn-danger', "Content is Empty!");
 		}
@@ -106,12 +106,12 @@ function isConvertable(){
 	// var supported_style =["Slidy","Scroll","S5","CAScroll","HTML","Slide","List"]; // Init in Editor.php
 	var radios = document.getElementById('ps-style');
 	var style = radios.options[radios.selectedIndex].text;
-	style = (style=='Scroll List') ? 'CAScroll' :style;// console.log(style);
-	style = (style=='Scroll Slide') ? 'ScrollSlide' :style;
+	style = (style=='ListPoint') ? 'CAScroll' :style;// console.log(style);
+	style = (style=='SlideList') ? 'ScrollSlide' :style;
 	radios.options[radios.selectedIndex].text = style;
 	if ($.inArray(style, supported_style) > -1) {//isSupport()
-		var title = $('#ps-title').val();
 		var contentMD = editorCM.getValue().trim();//$('#demo-notes').val();
+		var title = contentMD.split('\n', 1)[0]; console.log(title);
 		if (title!=''){
 			if(contentMD!=''){
 				return true;
@@ -119,7 +119,9 @@ function isConvertable(){
 				alertInfo = '<strong>Empty Content!</strong></a>';
 			}
 		} else{
-			alertInfo = '<strong>Empty Title!</strong></a>';
+			title = "title: set in content source";
+			return true;
+			// alertInfo = '<strong>Empty Title!</strong></a>';
 		}
 	} else{
 		alertInfo = '<strong>Invalid Style !</strong></a>';

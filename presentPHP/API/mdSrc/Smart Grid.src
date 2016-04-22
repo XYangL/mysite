@@ -2,7 +2,7 @@ Background of Smart Grid and its Routing
 
 	Smart Grid (SG) is the next generation electric power system [^img:over] {.des}	
 
-	[^img:over]: images/overview.png
+	[^img:over]: images/overview.png {.activeFull}
 
 		Integration of communication networks
 		- Home Area Networks (HANs)
@@ -196,7 +196,7 @@ Simulation of the Routing Algorithm
 
 	Algorithm Diagram [^img:diag] {.des}
 
-		[^img:diag]: images/algorithm.png
+		[^img:diag]: images/algorithm.png {.passiveFull}
 
 		To simulate the proposed routing algorithm, the meters' battery levels $B_{ij}$ and their positions $P_{ia}$ are first initialized using normal distribution and discrete uniform distribution, respectively. 
 
@@ -234,7 +234,7 @@ Simulation of the Routing Algorithm
 		
 		[^img:battery]: images/figure2.png
 
-		[^img:f5]: images/figure5.png
+		[^img:f5]: images/figure5.png {.passiveFull}
 
 		[^img:ran]: images/ml_ran.png {.bottom}
 

@@ -25,7 +25,7 @@ var maxIndex = 0;
 var secBGColor = 'rgba(186, 219, 177, 0.3)';
 var imageUrl = 'ScrollSlide/circlebg.png';
 var logoUrl = 'ScrollSlide/hkulogo.png';
-var fnContent = '<p>Scroll Slide with Nav Head</p>';
+var fnContent = '<p>SlideList</p>';
 
 var init = function(){
 	$('html').append($('<div/>',{'id': 'footDiv'}));

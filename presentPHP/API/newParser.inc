@@ -1,5 +1,10 @@
 <?php  
 
+## 1202
+## Accept title and other config in content.src
+## parserTest.php, newParser.inc, CAScroll.js, editor.js, ?editor.php?, 
+
+
 # Install PSR-0-compatible class autoloader
 spl_autoload_register(function($class){
 	require preg_replace('{\\\\|_(?!.*\\\\)}', DIRECTORY_SEPARATOR, ltrim($class, '\\')).'.php';
@@ -70,7 +75,7 @@ class Parser{
 	# called by User for converting content in Markdown to Presentable HTML
 	public function main($title, $contentSRC, $style)
 	{	
-		if( trim($title) == "" || trim($contentSRC) == "" || trim($style) == "" ){
+		if( trim($contentSRC) == "" || trim($style) == "" ){
 			$this->success = FALSE; $this->presentableHTML = "";
 			return $this->presentableHTML;// ? return FALSE??
 		} 
@@ -92,6 +97,7 @@ class Parser{
 		$this->style = $style;
 
 		# Convert new Syntax in to Markdown
+		# also get $this->title and append user configure to $this->specificConfig['head']
 		$this->contentMD = $this->src2md($this->contentMD);
 
 		# A Parser 1.1
@@ -120,11 +126,42 @@ class Parser{
 	# - split list from lines in the same block into [^one:1]
 	# - combine multi lines into one with <br/>
 	# - tabs into #* for being converted to <h$LEV> later
-	public function src2md( $contentSRC){
-		if ($contentSRC == ""){ $contentSRC = $this->contentMD; }
+	public function src2md( $inputSRC){
+		if ($inputSRC == ""){ $inputSRC = $this->contentMD; }
 
 		# $cotentSRC from <textarea> has carriage return indstead of \n
-		$contentSRC = str_replace("\r", "",  $contentSRC);
+		$inputSRC = str_replace("\r", "",  $inputSRC);
+
+		# Separate title and User Configureation from src
+		list($configSRC , $contentSRC) = preg_split('/(\n)+====+(\n)+/', $inputSRC, 2);
+		
+		
+		#Process customer configuration from user input
+		if($contentSRC){
+		# If HAS input configure, 
+			# map the input configure to variables array
+			$configSRC = str_replace(array(":", "\n"), array("=", "&"), $configSRC);
+			parse_str($configSRC, $configMap); 
+			$configMap = array_map('trim', $configMap);
+			// preg_match_all("/([^:\n]+): *([^:\n]+)/", $configure, $configure); 
+			// $configure = array_combine($configure[1], $configure[2]);	
+
+			if(isset($configMap['title']))// if($configure['title'])
+				$this->title = $configMap['title'];
+
+			# compose input condiguration as a js object
+			$userConfig = json_encode($configMap, JSON_PRETTY_PRINT);
+			$userConfig = <<<CONFIG
+\n	<script>
+	var userConfigure = $userConfig;
+	</script>\n
+CONFIG;
+			$this->specificConfig['head'] .=$userConfig;//var_dump($userConfig);			
+
+		} else{
+		# If NO input configure, content will be spit into config, so should be replaced.
+			list($contentSRC, $configSRC) = array($configSRC , $contentSRC);
+		}
 
 		# items are separated by '\n\n'
 		# - Replace the spaces in separated line with '\n'
@@ -187,6 +224,9 @@ class Parser{
 				$value = "<h$iLEV><div  markdown='1'>\n".preg_replace("/\n\t{".($iLEV-1)."}/", "\n", trim($value))."\n</div></h$iLEV>";
 				continue;
 			} else if (preg_match("/\n\t*(?=-)/", $value, $matchedFN)) {
+				// echo "!".ltrim($matchedFN[0],"\n")."!!\n\n";
+				// $FNTemp = explode($matchedFN[0], $value);
+				// var_dump($FNTemp); 
 				/*lines appended with List item in one block:*/
 				$FNTemp = preg_split("/\n\t*(?=-)/", $value);
 
