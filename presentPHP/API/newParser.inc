@@ -149,6 +149,21 @@ class Parser{
 			if(isset($configMap['title']))// if($configure['title'])
 				$this->title = $configMap['title'];
 
+			/*Make "userSet: user.js;user.css" acceptable in the global setting of *.src
+			  !!Need further design about how to specify the customer(userSet) js/css files
+			 */
+			$userSetFile = "\n";
+			if(isset($configMap['userSet'])){
+				$configMap['userSet'] = explode(';', $configMap['userSet']);
+				foreach ($configMap['userSet'] as  $ustemp) {
+					if (substr($ustemp, -3) === ".js") {
+						$userSetFile  .= "\t<script src='".$ustemp."' type='text/javascript'></script>\n";
+					} else if (substr($ustemp, -4) === ".css") {
+						$userSetFile .= "\t<link href='".$ustemp."' rel='stylesheet' type='text/css'/>\n";
+					}
+				}
+			}
+
 			# compose input condiguration as a js object
 			$userConfig = json_encode($configMap, JSON_PRETTY_PRINT);
 			$userConfig = <<<CONFIG
@@ -156,7 +171,8 @@ class Parser{
 	var userConfigure = $userConfig;
 	</script>\n
 CONFIG;
-			$this->specificConfig['head'] .=$userConfig;//var_dump($userConfig);			
+			$this->specificConfig['head'] .=$userSetFile.$userConfig;//var_dump($userConfig);			
+			$this->title = $configMap['title'];
 
 		} else{
 		# If NO input configure, content will be spit into config, so should be replaced.
@@ -237,6 +253,15 @@ CONFIG;
 				$FNDic["[^one:$oneI]"] = "[^one:$oneI]:".implode("\n\t", $FNTemp);
 				$oneI ++;
 				// continue;
+			} else 	if(preg_match("/^\t*\[link:/", $value, $matchedFN)){
+			/* Make reference-style links acceptable in *.src for phdExam
+			  !!Never Used & Still need to further checking or design
+				This is [an example][link:id] reference-style link.
+				[link:id]: http://example.com/  "Optional Title Here"
+			*/
+				$value = preg_replace("/\n\t*/", "\n\t", trim($value));//print_r( $value."\n");
+				$items[$key] = $value;
+				continue;
 			}
 
 			/*Combine multi Lines in one Block into one line*/

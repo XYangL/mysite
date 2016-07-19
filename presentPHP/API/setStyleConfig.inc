@@ -55,7 +55,11 @@ which will be used by parser.inc
 			$depTemp = $API_FOLDER."/"."../".$depFolder;
 			$depTemp =array_slice(scandir($depTemp, 1), 0, -2);
 			foreach ($depTemp as &$value) {
-				$value = $depFolder.'/'.$value;
+				if ($value!=".DS_Store") {
+					$value = $depFolder.'/'.$value;
+				} else{
+					$value = "";
+				}
 			}
 			$depDetails = array_merge($depDetails, $depTemp);
 			unset($depTemp);
